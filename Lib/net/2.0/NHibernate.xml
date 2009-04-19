@@ -169,6 +169,39 @@
             The entity persister.
             </summary>
         </member>
+        <member name="M:NHibernate.AdoNet.Util.DdlFormatter.Format(System.String)">
+            <summary> Format an SQL statement using simple rules:
+            a) Insert newline after each comma;
+            b) Indent three spaces after each inserted newline;
+            If the statement contains single/double quotes return unchanged,
+            it is too complex and could be broken by simple formatting.
+            </summary>
+        </member>
+        <member name="T:NHibernate.AdoNet.Util.FormatStyle">
+            <summary> Represents the the understood types or styles of formatting.  </summary>
+        </member>
+        <member name="T:NHibernate.AdoNet.Util.SqlStatementLogger">
+            <summary> Centralize logging handling for SQL statements. </summary>
+        </member>
+        <member name="M:NHibernate.AdoNet.Util.SqlStatementLogger.#ctor">
+            <summary> Constructs a new SqlStatementLogger instance.</summary>
+        </member>
+        <member name="M:NHibernate.AdoNet.Util.SqlStatementLogger.#ctor(System.Boolean,System.Boolean)">
+            <summary> Constructs a new SqlStatementLogger instance. </summary>
+            <param name="logToStdout">Should we log to STDOUT in addition to our internal logger. </param>
+            <param name="formatSql">Should we format SQL ('prettify') prior to logging. </param>
+        </member>
+        <member name="M:NHibernate.AdoNet.Util.SqlStatementLogger.LogCommand(System.String,System.Data.IDbCommand,NHibernate.AdoNet.Util.FormatStyle)">
+            <summary> Log a IDbCommand. </summary>
+            <param name="message">Title</param>
+            <param name="command">The SQL statement. </param>
+            <param name="style">The requested formatting style. </param>
+        </member>
+        <member name="M:NHibernate.AdoNet.Util.SqlStatementLogger.LogCommand(System.Data.IDbCommand,NHibernate.AdoNet.Util.FormatStyle)">
+            <summary> Log a IDbCommand. </summary>
+            <param name="command">The SQL statement. </param>
+            <param name="style">The requested formatting style. </param>
+        </member>
         <member name="T:NHibernate.AdoNet.AbstractBatcher">
             <summary>
             Manages prepared statements and batching. Class exists to enforce separation of concerns
@@ -5795,6 +5828,9 @@
         </member>
         <member name="F:NHibernate.Cfg.Environment.DefaultEntityMode">
             <summary>The EntityMode in which set the Session opened from the SessionFactory.</summary>
+        </member>
+        <member name="F:NHibernate.Cfg.Environment.FormatSql">
+            <summary> Enable formatting of SQL logged to the console</summary>
         </member>
         <member name="F:NHibernate.Cfg.Environment.QueryStartupChecking">
             <summary> Should named queries be checked during startup (the default is enabled). </summary>
@@ -21196,6 +21232,10 @@
             </summary>
             <param name="timeout"></param>
         </member>
+        <member name="M:NHibernate.IDetachedQuery.SetFetchSize(System.Int32)">
+            <summary> Set a fetch size for the underlying ADO query.</summary>
+            <param name="fetchSize">the fetch size </param>
+        </member>
         <member name="M:NHibernate.IDetachedQuery.SetLockMode(System.String,NHibernate.LockMode)">
             <summary>
             Set the lockmode for the objects idententified by the
@@ -21203,6 +21243,10 @@
             </summary>
             <param name="alias">alias a query alias, or <c>this</c> for a collection filter</param>
             <param name="lockMode"></param>
+        </member>
+        <member name="M:NHibernate.IDetachedQuery.SetComment(System.String)">
+            <summary> Add a comment to the generated SQL.</summary>
+            <param name="comment">a human-readable string </param>
         </member>
         <member name="M:NHibernate.IDetachedQuery.SetParameter(System.Int32,System.Object,NHibernate.Type.IType)">
             <summary>
@@ -23040,8 +23084,46 @@
         </member>
         <member name="M:NHibernate.IMultiCriteria.List">
             <summary>
-            Get all the 
+            Get all the results
             </summary>
+        </member>
+        <member name="M:NHibernate.IMultiCriteria.Add(System.Type,NHibernate.ICriteria)">
+            <summary>
+            Adds the specified criteria to the query. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="resultGenericListType">Return results in a <see cref="T:System.Collections.Generic.List`1"/></param>
+            <param name="criteria">The criteria.</param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.IMultiCriteria.Add``1(NHibernate.ICriteria)">
+            <summary>
+            Adds the specified criteria to the query. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="criteria">The criteria.</param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.IMultiCriteria.Add``1(System.String,NHibernate.ICriteria)">
+            <summary>
+            Adds the specified criteria to the query, and associates it with the given key. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="key">The key</param>
+            <param name="criteria">The criteria</param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.IMultiCriteria.Add``1(NHibernate.Criterion.DetachedCriteria)">
+            <summary>
+            Adds the specified detached criteria. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="detachedCriteria">The detached criteria.</param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.IMultiCriteria.Add``1(System.String,NHibernate.Criterion.DetachedCriteria)">
+            <summary>
+            Adds the specified detached criteria, and associates it with the given key. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="key">The key</param>
+            <param name="detachedCriteria">The detached criteria</param>
+            <returns></returns>
         </member>
         <member name="M:NHibernate.IMultiCriteria.Add(NHibernate.ICriteria)">
             <summary>
@@ -23141,8 +23223,55 @@
         </member>
         <member name="M:NHibernate.IMultiQuery.List">
             <summary>
-            Get all the 
+            Get all the results
             </summary>
+        </member>
+        <member name="M:NHibernate.IMultiQuery.Add(System.Type,NHibernate.IQuery)">
+            <summary>
+            Adds the specified criteria to the query. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="resultGenericListType">Return results in a <see cref="T:System.Collections.Generic.List`1"/></param>
+            <param name="criteria">The criteria.</param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.IMultiQuery.Add``1(NHibernate.IQuery)">
+            <summary>
+            Add the specified HQL query to the multi query. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+        </member>
+        <member name="M:NHibernate.IMultiQuery.Add``1(System.String,NHibernate.IQuery)">
+            <summary>
+            Add the specified HQL query to the multi query, and associate it with the given key. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="key"></param>
+            <param name="query"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.IMultiQuery.Add``1(System.String,System.String)">
+            <summary>
+            Add the specified HQL Query to the multi query, and associate it with the given key. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="key"></param>
+            <param name="hql"></param>
+            <returns></returns>
+        </member>
+        <member name="M:NHibernate.IMultiQuery.Add``1(System.String)">
+            <summary>
+            Add the specified HQL query to the multi query. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+        </member>
+        <member name="M:NHibernate.IMultiQuery.AddNamedQuery``1(System.String)">
+            <summary>
+            Add a named query to the multi query. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+        </member>
+        <member name="M:NHibernate.IMultiQuery.AddNamedQuery``1(System.String,System.String)">
+            <summary>
+            Add a named query to the multi query, and associate it with the given key. The result will be contained in a <see cref="T:System.Collections.Generic.List`1"/>
+            </summary>
+            <param name="key"></param>
+            <param name="namedKey"></param>
+            <returns></returns>
         </member>
         <member name="M:NHibernate.IMultiQuery.Add(System.String,NHibernate.IQuery)">
             <summary>
@@ -31505,7 +31634,7 @@
             database connection properties
             </summary>
             <param name="cfg">The NHibernate Configuration to generate the schema from.</param>
-            <param name="connectionProperties">The Properties to use when connecting to the Database.</param>
+            <param name="configProperties">The Properties to use when connecting to the Database.</param>
         </member>
         <member name="M:NHibernate.Tool.hbm2ddl.SchemaExport.SetOutputFile(System.String)">
             <summary>
@@ -31528,8 +31657,8 @@
             <param name="script"><see langword="true"/> if the ddl should be outputted in the Console.</param>
             <param name="export"><see langword="true"/> if the ddl should be executed against the Database.</param>
             <remarks>
-            This is a convenience method that calls <see cref="M:NHibernate.Tool.hbm2ddl.SchemaExport.Execute(System.Boolean,System.Boolean,System.Boolean,System.Boolean)"/> and sets
-            the justDrop parameter to false and the format parameter to true.
+            This is a convenience method that calls <see cref="M:NHibernate.Tool.hbm2ddl.SchemaExport.Execute(System.Boolean,System.Boolean,System.Boolean)"/> and sets
+            the justDrop parameter to false.
             </remarks>
         </member>
         <member name="M:NHibernate.Tool.hbm2ddl.SchemaExport.Drop(System.Boolean,System.Boolean)">
@@ -31539,18 +31668,17 @@
             <param name="script"><see langword="true"/> if the ddl should be outputted in the Console.</param>
             <param name="export"><see langword="true"/> if the ddl should be executed against the Database.</param>
             <remarks>
-            This is a convenience method that calls <see cref="M:NHibernate.Tool.hbm2ddl.SchemaExport.Execute(System.Boolean,System.Boolean,System.Boolean,System.Boolean)"/> and sets
-            the justDrop and format parameter to true.
+            This is a convenience method that calls <see cref="M:NHibernate.Tool.hbm2ddl.SchemaExport.Execute(System.Boolean,System.Boolean,System.Boolean)"/> and sets
+            the justDrop parameter to true.
             </remarks>
         </member>
-        <member name="M:NHibernate.Tool.hbm2ddl.SchemaExport.Execute(System.Boolean,System.Boolean,System.Boolean,System.Boolean,System.Data.IDbConnection,System.IO.TextWriter)">
+        <member name="M:NHibernate.Tool.hbm2ddl.SchemaExport.Execute(System.Boolean,System.Boolean,System.Boolean,System.Data.IDbConnection,System.IO.TextWriter)">
             <summary>
             Executes the Export of the Schema in the given connection
             </summary>
             <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
             <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
             <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
-            <param name="format"><see langword="true" /> if the ddl should be nicely formatted instead of one statement per line.</param>
             <param name="connection">
             The connection to use when executing the commands when export is <see langword="true" />.
             Must be an opened connection. The method doesn't close the connection.
@@ -31562,40 +31690,15 @@
             It does NOT close the given connection!
             </remarks>
         </member>
-        <member name="M:NHibernate.Tool.hbm2ddl.SchemaExport.Execute(System.Boolean,System.Boolean,System.Boolean,System.Boolean)">
+        <member name="M:NHibernate.Tool.hbm2ddl.SchemaExport.Execute(System.Boolean,System.Boolean,System.Boolean)">
             <summary>
             Executes the Export of the Schema.
             </summary>
             <param name="script"><see langword="true" /> if the ddl should be outputted in the Console.</param>
             <param name="export"><see langword="true" /> if the ddl should be executed against the Database.</param>
             <param name="justDrop"><see langword="true" /> if only the ddl to drop the Database objects should be executed.</param>
-            <param name="format"><see langword="true" /> if the ddl should be nicely formatted instead of one statement per line.</param>
             <remarks>
             This method allows for both the drop and create ddl script to be executed.
-            </remarks>
-        </member>
-        <member name="M:NHibernate.Tool.hbm2ddl.SchemaExport.Format(System.String)">
-            <summary>
-            Format an SQL statement using simple rules
-            </summary>
-            <param name="sql">The string containing the sql to format.</param>
-            <returns>A string that contains formatted sql.</returns>
-            <remarks>
-            The simple rules to used when formatting are:
-            <list type="number">
-            	<item>
-            		<description>Insert a newline after each comma</description>
-            	</item>
-            	<item>
-            		<description>Indent three spaces after each inserted newline</description>
-            	</item>
-            	<item>
-            		<description>
-            		If the statement contains single/double quotes return unchanged because
-            		it is too complex and could be broken by simple formatting.
-            		</description>
-            	</item>
-            </list>
             </remarks>
         </member>
         <member name="M:NHibernate.Tool.hbm2ddl.SchemaUpdate.Execute(System.Boolean,System.Boolean)">
