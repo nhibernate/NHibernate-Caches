@@ -14,4 +14,8 @@ cd MemCache
 nant -t:net-3.5
 cd ..
 
+cd Velocity
+nant -t:net-3.5
+cd ..
+
 pause
