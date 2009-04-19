@@ -73,14 +73,6 @@ namespace NHibernate.Caches.MemCache
 						log.DebugFormat("compression_enabled set to {0}", client.EnableCompression);
 					}
 				}
-				if (properties.ContainsKey("expiration"))
-				{
-					expiry = Convert.ToInt32(properties["expiration"]);
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("using expiration of {0} seconds", expiry);
-					}
-				}
 
 				if (properties.ContainsKey("expiration"))
 				{
