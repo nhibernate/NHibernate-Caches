@@ -1,0 +1,208 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>CacheBaseLibrary</name>
+    </assembly>
+    <members>
+  
+        <member name="T:System.Data.Caching.CacheItem">
+            <summary>
+            CacheItem: describes the format of the object as it is stored in the cache.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.CacheItem.CacheObject">
+            <summary>
+            Gets user object stored in the cache.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.CacheItem.ObjectKey">
+            <summary>
+            Gets the unique key associated with the object.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.CacheItem.Value">
+            <summary>
+            Gets the object in the serialized form.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.CacheItem.Tags">
+            <summary>
+            Gets the tags associated with the object.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.CacheItem.Version">
+            <summary>
+              Gets the version version associated with the object .
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.CacheItem.RegionName">
+            <summary>
+            Gets the name of the region this CacheItem belongs to.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.CacheItem.CacheName">
+            <summary>
+            Gets the name of the cache this CacheItem belongs to.
+            </summary>
+        </member>
+        <member name="T:System.Data.Caching.CacheItemVersion">
+            <summary>
+              This represents the version of the CacheItem.
+            </summary>
+        </member>
+  
+        <member name="M:System.Data.Caching.CacheItemVersion.Equals(System.Object)">
+            <summary>
+            Returns a value which indicates if this object is equal to specified CacheItemVersion instance.
+            </summary>
+            <param name="obj">
+              Instance of type System.Data.Caching.CacheItemVersion.
+            </param>
+            <returns>
+            Returns true if equal, false otherwise.
+            </returns>
+        </member>
+        <member name="M:System.Data.Caching.CacheItemVersion.GetHashCode">
+            <summary>
+              Returns the hashcode for the System.Data.Caching.CacheItemVersion instance.
+            </summary>
+            <returns>
+            Returns the hash code.
+            </returns>
+        </member>
+        <member name="T:System.Data.Caching.LockHandle">
+            <summary>
+              Lock handle represents lock associated with the object in the cache.
+            </summary>
+        </member>
+      
+        <member name="M:System.Data.Caching.Tag.ToString">
+            <summary>
+            String representation of a the current tag object.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.Caching.Tag.Equals(System.Object)">
+            <summary>
+            Compares current tag object for equality with the specified tag object.
+            </summary>
+            <param name="obj">
+              Instance of type System.Data.Caching.Tag.
+            </param>
+            <returns>
+              Returns true if equal, false otherwise.
+            </returns>
+        </member>
+        <member name="M:System.Data.Caching.Tag.GetHashCode">
+            <summary>
+              Returns hash code for the current System.Data.Caching.Tag object instance.
+            </summary>
+            <returns></returns>
+        </member>
+        <member name="T:System.Data.Caching.CacheErrorCode">
+            <summary>
+            Class which defines error codes contained in CacheException thrown by Cache Libraries. 
+            </summary>
+        </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAVersionMismatch">
+        <summary>
+          Object's Version in the cache doesn't match with specified version.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CANetworkError">
+        <summary>
+          Error communicating with cache service.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CANullArgument">
+        <summary>
+          Null Argument specified.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAOutofMemory">
+        <summary>
+          Out of memory.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAInvalidArgument">
+        <summary>
+         One of the arguments passed is not valid.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAUndefinedError">
+        <summary>
+          Unknown error.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CARegionDoesNotExist">
+        <summary>
+          Region Doesn't exist.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAKeyDoesNotExist">
+        <summary>
+          Object with the specified unique key doesn't exist.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CARegionAlreadyExists">
+        <summary>
+          Region already exists.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAKeyAlreadyExists">
+        <summary>
+          Object with the unique key is already present in the cache.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CANamedCacheDoesNotExist">
+        <summary>
+          Cache with the specified name doesn't exist.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAMaxNamedCacheCountExceeded">
+        <summary>
+          Named Cache count exceeded max value.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAObjectLocked">
+        <summary>
+          Object in the cache is locked already.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAObjectNotLocked">
+        <summary>
+          Object is not locked.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAInvalidLock">
+        <summary>
+          Specified lock handle is not valid.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAInvalidEnumerator">
+        <summary>
+          Invalid enumerator specified.
+        </summary>
+      </member>
+      <member name="F:System.Data.Caching.CacheErrorCode.CAMaxRegionCountExceeded">
+        <summary>
+          Region count exceeded max value.
+        </summary>
+      </member>
+        <member name="T:System.Data.Caching.CacheException">
+            <summary>
+              Defines the class used by System.Data.Caching classes to throw exceptions.
+            </summary>
+        </member>        
+        <member name="P:System.Data.Caching.CacheException.ErrorCode">
+            <summary>
+            Error Code which indicates exact nature of the error which caused the exception.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.CacheException.Message">
+            <summary>
+            Message associated with the exception. 
+            </summary>
+        </member>
+         </members>
+</doc>

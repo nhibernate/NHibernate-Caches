@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Velocity", "NHibernate.Caches.Velocity\NHibernate.Caches.Velocity.csproj", "{09EA5F04-1F0C-4D5E-A393-2B7B2FD279E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Velocity.Tests", "NHibernate.Caches.Velocity.Tests\NHibernate.Caches.Velocity.Tests.csproj", "{CA4F0A59-844B-4717-8F3B-6F53DC0F0B2E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8A0B0F4D-9CA0-4626-8895-A8A1DA5EEACA}"
+	ProjectSection(SolutionItems) = preProject
+		default.build = default.build
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{09EA5F04-1F0C-4D5E-A393-2B7B2FD279E8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{09EA5F04-1F0C-4D5E-A393-2B7B2FD279E8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{09EA5F04-1F0C-4D5E-A393-2B7B2FD279E8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{09EA5F04-1F0C-4D5E-A393-2B7B2FD279E8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA4F0A59-844B-4717-8F3B-6F53DC0F0B2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA4F0A59-844B-4717-8F3B-6F53DC0F0B2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA4F0A59-844B-4717-8F3B-6F53DC0F0B2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA4F0A59-844B-4717-8F3B-6F53DC0F0B2E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

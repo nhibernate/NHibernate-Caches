@@ -1,0 +1,353 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ClientLibrary</name>
+    </assembly>
+    <members>  
+        <member name="T:System.Data.Caching.CacheFactory">
+            <summary>
+              CacheFactory is a factory class to obtain System.Data.Caching.Cache instance.
+              Use like:
+              string cacheName = someName;
+              CacheFactory fac = new CacheFactory();
+              Cache _myCache = fac.GetCache(cacheName);
+            </summary>
+        </member>
+   
+        <member name="M:System.Data.Caching.CacheFactory.#ctor">
+            <summary>
+              Returns a System.Data.Caching CacheFactory instance.
+            </summary>
+        </member>
+       
+        <member name="M:System.Data.Caching.CacheFactory.GetCache(System.String)">
+            <summary>
+            Returns the cache instance for the specified cache name.
+            </summary>
+            <param name="cacheName">
+              Name of the cache.
+            </param>
+            <returns>
+              Returns a cache instance.
+            </returns>
+        </member>
+
+        <member name="M:System.Data.Caching.CacheFactory.Close">
+            <summary>
+              Closes the CacheFactory and releases all resources used.
+            </summary>
+            <returns>
+              Success or failure.
+            </returns>
+        </member>
+      
+        <member name="T:System.Data.Caching.Cache">
+            <summary>
+            Abstract class which provides interface for doing cache operations.
+            </summary>
+        </member>
+       
+         <member name="M:System.Data.Caching.Cache.Add(System.String,System.String,System.Object,System.Data.Caching.Tag[],System.TimeSpan)">
+            <summary>
+            Adds the object into the the specified region of the cache if object doesn't already exist.
+            If it exists, throws an exception of type CacheException indicating that key already exists.
+            </summary>
+            <param name="region"> Name of the region where object is to be stored.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="value">Object to be stored in the cache.</param>
+            <param name="tags">List of tags to be associated with the object.</param>
+            <param name="timeOut">Time to live of the object.</param>
+            <returns>Returns System.Data.Caching.CacheItemVersion associated with the object.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Add(System.String,System.String,System.Object,System.Data.Caching.Tag[])">
+            <summary>
+              Adds the object into the the given region of the cache if object doesn't already exist.
+              If it exists, throws an exception of type CacheException indicating that key already exists.
+            </summary>
+            <param name="region"> Name of the region,object is to be stored into. </param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="value">Object to be stored in the cache.</param>
+            <param name="tags">List of tags to be associated with the object.</param>
+            <returns>Returns System.Data.Caching.CacheItemVersion associated with the object.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Add(System.String,System.Object)">
+            <summary>
+            Adds the object in default regions of the cache if object doesn't already exist.
+            If it exists, throws an exception of type CacheException indicating that key already exists.
+            </summary>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="value">Object to be stored in the cache</param>
+            <returns>Returns System.Data.Caching.CacheItemVersion associated with the object.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Put(System.String,System.String,System.Object,System.Data.Caching.Tag[],System.Data.Caching.CacheItemVersion,System.TimeSpan)">
+            <summary>
+            Updates the object in the given region of the cache if oldversion matches 
+            to one stored in the cache. If version doesn't match, throws an exception of type CacheException.
+            </summary>
+            <param name="region">Name of the region where object is to be placed.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="value"> Object to be stored in the cache.</param>
+            <param name="tags"> List of tags to be associated with the object.</param>
+            <param name="oldVersion">
+              Old version, object will be updated in the cache only when
+              current version of the object present in cache matches with this old version. If oldversion is null, object is updated regardless of the version mismatch.
+            </param>
+            <param name="timeOut"> Time to live for the object</param>
+            <returns>Returns updated System.Data.Caching.CacheItemVersion associated with the object.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Put(System.String,System.String,System.Object,System.Data.Caching.Tag[],System.Data.Caching.CacheItemVersion)">
+            <summary>
+              Updates the object in the given region of the cache if oldversion matches
+              to one stored in the cache. If version doesn't match, throws an exception of type CacheException.
+              </summary>
+              <param name="region">Name of the region where object is to be placed</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="value">Object to be stored in the cache.</param>
+            <param name="tags"> List of tags to be associated with the object.</param>
+            <param name="oldVersion">
+              Old version, object will be updated in the cache only when
+              current version of the object present in cache matches with this old version. If oldversion is null, object is updated regardless of the version mismatch.
+            </param>
+            <returns>Returns updated System.Data.Caching.CacheItemVersion associated with the object.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Put(System.String,System.Object)">
+            <summary>
+              Updates a existing object or Add the object if it does not exist in the cache.
+            </summary>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="value">Object to be stored in the cache.</param>
+            <returns>Returns updated System.Data.Caching.CacheItemVersion associated with the object.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Get(System.String,System.String,System.Data.Caching.CacheItemVersion@)">
+            <summary>
+              Retrives the object with specified key from the cache.
+            </summary>
+            <param name="region">Name of the region to retrieve object from.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="version">Object with specified version will be retrived. If null, object with latest version is retrieved.</param>
+            <returns>Returns object from specified region with the specified key and version. If object not found, null will be returned.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Get(System.String)">
+            <summary>
+              Retrives the object with specified key from the cache.
+            </summary>
+            <param name="key"> Unique key associated with the object.</param>
+            <returns>Returns object with specified key. If object not found, null will be returned.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Remove(System.String,System.String)">
+            <summary>
+            Deletes object with specified key from the specified region of the cache.
+            </summary>
+            <param name="region"> Name of the region.</param>
+            <param name="key"> Unique key associated with the object.</param>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Remove(System.String,System.String,System.Data.Caching.CacheItemVersion)">
+            <summary>
+              Deletes object with specified key from the specified region of the cache if its version
+              matches with specified version.
+            </summary>
+            <param name="region"> Name of the region</param>
+            <param name="key"> Unique key associated with the object.</param>
+            <param name="version">Object with specified version will be deleted. If null, object with latest version is deleted.</param>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Remove(System.String)">
+            <summary>
+            Deletes object with specified key from the cache.
+            </summary>
+            <param name="key"> Unique key associated with the object.</param>
+        </member>
+        <member name="M:System.Data.Caching.Cache.ResetObjectTimeout(System.String,System.String,System.TimeSpan)">
+            <summary>
+              Sets a new Time To Live (TTL) timeout for the object in the specified region with the specified key. Object will expire after this new TTL expires.
+            </summary>
+            <param name="region">Name of the region where the object exists.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="newTimeout"> New Time to Live(TTL) Value.</param>
+            <returns></returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetIfVersionMismatch(System.String,System.String,System.Data.Caching.CacheItemVersion@)">
+            <summary>
+              Retrives the object from the specified region if the object has been modified.
+            </summary>
+            <param name="region">Name of the region.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="version"></param>
+            <returns>Returns the object if it has been modified, else null is returned.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetAndLock(System.String,System.String,System.TimeSpan,System.Data.Caching.LockHandle@)">
+            <summary>
+             Gets the object from the cache and locks it in one atomic operation if object is not locked. If object is already locked, throws an exception of type CacheException.
+            </summary>
+            <param name="region">
+            Name of the region.
+            </param>
+            <param name="key">
+              Unique key associated with the object.
+            </param>
+           
+            <param name="lockTimeOut">
+              Duration for locking this object.
+            </param>
+            <param name="lockHandle">
+              Lock handle is returned (as a out parameter). The handle can be used to unlock the object.
+            </param>
+            <returns>
+              Returns object with specified key if object was present in the cache and was also in unlocked state.
+            </returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.PutAndUnlock(System.String,System.String,System.Object,System.TimeSpan,System.Data.Caching.LockHandle,System.Data.Caching.Tag[])">
+            <summary>
+              Updates the object in the specified region, if passed lock handle matches with the lock handle of the object in the cache.
+            </summary>
+            <param name="region">Name of the region.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="value">Value of the object to be stored.</param>
+            <param name="timeOut">New Time to Live(TTL) Value.</param>
+            <param name="lockHandle">Lock Handle to be matched with the object present in the cache.</param>
+            <param name="tags">List of tags to be associated with the object.</param>
+            <returns>Returns updated System.Data.Caching.CacheItemVersion associated with the object.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.PutAndUnlock(System.String,System.String,System.Object,System.Data.Caching.LockHandle,System.Data.Caching.Tag[])">
+            <summary>
+              Updates the object in the specified region, if passed lock handle matches with the lock handle of the object in the cache.
+            </summary>
+            <param name="region">Name of the region.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="value">Value of the object to be stored.</param>
+            <param name="lockHandle">Lock Handle to be matched with the object present in the cache.</param>
+            <param name="tags">List of tags to be associated with the object.</param>
+            <returns>Returns updated System.Data.Caching.CacheItemVersion associated with the object.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Unlock(System.String,System.String,System.Data.Caching.LockHandle,System.TimeSpan)">
+            <summary>
+              Unlocks the object in the specified region with specified key, if passed lock handle matches with the lock handle of the object in the cache. Time To Live (TTL) is also updated.
+            </summary>
+            <param name="region"> Name of the region.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="lockHandle">LockHandle to be matched with the lock handle of the object present in the cache.</param>
+            <param name="timeOut">New Time to Live(TTL) Value.</param>
+            <returns>Returns true if successful. Else returns false.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.Unlock(System.String,System.String,System.Data.Caching.LockHandle)">
+            <summary>
+              Unlocks the object in the specified region with specified key, if passed lock handle matches with the lock handle of the object in the cache.
+            </summary>
+            <param name="region"> Name of the region.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <param name="lockHandle">LockHandle to be matchd with the lock handle of the object present in the cache.</param>
+            <returns>Returns true if successful. Else returns false.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetCacheItem(System.String,System.String)">
+            <summary>
+              Retrieves the System.Data.Caching.CacheItem of the object with specified key from the specified region.
+            </summary>
+            <param name="region">Name of the region.</param>
+            <param name="key">Unique key associated with the object.</param>
+            <returns>Returns System.Data.Caching.CacheItem representing the object with specified key.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetAllMatchingTags(System.String,System.Data.Caching.Tag[])">
+            <summary>
+              Gets the System.Collections.Generic.List of all those objects whose tags matches all the specified tags from
+              the specified region only.
+            </summary>
+            <param name="region"> Name of the region from where objects are to fetched.</param>
+            <param name="tags">List of tags to search for.</param>
+            <returns>Returns System.Collections.Generic.List of objects with all tags matching.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetAnyMatchingTag(System.String,System.Data.Caching.Tag[])">
+            <summary>
+              Gets the System.Collections.Generic.List of all those objects which have atleast one tag from the specified list of tags from
+              the specified region only.
+            </summary>
+            <param name="region"> 
+            Name of the region from where objects are to fetched.
+            </param>
+            <param name="tags">List of tags to search for.</param>
+            <returns>Returns System.Collections.Generic.List of objects with atleast one tag matching.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetByTag(System.String,System.Data.Caching.Tag)">
+            <summary>
+              Gets the System.Collections.Generic.List of all those objects whose tags contain the specified tag from
+              the specified region only.
+            </summary>
+            <param name="region"> 
+            Name of the region from where objects are to fetched.
+            </param>
+            <param name="tag">Tag to search for.</param>
+            <returns>Returns System.Collections.Generic.List of objects with matching tag.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.CreateRegion(System.String,System.Boolean)">
+            <summary>
+              Creates a new region with specified properties. Throws an exception of type CacheException if region with specified name already exists.
+            </summary>
+            <param name="region">Name of the region to be created. Unique identifier of the region with in the cache, cannot be null.</param>
+            <param name="evictable">Specify true if objects can be evicted. False to disallow eviction.</param>
+            <returns>Returns true if successful. Else returns false.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.RemoveRegion(System.String)">
+            <summary>
+              Deletes region with the specified name.
+            </summary>
+            <param name="region">Name of the region, cannot be null.</param>
+            <returns>Returns true if successful. Else returns false.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.ClearRegion(System.String)">
+            <summary>
+            Deletes all objects in the specified region.
+            </summary>
+            <param name="region"> Name of the region, cannot be null.</param>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetEnumerator(System.String)">
+            <summary>
+              Returns a System.Collections.Generic.IEnumerator instance to iterate through all the objects present in the specified region.
+            </summary>
+            <param name="region">Name of the region, cannot be null.</param>
+            <returns>Returns an System.Collections.Generic.IEnumerator.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetAnyEnumerator(System.String,System.Data.Caching.Tag[])">
+            <summary>
+              Returns a System.Collections.Generic.IEnumerator instance to iterate through all those objects
+              whose tags contain any of the tag in tags, from the specified region only.
+            </summary>
+            <param name="region">Name of the region, cannot be null.</param>
+            <param name="tags">List of tag.</param>
+            <returns>Returns an System.Collections.Generic.IEnumerator.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetAllEnumerator(System.String,System.Data.Caching.Tag[])">
+            <summary>
+              Returns a System.Collections.Generic.IEnumerator instance to iterate through all those objects
+              whose tags contain all tag in tags, from the specified region only.
+            </summary>
+            <param name="region">Name of the region, cannot be null.</param>
+            <param name="tags">List of tag.</param>
+            <returns>Returns an System.Collections.Generic.IEnumerator.</returns>
+        </member>
+        <member name="M:System.Data.Caching.Cache.GetEnumerator(System.String,System.Data.Caching.Tag)">
+            <summary>
+              Returns a System.Collections.Generic.IEnumerator instance to iterate through all those objects
+              whose tags contains the specified tag, from the specified region only.
+            </summary>
+            <param name="region">Name of the region, cannot be null.</param>
+            <param name="tag">Tag to search for.</param>
+            <returns>Returns an System.Collections.Generic.IEnumerator.</returns>
+        </member>
+        <member name="P:System.Data.Caching.Cache.DefaultRegion">
+            <summary>
+            The Default Region. References regions created by the cache to loadbalance the items over nodes.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.Cache.DefaultCache">
+            <summary>
+            The Default Cache, pre-created at the time of installation.
+            </summary>
+        </member>
+        <member name="P:System.Data.Caching.Cache.Item(System.String)">
+            <summary>
+            Indexer on unique key associated with the object for the cache.
+            </summary>
+            <param name="key">Unique key associated with the object.</param>
+            <returns>Returns object associated with the unique key from the cache.</returns>
+        </member>
+ 
+    </members>
+</doc>
