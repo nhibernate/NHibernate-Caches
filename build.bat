@@ -10,4 +10,8 @@ cd SharedCache
 nant -t:net-3.5
 cd ..
 
+cd MemCache
+nant -t:net-3.5
+cd ..
+
 pause

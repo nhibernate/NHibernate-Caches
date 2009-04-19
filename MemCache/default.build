@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<project
+		name="NHibernate.Caches.MemCache"
+		default="build"
+		description="NHibernate distributed cache provider using memcached"
+		xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+	<property name="framework.family" value="${framework::get-family(framework::get-target-framework())}"/>
+	<property name="framework.version" value="${framework::get-version(framework::get-target-framework())}"/>
+
+	<property name="folders.lib" value="../Lib/${framework.family}/${framework.version}" />
+	<property name="folders.build" value="../build" />
+
+	<target name="build">
+		<mkdir dir="${folders.build}"/>
+
+		<csc target="library"
+			 output="${folders.build}/NHibernate.Caches.MemCache.dll"
+		>
+			<nowarn>
+				<warning number="1591" />
+				<!-- No XML comment for publicly visible member -->
+			</nowarn>
+			<sources basedir="NHibernate.Caches.MemCache">
+				<include name="**/*.cs"/>
+			</sources>
+			<references>
+				<include name="System.dll" />
+				<include name="System.Configuration.dll" />
+				<include name="System.Xml.dll" />
+				<include name="${folders.lib}/log4net.dll" />
+				<include name="${folders.lib}/NHibernate.dll" />
+				<include name="${folders.lib}/Memcached.ClientLibrary.dll"/>
+			</references>
+		</csc>
+
+		<csc target="library"
+			 output="${folders.build}/NHibernate.Caches.MemCache.Tests.dll"
+		>
+			<nowarn>
+				<warning number="1591" />
+				<!-- No XML comment for publicly visible member -->
+			</nowarn>
+			<sources basedir="NHibernate.Caches.MemCache.Tests">
+				<include name="**/*.cs"/>
+			</sources>
+			<references>
+				<include name="System.dll" />
+				<include name="System.Xml.dll" />
+				<include name="${folders.lib}/log4net.dll" />
+				<include name="${folders.lib}/NHibernate.dll" />
+				<include name="${folders.lib}/nunit.framework.dll" />
+				<include name="${folders.lib}/Memcached.ClientLibrary.dll"/>
+				<include name="${folders.build}/NHibernate.Caches.MemCache.dll"/>
+			</references>
+			<resources basedir="NHibernate.Caches.MemCache.Tests" prefix="NHibernate.Caches.MemCache.Tests" dynamicprefix="true">
+				<include name="**/*.hbm.xml"/>
+				<exclude name="**/bin/**/*.hbm.xml"/>
+				<exclude name="**/obj/**/*.hbm.xml"/>
+			</resources>
+		</csc>
+
+		<copy file="NHibernate.Caches.MemCache.Tests/App.config"
+			  tofile="${folders.build}/NHibernate.Caches.MemCache.Tests.dll.config"
+			  if="${file::exists('NHibernate.Caches.MemCache.Tests/App.config')}"
+		/>
+
+		<copy todir="${folders.build}" flatten="true">
+			<fileset>
+				<include name="${folders.lib}/NHibernate.dll" />
+				<include name="${folders.lib}/Iesi.Collections.dll" />
+				<include name="${folders.lib}/log4net.dll" />
+				<include name="${folders.lib}/nunit.framework.dll" />
+
+				<include name="${folders.lib}/Memcached.ClientLibrary.dll"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="test"
+			depends="build">
+		<nunit2>
+			<formatter type="Xml"
+			           usefile="true"
+			           extension=".xml" />
+			<test assemblyname="${folders.build}/NHibernate.Caches.MemCache.Tests.dll"/>
+		</nunit2>
+	</target>
+
+	<target name="clean">
+		<delete dir="${folders.build}" failonerror="false"/>
+	</target>
+</project>
