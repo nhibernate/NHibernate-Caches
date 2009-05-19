@@ -25,9 +25,7 @@
 using System.Collections.Generic;
 using System.Web.Caching;
 using System.Xml;
-
 using NUnit.Framework;
-using NUnit.Framework.SyntaxHelpers;
 
 namespace NHibernate.Caches.SysCache.Tests
 {
