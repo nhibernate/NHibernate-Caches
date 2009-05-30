@@ -121,27 +121,24 @@ namespace NHibernate.Caches.Velocity.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullKeyPut()
 		{
 			ICache cache = new VelocityClient();
-			cache.Put(null, null);
+			Assert.Throws<ArgumentNullException>(() => cache.Put(null, null));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullKeyRemove()
 		{
 			ICache cache = new VelocityClient();
-			cache.Remove(null);
+			Assert.Throws<ArgumentNullException>(() => cache.Remove(null));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullValuePut()
 		{
 			ICache cache = new VelocityClient();
-			cache.Put("nunit", null);
+			Assert.Throws<ArgumentNullException>(() => cache.Put("nunit", null));
 		}
 
 		[Test]

@@ -129,21 +129,19 @@ namespace NHibernate.Caches.SysCache.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (IndexOutOfRangeException))]
 		public void TestPriorityOutOfRange()
 		{
 			var h = new Dictionary<string, string>();
 			h.Add("priority", 7.ToString());
-			new SysCache("nunit", h);
+			Assert.Throws<IndexOutOfRangeException>(()=> new SysCache("nunit", h));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentException))]
 		public void TestBadRelativeExpiration()
 		{
 			var h = new Dictionary<string, string>();
 			h.Add("expiration", "foobar");
-			new SysCache("nunit", h);
+			Assert.Throws<ArgumentException>(() => new SysCache("nunit", h));
 		}
 
 		[Test]
@@ -154,19 +152,17 @@ namespace NHibernate.Caches.SysCache.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullKeyPut()
 		{
 			ICache cache = new SysCache();
-			cache.Put(null, null);
+			Assert.Throws<ArgumentNullException>(() => cache.Put(null, null));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullValuePut()
 		{
 			ICache cache = new SysCache();
-			cache.Put("nunit", null);
+			Assert.Throws<ArgumentNullException>(() => cache.Put("nunit", null));
 		}
 
 		[Test]
@@ -179,11 +175,10 @@ namespace NHibernate.Caches.SysCache.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullKeyRemove()
 		{
 			ICache cache = new SysCache();
-			cache.Remove(null);
+			Assert.Throws<ArgumentNullException>(() => cache.Remove(null));
 		}
 
 		[Test]

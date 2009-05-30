@@ -151,27 +151,24 @@ namespace NHibernate.Caches.Prevalence.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullKeyPut()
 		{
 			ICache cache = new PrevalenceCache();
-			cache.Put(null, null);
+			Assert.Throws<ArgumentNullException>(() => cache.Remove(null));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullKeyRemove()
 		{
 			ICache cache = new PrevalenceCache();
-			cache.Remove(null);
+			Assert.Throws<ArgumentNullException>(() => cache.Remove(null));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullValuePut()
 		{
 			ICache cache = new PrevalenceCache();
-			cache.Put("nunit", null);
+			Assert.Throws<ArgumentNullException>(() => cache.Put("nunit", null));
 		}
 
 		[Test]

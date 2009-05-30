@@ -110,27 +110,24 @@ namespace NHibernate.Caches.SharedCache.Tests
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullKeyPut()
 		{
 			ICache cache = new SharedCacheClient();
-			cache.Put(null, null);
+			Assert.Throws<ArgumentNullException>(() => cache.Put(null, null));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullKeyRemove()
 		{
 			ICache cache = new SharedCacheClient();
-			cache.Remove(null);
+			Assert.Throws<ArgumentNullException>(() => cache.Remove(null));
 		}
 
 		[Test]
-		[ExpectedException(typeof (ArgumentNullException))]
 		public void TestNullValuePut()
 		{
 			ICache cache = new SharedCacheClient();
-			cache.Put("nunit", null);
+			Assert.Throws<ArgumentNullException>(() => cache.Put("nunit", null));
 		}
 
 		[Test]

@@ -74,9 +74,10 @@ namespace NHibernate.Caches.MemCache
 					}
 				}
 
-				if (properties.ContainsKey("expiration"))
+				var expirationString = GetExpirationString(properties);
+				if (expirationString != null)
 				{
-					expiry = Convert.ToInt32(properties["expiration"]);
+					expiry = Convert.ToInt32(expirationString);
 					if (log.IsDebugEnabled)
 					{
 						log.DebugFormat("using expiration of {0} seconds", expiry);
@@ -100,6 +101,16 @@ namespace NHibernate.Caches.MemCache
 					}
 				}
 			}
+		}
+
+		private static string GetExpirationString(IDictionary<string, string> props)
+		{
+			string result;
+			if (!props.TryGetValue("expiration", out result))
+			{
+				props.TryGetValue(Cfg.Environment.CacheDefaultExpiration, out result);
+			}
+			return result;
 		}
 
 		private static HashAlgorithm Hasher

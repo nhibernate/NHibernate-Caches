@@ -452,6 +452,9 @@
             Gets the <see cref="P:NHibernate.AdoNet.AbstractBatcher.ConnectionManager"/> for this batcher.
             </summary>
         </member>
+        <member name="T:NHibernate.AdoNet.ColumnNameCache">
+            <summary> Implementation of ColumnNameCache. </summary>
+        </member>
         <member name="T:NHibernate.AdoNet.ConnectionManager">
             <summary>
             Manages the database connection and transaction for an <see cref="T:NHibernate.ISession"/>.
@@ -463,18 +466,6 @@
         </member>
         <member name="P:NHibernate.AdoNet.ConnectionManager.Batcher">
             <summary> The batcher managed by this ConnectionManager. </summary>
-        </member>
-        <member name="P:NHibernate.Transaction.ITransactionContext.Factory">
-            Since C# doesn't support interfaces into interfaces ITransactionContext
-            represent the inner interface at 
-            org.hibernate.transaction.TransactionFactory.Context
-        </member>
-        <member name="P:NHibernate.AdoNet.AdoNetContext.IContext.ConnectionReleaseMode">
-            We cannot rely upon this method being called! It is only
-            called if we are using Hibernate Transaction API.
-        </member>
-        <member name="T:NHibernate.AdoNet.ColumnNameCache">
-            <summary> Implementation of ColumnNameCache. </summary>
         </member>
         <member name="P:NHibernate.AdoNet.IExpectation.ExpectedRowCount">
             <summary>
@@ -7965,7 +7956,7 @@
             <summary> Each row of results is a distinct instance of the root entity</summary>
         </member>
         <member name="F:NHibernate.Criterion.CriteriaSpecification.Projection">
-            <summary> This result transformer is selected implicitly by calling <see cref="M:NHibernate.ICriteria.SetProjection(NHibernate.Criterion.IProjection)"/> </summary>
+            <summary> This result transformer is selected implicitly by calling <see cref="M:NHibernate.ICriteria.SetProjection(NHibernate.Criterion.IProjection[])"/> </summary>
         </member>
         <member name="F:NHibernate.Criterion.CriteriaSpecification.InnerJoin">
             <summary> Specifies joining to an entity based on an inner join.</summary>
@@ -12153,6 +12144,14 @@
             in a paged subselect. NH-1155
             </remarks>
         </member>
+        <member name="M:NHibernate.Dialect.MsSql2005Dialect.HasMatchingParens(System.Collections.Generic.IEnumerable{System.Char})">
+            <summary>
+            Indicates whether the string fragment contains matching parenthesis
+            </summary>
+            <param name="statement"> the statement to evaluate</param>
+            <returns>true if the statment contains no parenthesis or an equal number of
+             opening and closing parenthesis;otherwise false </returns>
+        </member>
         <member name="P:NHibernate.Dialect.MsSql2005Dialect.SupportsLimit">
             <summary>
             Sql Server 2005 supports a query statement that provides <c>LIMIT</c>
@@ -14396,7 +14395,7 @@
             work transaction.
             </summary>
         </member>
-        <member name="M:NHibernate.Engine.Transaction.IIsolatedWork.DoWork(System.Data.IDbConnection)">
+        <member name="M:NHibernate.Engine.Transaction.IIsolatedWork.DoWork(System.Data.IDbConnection,System.Data.IDbTransaction)">
             <summary>
             Perform the actual work to be done.
             </summary>
@@ -16765,7 +16764,7 @@
             and performing work in a new transaction
             </summary>
         </member>
-        <member name="M:NHibernate.Engine.TransactionHelper.DoWorkInCurrentTransaction(System.Data.IDbConnection,System.String)">
+        <member name="M:NHibernate.Engine.TransactionHelper.DoWorkInCurrentTransaction(NHibernate.Engine.ISessionImplementor,System.Data.IDbConnection,System.Data.IDbTransaction)">
             <summary> The work to be done</summary>
         </member>
         <member name="M:NHibernate.Engine.TransactionHelper.DoWorkInNewTransaction(NHibernate.Engine.ISessionImplementor)">
@@ -19209,9 +19208,39 @@
             The <see cref="T:System.Runtime.Serialization.StreamingContext"/> that contains contextual information about the source or destination.
             </param>
         </member>
+        <member name="T:NHibernate.Exceptions.AdoExceptionContextInfo">
+            <summary>
+            Collect data of an <see cref="T:NHibernate.ADOException"/> to be converted.
+            </summary>
+        </member>
+        <member name="P:NHibernate.Exceptions.AdoExceptionContextInfo.SqlException">
+            <summary>
+            The <see cref="T:System.Data.Common.DbException"/> to be converted.
+            </summary>
+        </member>
+        <member name="P:NHibernate.Exceptions.AdoExceptionContextInfo.Message">
+            <summary>
+            An optional error message.
+            </summary>
+        </member>
+        <member name="P:NHibernate.Exceptions.AdoExceptionContextInfo.Sql">
+            <summary>
+            The SQL that generate the exception
+            </summary>
+        </member>
+        <member name="P:NHibernate.Exceptions.AdoExceptionContextInfo.EntityName">
+            <summary>
+            Optional EntityName where available in the original exception context.
+            </summary>
+        </member>
+        <member name="P:NHibernate.Exceptions.AdoExceptionContextInfo.EntityId">
+            <summary>
+            Optional EntityId where available in the original exception context.
+            </summary>
+        </member>
         <member name="M:NHibernate.Exceptions.ADOExceptionHelper.Convert(NHibernate.Exceptions.ISQLExceptionConverter,System.Exception,System.String,NHibernate.SqlCommand.SqlString)">
             <summary> 
-            Converts the given SQLException into NHibernate's ADOException hierarchy, as well as performing
+            Converts the given SQLException into Exception hierarchy, as well as performing
             appropriate logging. 
             </summary>
             <param name="converter">The converter to use.</param>
@@ -19222,7 +19251,7 @@
         </member>
         <member name="M:NHibernate.Exceptions.ADOExceptionHelper.Convert(NHibernate.Exceptions.ISQLExceptionConverter,System.Exception,System.String)">
             <summary> 
-            Converts the given SQLException into NHibernate's ADOException hierarchy, as well as performing
+            Converts the given SQLException into Exception hierarchy, as well as performing
             appropriate logging. 
             </summary>
             <param name="converter">The converter to use.</param>
@@ -19280,14 +19309,12 @@
             </remarks>
             <seealso cref="T:NHibernate.Exceptions.SQLExceptionConverterFactory"/>
         </member>
-        <member name="M:NHibernate.Exceptions.ISQLExceptionConverter.Convert(System.Exception,System.String,NHibernate.SqlCommand.SqlString)">
+        <member name="M:NHibernate.Exceptions.ISQLExceptionConverter.Convert(NHibernate.Exceptions.AdoExceptionContextInfo)">
             <summary> 
-            Convert the given <see cref="T:System.Data.Common.DbException"/> into NHibernate's ADOException hierarchy. 
+            Convert the given <see cref="T:System.Data.Common.DbException"/> into custom Exception. 
             </summary>
-            <param name="sqlException">The <see cref="T:System.Data.Common.DbException"/> to be converted. </param>
-            <param name="message"> An optional error message. </param>
-            <param name="sql">The SQL that generate the exception</param>
-            <returns> The resulting ADOException. </returns>
+            <param name="adoExceptionContextInfo">Available information during exception throw.</param>
+            <returns> The resulting Exception to throw. </returns>
         </member>
         <member name="T:NHibernate.Exceptions.LockAcquisitionException">
             <summary> 
@@ -19332,7 +19359,7 @@
             for converting/interpreting SQLExceptions. 
             </summary>
         </member>
-        <member name="M:NHibernate.Exceptions.SQLStateConverter.HandledNonSpecificException(System.Exception,System.String,NHibernate.SqlCommand.SqlString)">
+        <member name="M:NHibernate.Exceptions.SQLStateConverter.HandledNonSpecificException(System.Exception,System.String,System.String)">
             <summary> Handle an exception not converted to a specific type based on the SQLState. </summary>
             <param name="sqlException">The exception to be handled. </param>
             <param name="message">An optional message </param>
@@ -24079,7 +24106,7 @@
             </para>
             </remarks>
         </member>
-        <member name="M:NHibernate.ICriteria.SetProjection(NHibernate.Criterion.IProjection)">
+        <member name="M:NHibernate.ICriteria.SetProjection(NHibernate.Criterion.IProjection[])">
             <summary>
             Used to specify that the query results will be a projection (scalar in
             nature).  Implicitly specifies the projection result transformer.
@@ -25434,7 +25461,13 @@
             <param name="entityMode">The entity mode</param>
         </member>
         <member name="M:NHibernate.Impl.SessionImpl.Close">
-            <summary></summary>
+            <summary>
+            Close the session and release all resources
+            <remarks>
+            Do not call this method inside a transaction scope, use <c>Dispose</c> instead, since
+            Close() is not aware of distributed transactions
+            </remarks>
+            </summary>
         </member>
         <member name="M:NHibernate.Impl.SessionImpl.AfterTransactionCompletion(System.Boolean,NHibernate.ITransaction)">
             <summary>
@@ -25615,7 +25648,7 @@
         </member>
         <member name="M:NHibernate.Impl.SessionImpl.Dispose">
             <summary>
-            Just in case the user forgot to Commit() or Close()
+            Perform a soft (distributed transaction aware) close of the session
             </summary>
         </member>
         <member name="M:NHibernate.Impl.SessionImpl.Dispose(System.Boolean)">
@@ -31915,6 +31948,11 @@
             which indicates that the Proxy will need to forward to the real implementation.
             </returns>
         </member>
+        <member name="T:NHibernate.Proxy.AbstractProxyFactory">
+            <summary>
+            Convenient common implementation for ProxyFactory
+            </summary>
+        </member>
         <member name="T:NHibernate.Proxy.IProxyValidator">
             <summary>
             Proxeability validator.
@@ -33560,19 +33598,10 @@
             Create a new transaction and return it without starting it.
             </summary>
         </member>
-        <member name="M:NHibernate.Transaction.ITransactionFactory.IsTransactionInProgress(NHibernate.AdoNet.AdoNetContext,NHibernate.Transaction.ITransactionContext,NHibernate.ITransaction)">
-             <summary>
-             Determine whether an underlying transaction is in progress.
-            
-             Mainly this is used in determining whether to register a
-             synchronization as well as whether or not to circumvent
-             auto flushing outside transactions. 
-             </summary>
-             <returns>true if an underlying transaction is know to be in effect.</returns>
-        </member>
-        <member name="P:NHibernate.Transaction.ITransactionFactory.DefaultReleaseMode">
+        <member name="T:NHibernate.Transaction.ITransactionContext">
             <summary>
-            Get the default connection release mode
+            This is used as a marker interface for the different 
+            transaction context required for each session
             </summary>
         </member>
         <member name="T:NHibernate.Transaction.AdoTransaction">

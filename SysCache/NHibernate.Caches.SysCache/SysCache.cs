@@ -146,7 +146,12 @@ namespace NHibernate.Caches.SysCache
 		{
 			TimeSpan result = DefaultExpiration;
 			string expirationString;
-			if (props.TryGetValue("expiration", out expirationString))
+			if (!props.TryGetValue("expiration", out expirationString))
+			{
+				props.TryGetValue(Cfg.Environment.CacheDefaultExpiration, out expirationString);
+			}
+
+			if (expirationString != null)
 			{
 				try
 				{
