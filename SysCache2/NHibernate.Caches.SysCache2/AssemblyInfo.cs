@@ -7,9 +7,9 @@ using System.Reflection;
 [assembly: AssemblyCompanyAttribute("NHibernate.org")]
 [assembly: AssemblyProductAttribute("NHibernate.Caches.SysCache2")]
 [assembly: AssemblyCopyrightAttribute("Licensed under LGPL.")]
-[assembly: AssemblyVersionAttribute("2.1.0.2001")]
-[assembly: AssemblyInformationalVersionAttribute("2.1.0.2001")]
-[assembly: AssemblyFileVersionAttribute("2.1.0.2001")]
+[assembly: AssemblyVersionAttribute("2.1.0.3001")]
+[assembly: AssemblyInformationalVersionAttribute("2.1.0.3001")]
+[assembly: AssemblyFileVersionAttribute("2.1.0.3001")]
 //[assembly: AssemblyKeyFileAttribute("../../src/NHibernate.snk")]
 //[assembly: AssemblyDelaySignAttribute(false)]
 
