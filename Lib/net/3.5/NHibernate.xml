@@ -5616,6 +5616,14 @@
             <param name="assembly">The assembly that contains the resource file.</param>
             <returns>This configuration object.</returns>
         </member>
+        <member name="M:NHibernate.Cfg.Configuration.AddResources(System.Collections.Generic.IEnumerable{System.String},System.Reflection.Assembly)">
+            <summary>
+            Adds the mappings from ebedded resources of the assembly.
+            </summary>
+            <param name="paths">Paths to the resource files in the assembly.</param>
+            <param name="assembly">The assembly that contains the resource files.</param>
+            <returns>This configuration object.</returns>
+        </member>
         <member name="M:NHibernate.Cfg.Configuration.AddClass(System.Type)">
             <summary>
             Read a mapping from an embedded resource, using a convention.
