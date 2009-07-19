@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<project 
+	name="NHContrib" 
+	default="build"
+	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
+
+	<property name="root.dir" value="." />
+	<property name="test" value="false" />
+	<property name="targets.build" value="build" />
+	<property name="targets.test" value="test" />
+	<property name="skip.memcache" value="false"/>
+	<property name="skip.prevalence" value="false"/>
+	<property name="skip.sharedcache" value="false"/>
+	<property name="skip.syscache" value="false"/>
+	<property name="skip.syscache2" value="false"/>
+	<property name="skip.velocity" value="false"/>
+	<fileset id="buildfiles.all">
+ 		<include name="MemCache/default.build" unless="${skip.memcache}"/> 
+ 		<include name="Prevalence/default.build" unless="${skip.prevalence}"/> 
+ 		<include name="SharedCache/default.build" unless="${skip.sharedcache}"/> 
+ 		<include name="SysCache/default.build" unless="${skip.syscache}"/> 		
+		<include name="SysCache2/default.build" unless="${skip.syscache2}"/>
+		<include name="Velocity/default.build" unless="${skip.memcache}"/>
+	</fileset>
+	
+	
+	<target name="init">
+		<if test="${test}">
+			<property name="targets" value="${targets.build} ${targets.test}" />
+		</if>
+		<if test="${not test}">
+			<property name="targets" value="${targets.build}" />
+		</if>
+	</target>
+
+	<target name="build" depends="init"	description="Builds NHibernate in the current configuration">
+		<nant target="build">
+			<buildfiles refid="buildfiles.all" />
+		</nant>
+	</target>
+	
+	
+	<target name="test" depends="init build" description="Builds NHibernate in the current configuration">
+		<nant target="test">
+			<buildfiles refid="buildfiles.all" />
+		</nant>
+	</target>
+</project>
