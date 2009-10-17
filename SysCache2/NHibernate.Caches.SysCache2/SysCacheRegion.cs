@@ -455,7 +455,8 @@ namespace NHibernate.Caches.SysCache2
 					}
 
 					var commandEnlister = new SqlCommandCacheDependencyEnlister(commandConfig.Command, commandConfig.IsStoredProcedure,
-					                                                            connectionName, connectionStringProvider);
+					                                                            commandConfig.CommandTimeout, connectionName, 
+                                                                                connectionStringProvider);
 
 					_dependencyEnlisters.Add(commandEnlister);
 				}

@@ -30,6 +30,11 @@ namespace NHibernate.Caches.SysCache2
 
 			properties.Add(commandProperty);
 
+            var commandTimeoutProperty = new ConfigurationProperty("commandTimeout", typeof(int?), null,
+                                                            ConfigurationPropertyOptions.None);
+
+            properties.Add(commandTimeoutProperty);
+
 			var connectionNameProperty = new ConfigurationProperty("connectionName", typeof (string), String.Empty,
 			                                                       ConfigurationPropertyOptions.None);
 
@@ -93,6 +98,15 @@ namespace NHibernate.Caches.SysCache2
 		{
 			get { return (System.Type) base["connectionStringProviderType"]; }
 		}
+
+        /// <summary>
+        /// How long the sql command can run for without timing out. If null,
+        /// the default is used.
+        /// </summary>
+        public int? CommandTimeout
+        {
+            get { return (int?)base["commandTimeout"]; }
+        }
 
 		/// <summary>
 		/// Gets the collection of properties.
