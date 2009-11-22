@@ -24756,6 +24756,13 @@
             </summary>
             <returns>The clone of the root criteria.</returns>
         </member>
+        <member name="P:NHibernate.Impl.CurrentSessionIdLoggingContext.SessionId">
+            <summary>
+            Error handling in this case will only kick in if we cannot set values on the TLS
+            this is usally the case if we are called from the finalizer, since this is something
+            that we do only for logging, we ignore the error.
+            </summary>
+        </member>
         <member name="T:NHibernate.Impl.DbCommandSet`2">
             <summary>
             Expose the batch functionality in ADO.Net 2.0
@@ -25767,9 +25774,11 @@
         </member>
         <member name="P:NHibernate.Impl.SessionIdLoggingContext.SessionId">
             <summary>
-            Error handling in this case will only kick in if we cannot set values on the TLS
-            this is usally the case if we are called from the finalizer, since this is something
-            that we do only for logging, we ignore the error.
+            We always set the result to use a thread static variable, on the face of it,
+            it looks like it is not a valid choice, since ASP.Net and WCF may decide to switch
+            threads on us. But, since SessionIdLoggingContext is only used inside NH calls, and since
+            NH calls are never async, this isn't an issue for us.
+            In addition to that, attempting to match to the current context has proven to be performance hit.
             </summary>
         </member>
         <member name="T:NHibernate.Impl.SessionImpl">
