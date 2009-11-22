@@ -19,7 +19,7 @@ It's recommended to research for a while before deciding which one is better for
 ======================================
 Notes
 ======================================
-Build 2.1.2.GA (rev1203 of contrib) for NHibernate 2.1.1GA
+Build 2.1.2.GA (rev1204 of contrib) for NHibernate 2.1.2GA
 ================================================================
 
 Build 2.1.1.GA (rev1104 of contrib) for NHibernate 2.1.1GA
