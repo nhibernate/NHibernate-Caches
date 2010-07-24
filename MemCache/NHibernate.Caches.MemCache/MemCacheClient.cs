@@ -47,6 +47,7 @@ namespace NHibernate.Caches.MemCache
 
 		private readonly string region;
 		private readonly string regionPrefix = "";
+	    private readonly bool noLingeringDelete = false;
 
 		static MemCacheClient()
 		{
@@ -100,6 +101,15 @@ namespace NHibernate.Caches.MemCache
 						log.Debug("no regionPrefix value given, using defaults");
 					}
 				}
+
+                if (properties.ContainsKey("lingering_delete_disabled"))
+                {
+                    noLingeringDelete = Convert.ToBoolean(properties["lingering_delete_disabled"]);
+                    if (log.IsDebugEnabled)
+                    {
+                        log.DebugFormat("lingering_delete_disabled set to {0}", noLingeringDelete);
+                    }
+                }
 			}
 		}
 
@@ -205,7 +215,11 @@ namespace NHibernate.Caches.MemCache
 			{
 				log.DebugFormat("removing item {0}", key);
 			}
-			client.Delete(KeyAsString(key), DateTime.Now.AddSeconds(expiry));
+
+            if (noLingeringDelete)
+                client.Delete(KeyAsString(key)); // Memcached 1.4+ does not support lingering deletes anymore
+			else
+                client.Delete(KeyAsString(key), DateTime.Now.AddSeconds(expiry));
 		}
 
 		public void Clear()
