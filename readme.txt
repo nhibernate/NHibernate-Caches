@@ -19,6 +19,11 @@ It's recommended to research for a while before deciding which one is better for
 ======================================
 Notes
 ======================================
+Build 3.0.0.Alpha1 (rev1302 of contrib) for NHibernate 3.0.0Alpha1
+================================================================
+** Bug
+    * [NHCH-27] - MemCache provider fails to delete item from cache if server is memcached 1.4.4
+
 Build 2.1.2.GA (rev1204 of contrib) for NHibernate 2.1.2GA
 ================================================================
 
