@@ -14,6 +14,10 @@ cd MemCache
 nant -D:project.config=release -t:net-3.5
 cd ..
 
+cd EnyimMemcached
+nant -D:project.config=release -t:net-3.5
+cd ..
+
 cd Velocity
 nant -D:project.config=release -t:net-3.5
 cd ..
