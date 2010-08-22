@@ -12,6 +12,8 @@
     <AssemblyName>NHibernate.Caches.SysCache2</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -64,6 +66,9 @@
     <Compile Include="SysCacheSection.cs" />
     <Compile Include="TableCacheDependencyCollection.cs" />
     <Compile Include="TableCacheDependencyElement.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NHibernate.Caches.snk" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />

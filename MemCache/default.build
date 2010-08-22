@@ -10,13 +10,15 @@
 
 	<property name="folders.lib" value="../Lib/${framework.family}/${framework.version}" />
 	<property name="folders.build" value="../build" />
+  <property name="key.file" value="../NHibernate.Caches.snk" />
 
-	<target name="build">
+  <target name="build">
 		<mkdir dir="${folders.build}"/>
 
 		<csc target="library"
 			 output="${folders.build}/NHibernate.Caches.MemCache.dll"
-		>
+ 			 keyfile="${key.file}">
+      
 			<nowarn>
 				<warning number="1591" />
 				<!-- No XML comment for publicly visible member -->

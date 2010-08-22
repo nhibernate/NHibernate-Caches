@@ -12,6 +12,8 @@
     <AssemblyName>NHibernate.Caches.Velocity</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -55,6 +57,9 @@
     <Compile Include="VelocityClient.cs" />
     <Compile Include="VelocityConfig.cs" />
     <Compile Include="VelocityProvider.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NHibernate.Caches.snk" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
