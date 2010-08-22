@@ -4,7 +4,7 @@
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("NHibernate.Caches.SharedCache")]
-[assembly: AssemblyDescription("Cache provider for NHibernate 2.1.0 using http://www.sharedcache.com")]
+[assembly: AssemblyDescription("Cache provider for NHibernate using http://www.sharedcache.com")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Heilig-Hartziekenhuis vzw")]
 [assembly: AssemblyProduct("NHibernate.Caches.SharedCache")]
@@ -12,6 +12,6 @@
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersionAttribute("3.0.0.1000")]
-[assembly: AssemblyInformationalVersionAttribute("3.0.0.1000")]
-[assembly: AssemblyFileVersionAttribute("3.0.0.1000")]
+[assembly: AssemblyVersionAttribute("3.0.0.2000")]
+[assembly: AssemblyInformationalVersionAttribute("3.0.0.2000")]
+[assembly: AssemblyFileVersionAttribute("3.0.0.2000")]
