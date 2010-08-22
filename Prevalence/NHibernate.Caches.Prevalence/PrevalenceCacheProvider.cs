@@ -4,7 +4,6 @@ using System.IO;
 using System.Text;
 using Bamboo.Prevalence;
 using Bamboo.Prevalence.Util;
-using log4net;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.Prevalence
@@ -15,7 +14,7 @@ namespace NHibernate.Caches.Prevalence
 	/// </summary>
 	public class PrevalenceCacheProvider : ICacheProvider
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof (PrevalenceCacheProvider));
+		private static readonly ILogger log = LoggerProvider.LoggerFor((typeof(PrevalenceCacheProvider)));
 		private string dataDir;
 		private PrevalenceEngine engine;
 		private CacheSystem system;

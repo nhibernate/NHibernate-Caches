@@ -19,7 +19,6 @@ xmlns="http://nant.sf.net/release/0.85/nant.xsd">
 				<include name="System.dll" />
 				<include name="System.Configuration.dll" />
 				<include name="System.Xml.dll" />
-				<include name="${folders.lib}/log4net.dll" />
 				<include name="${folders.lib}/NHibernate.dll" />
 				<include name="${folders.lib}/NLog.dll" />
 				<include name="${folders.lib}/MergeSystem.Indexus.WinServiceCommon.dll" />

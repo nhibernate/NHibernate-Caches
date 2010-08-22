@@ -23,7 +23,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
-using log4net;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.SysCache
@@ -34,11 +33,11 @@ namespace NHibernate.Caches.SysCache
 	public class SysCacheProvider : ICacheProvider
 	{
 		private static readonly Dictionary<string, ICache> caches;
-		private static readonly ILog log;
+		private static readonly ILogger log;
 
 		static SysCacheProvider()
 		{
-			log = LogManager.GetLogger(typeof (SysCacheProvider));
+			log = LoggerProvider.LoggerFor(typeof(SysCacheProvider));
 			caches = new Dictionary<string, ICache>();
 
 			var list = ConfigurationManager.GetSection("syscache") as CacheConfig[];

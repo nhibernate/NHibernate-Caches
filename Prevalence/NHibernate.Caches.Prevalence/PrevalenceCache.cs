@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using log4net;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.Prevalence
@@ -11,7 +10,7 @@ namespace NHibernate.Caches.Prevalence
 	public class PrevalenceCache : ICache
 	{
 		private const string CacheKeyPrefix = "NHibernate-Cache:";
-		private static readonly ILog log = LogManager.GetLogger(typeof (PrevalenceCache));
+		private static readonly ILogger log = LoggerProvider.LoggerFor((typeof(PrevalenceCache)));
 		private readonly string region;
 		private readonly CacheSystem system;
 

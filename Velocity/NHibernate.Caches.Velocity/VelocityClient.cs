@@ -37,7 +37,6 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Caching;
-using log4net;
 using NHibernate.Cache;
 using CacheException=System.Data.Caching.CacheException;
 using CacheFactory=System.Data.Caching.CacheFactory;
@@ -47,13 +46,13 @@ namespace NHibernate.Caches.Velocity
 	public class VelocityClient : ICache
 	{
 		private const string CacheName = "nhibernate";
-		private static readonly ILog log;
+		private static readonly ILogger log;
 		private readonly System.Data.Caching.Cache cache;
 		private readonly string region;
 
 		static VelocityClient()
 		{
-			log = LogManager.GetLogger(typeof (VelocityClient));
+			log = LoggerProvider.LoggerFor(typeof(VelocityClient));
 		}
 
 		public VelocityClient() : this("nhibernate", null) {}

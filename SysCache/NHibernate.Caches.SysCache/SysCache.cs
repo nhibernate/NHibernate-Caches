@@ -24,9 +24,6 @@ using System;
 using System.Collections;
 using System.Web;
 using System.Web.Caching;
-
-using log4net;
-
 using NHibernate.Cache;
 using System.Collections.Generic;
 
@@ -37,7 +34,7 @@ namespace NHibernate.Caches.SysCache
 	/// </summary>
 	public class SysCache : ICache
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SysCache));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SysCache));
 		private readonly string region;
 		private string regionPrefix;
 		private readonly System.Web.Caching.Cache cache;

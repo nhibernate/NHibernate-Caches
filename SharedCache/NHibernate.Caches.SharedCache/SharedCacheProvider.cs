@@ -26,7 +26,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
-using log4net;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.SharedCache
@@ -37,11 +36,11 @@ namespace NHibernate.Caches.SharedCache
 	/// </summary>
 	public class SharedCacheProvider : ICacheProvider
 	{
-		private static readonly ILog log;
+		private static readonly ILogger log;
 
 		static SharedCacheProvider()
 		{
-			log = LogManager.GetLogger(typeof (SharedCacheProvider));
+			log = LoggerProvider.LoggerFor((typeof(SharedCacheProvider)));
 			var configs = ConfigurationManager.GetSection("sharedcache") as SharedCacheConfig[];
 		}
 

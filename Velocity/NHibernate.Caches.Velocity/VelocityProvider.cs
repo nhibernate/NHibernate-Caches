@@ -37,7 +37,6 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Text;
-using log4net;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.Velocity
@@ -48,11 +47,11 @@ namespace NHibernate.Caches.Velocity
 	/// </summary>
 	public class VelocityProvider : ICacheProvider
 	{
-		private static readonly ILog log;
+		private static readonly ILogger log;
 
 		static VelocityProvider()
 		{
-			log = LogManager.GetLogger(typeof (VelocityProvider));
+			log = LoggerProvider.LoggerFor((typeof(VelocityProvider)));
 			var configs = ConfigurationManager.GetSection("velocity") as VelocityConfig[];
 		}
 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using log4net;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.SysCache2
@@ -17,7 +16,7 @@ namespace NHibernate.Caches.SysCache2
 		private static readonly CacheRegionCollection cacheRegionSettingsList;
 
 		/// <summary>log4net logger</summary>
-		private static readonly ILog log = LogManager.GetLogger(typeof (SysCacheProvider));
+		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SysCacheProvider));
 
 		/// <summary>synchronizing object for the cache regions dictionaly</summary>
 		private static readonly Object regionsSyncRoot = new Object();

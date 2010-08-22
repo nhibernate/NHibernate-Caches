@@ -30,7 +30,6 @@
 				<include name="System.Web.dll" />
 				<include name="System.Xml.dll" />
 				<include name="${folders.lib}/NHibernate.dll"/>
-				<include name="${folders.lib}/log4net.dll"/>
 			</references>
 		</csc>
 

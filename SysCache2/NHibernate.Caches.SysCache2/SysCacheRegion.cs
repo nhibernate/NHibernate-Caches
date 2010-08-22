@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Web;
 using System.Web.Caching;
-using log4net;
 using NHibernate.Cache;
 using Environment=NHibernate.Cfg.Environment;
 
@@ -23,7 +22,7 @@ namespace NHibernate.Caches.SysCache2
 		private static readonly TimeSpan defaultRelativeExpiration = TimeSpan.FromSeconds(300);
 
 		/// <summary>logger for the type</summary>
-		private static readonly ILog log = LogManager.GetLogger(typeof (SysCacheRegion));
+		private static readonly ILogger log = LoggerProvider.LoggerFor((typeof(SysCacheRegion)));
 
 		/// <summary>
 		/// List of dependencies that need to be enlisted before being hooked to a cache item

@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using log4net;
 using MergeSystem.Indexus.WinServiceCommon.Provider.Cache;
 using NHibernate.Cache;
 
@@ -33,12 +32,12 @@ namespace NHibernate.Caches.SharedCache
 {
 	public class SharedCacheClient : ICache
 	{
-		private static readonly ILog log;
+		private static readonly ILogger log;
 		private readonly string region;
 
 		static SharedCacheClient()
 		{
-			log = LogManager.GetLogger(typeof (SharedCacheClient));
+			log = LoggerProvider.LoggerFor(typeof(SharedCacheClient));
 		}
 
 		public SharedCacheClient() : this("nhibernate", null) {}

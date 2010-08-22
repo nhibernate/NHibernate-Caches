@@ -29,7 +29,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using log4net;
 using Memcached.ClientLibrary;
 using NHibernate.Cache;
 
@@ -38,7 +37,7 @@ namespace NHibernate.Caches.MemCache
 	public class MemCacheClient : ICache
 	{
 		internal const string PoolName = "nhibernate";
-		private static readonly ILog log;
+		private static readonly ILogger log;
 		[ThreadStatic] private static HashAlgorithm hasher;
 
 		[ThreadStatic] private static MD5 md5;
@@ -51,7 +50,7 @@ namespace NHibernate.Caches.MemCache
 
 		static MemCacheClient()
 		{
-			log = LogManager.GetLogger(typeof (MemCacheClient));
+			log = LoggerProvider.LoggerFor((typeof(MemCacheClient)));
 		}
 
 		public MemCacheClient() : this("nhibernate", null) {}
