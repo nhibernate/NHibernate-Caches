@@ -19,6 +19,11 @@ It's recommended to research for a while before deciding which one is better for
 ======================================
 Notes
 ======================================
+Build 3.0.0.Alpha2 (revxxxx of contrib) for NHibernate 3.0.0Alpha2
+================================================================
+* Breaking changes
+    * All chache provider works with .NET3.5
+
 Build 3.0.0.Alpha1 (rev1302 of contrib) for NHibernate 3.0.0Alpha1
 ================================================================
 ** Bug
