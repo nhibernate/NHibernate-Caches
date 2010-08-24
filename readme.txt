@@ -19,10 +19,16 @@ It's recommended to research for a while before deciding which one is better for
 ======================================
 Notes
 ======================================
-Build 3.0.0.Alpha2 (revxxxx of contrib) for NHibernate 3.0.0Alpha2
+Build 3.0.0.Alpha2 (rev1318 of contrib) for NHibernate 3.0.0Alpha2
 ================================================================
 * Breaking changes
     * All chache provider works with .NET3.5
+
+** Improvement
+    * [NHCH-24] - Strong naming and signing assemblies
+    * [NHCH-26] - NHibernate.Caches.Memcached updated to use Enyim.Caching.Memcached
+    * [NHCH-28] - Remove dependency to any logging framework
+
 
 Build 3.0.0.Alpha1 (rev1302 of contrib) for NHibernate 3.0.0Alpha1
 ================================================================
