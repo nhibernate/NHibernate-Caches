@@ -4,7 +4,7 @@
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 
   <property name="root.dir" value="." />
-  <include buildfile="buildcommon.xml" />
+  <include buildfile="${root.dir}/buildcommon.xml" />
 
   <fileset id="buildfiles.all" basedir=".">
     <include name="SysCache/default.build" />
