@@ -1,48 +1,61 @@
-<?xml version="1.0" ?>
 <project 
-	name="NHContrib" 
+	name="NHibernateCacheProviders" 
 	default="build"
 	xmlns="http://nant.sf.net/release/0.85-rc3/nant.xsd">
 
-	<property name="root.dir" value="." />
-	<property name="test" value="false" />
-	<property name="targets.build" value="build" />
-	<property name="targets.test" value="test" />
-	<property name="skip.memcache" value="false"/>
-	<property name="skip.prevalence" value="false"/>
-	<property name="skip.sharedcache" value="false"/>
-	<property name="skip.syscache" value="false"/>
-	<property name="skip.syscache2" value="false"/>
-	<property name="skip.velocity" value="false"/>
-	<fileset id="buildfiles.all">
- 		<include name="MemCache/default.build" unless="${skip.memcache}"/> 
- 		<include name="Prevalence/default.build" unless="${skip.prevalence}"/> 
- 		<include name="SharedCache/default.build" unless="${skip.sharedcache}"/> 
- 		<include name="SysCache/default.build" unless="${skip.syscache}"/> 		
-		<include name="SysCache2/default.build" unless="${skip.syscache2}"/>
-		<include name="Velocity/default.build" unless="${skip.memcache}"/>
-	</fileset>
-	
-	
-	<target name="init">
-		<if test="${test}">
-			<property name="targets" value="${targets.build} ${targets.test}" />
-		</if>
-		<if test="${not test}">
-			<property name="targets" value="${targets.build}" />
-		</if>
-	</target>
+  <property name="root.dir" value="." />
+  <include buildfile="buildcommon.xml" />
 
-	<target name="build" depends="init"	description="Builds NHibernate in the current configuration">
-		<nant target="build">
-			<buildfiles refid="buildfiles.all" />
-		</nant>
-	</target>
-	
-	
-	<target name="test" depends="init build" description="Builds NHibernate in the current configuration">
-		<nant target="test">
-			<buildfiles refid="buildfiles.all" />
-		</nant>
-	</target>
+  <fileset id="buildfiles.all" basedir=".">
+    <include name="SysCache/default.build" />
+    <include name="SysCache2/default.build" />
+    <include name="SharedCache/default.build" />
+    <include name="MemCache/default.build" />
+    <include name="Velocity/default.build" />
+    <include name="Prevalence/default.build" />
+    <include name="EnyimMemcached/default.build" />
+  </fileset>
+  
+  <target name="build" depends="init"
+		description="Builds NHibernate in the current configuration">
+    <nant target="build">
+      <buildfiles refid="buildfiles.all" />
+    </nant>
+  </target>
+  
+  <target name="build-test"
+		description="Builds NHibernate in the current configuration">
+    <nant target="build-test">
+      <buildfiles refid="buildfiles.all" />
+    </nant>
+  </target>
+  
+  <target name="clean" depends="set-project-configuration">
+    <delete dir="${build.root.dir}" failonerror="false"/>
+  </target>
+  
+  <target name="bin-pack" depends="init build">
+    <property name="bin-pack.tmpdir" value="${build.dir}/tmp-bin" />
+
+    <copy file="readme.txt" todir="${bin-pack.tmpdir}"/>
+    <copy file="lgpl.txt" todir="${bin-pack.tmpdir}"/>
+    <nant target="bin-pack">
+      <buildfiles refid="buildfiles.all" />
+    </nant>
+  </target>
+
+  <target name="binaries-zip" depends="init bin-pack">
+    <zip zipfile="${build.dir}/NHCH-${project.version}-bin.zip">
+      <fileset basedir="${bin-pack.tmpdir}">
+        <include name="**/*" />
+      </fileset>
+    </zip>
+  </target>
+
+  <target name="release" depends="init build binaries-zip"
+		description="Creates files for the partial (Alpha-Beta-Candidate) Release on SourceForge">
+
+    <echo message="Created a '${project.config}' package in ${build.dir}" />
+  </target>
+
 </project>
