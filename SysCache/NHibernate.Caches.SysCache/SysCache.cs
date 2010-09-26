@@ -34,7 +34,7 @@ namespace NHibernate.Caches.SysCache
 	/// </summary>
 	public class SysCache : ICache
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SysCache));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SysCache));
 		private readonly string region;
 		private string regionPrefix;
 		private readonly System.Web.Caching.Cache cache;

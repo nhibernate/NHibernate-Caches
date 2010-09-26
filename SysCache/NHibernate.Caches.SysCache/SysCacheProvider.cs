@@ -33,7 +33,7 @@ namespace NHibernate.Caches.SysCache
 	public class SysCacheProvider : ICacheProvider
 	{
 		private static readonly Dictionary<string, ICache> caches;
-		private static readonly ILogger log;
+		private static readonly IInternalLogger log;
 
 		static SysCacheProvider()
 		{

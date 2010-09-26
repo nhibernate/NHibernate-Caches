@@ -36,7 +36,7 @@ namespace NHibernate.Caches.MemCache
 	/// </summary>
 	public class MemCacheSectionHandler : IConfigurationSectionHandler
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor((typeof(MemCacheSectionHandler)));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor((typeof(MemCacheSectionHandler)));
 
 		#region IConfigurationSectionHandler Members
 

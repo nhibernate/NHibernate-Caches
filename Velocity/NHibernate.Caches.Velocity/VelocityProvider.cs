@@ -47,7 +47,7 @@ namespace NHibernate.Caches.Velocity
 	/// </summary>
 	public class VelocityProvider : ICacheProvider
 	{
-		private static readonly ILogger log;
+		private static readonly IInternalLogger log;
 
 		static VelocityProvider()
 		{

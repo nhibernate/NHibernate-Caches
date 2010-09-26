@@ -32,7 +32,7 @@ namespace NHibernate.Caches.SharedCache
 {
 	public class SharedCacheClient : ICache
 	{
-		private static readonly ILogger log;
+		private static readonly IInternalLogger log;
 		private readonly string region;
 
 		static SharedCacheClient()

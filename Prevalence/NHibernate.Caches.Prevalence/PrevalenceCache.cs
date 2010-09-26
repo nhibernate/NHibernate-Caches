@@ -10,7 +10,7 @@ namespace NHibernate.Caches.Prevalence
 	public class PrevalenceCache : ICache
 	{
 		private const string CacheKeyPrefix = "NHibernate-Cache:";
-		private static readonly ILogger log = LoggerProvider.LoggerFor((typeof(PrevalenceCache)));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor((typeof(PrevalenceCache)));
 		private readonly string region;
 		private readonly CacheSystem system;
 

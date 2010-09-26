@@ -14,7 +14,7 @@ namespace NHibernate.Caches.Prevalence
 	/// </summary>
 	public class PrevalenceCacheProvider : ICacheProvider
 	{
-		private static readonly ILogger log = LoggerProvider.LoggerFor((typeof(PrevalenceCacheProvider)));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor((typeof(PrevalenceCacheProvider)));
 		private string dataDir;
 		private PrevalenceEngine engine;
 		private CacheSystem system;

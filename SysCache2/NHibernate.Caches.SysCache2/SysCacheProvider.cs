@@ -16,7 +16,7 @@ namespace NHibernate.Caches.SysCache2
 		private static readonly CacheRegionCollection cacheRegionSettingsList;
 
 		/// <summary>log4net logger</summary>
-		private static readonly ILogger log = LoggerProvider.LoggerFor(typeof(SysCacheProvider));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(SysCacheProvider));
 
 		/// <summary>synchronizing object for the cache regions dictionaly</summary>
 		private static readonly Object regionsSyncRoot = new Object();

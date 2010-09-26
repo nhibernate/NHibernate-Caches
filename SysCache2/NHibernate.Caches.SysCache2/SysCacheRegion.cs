@@ -22,7 +22,7 @@ namespace NHibernate.Caches.SysCache2
 		private static readonly TimeSpan defaultRelativeExpiration = TimeSpan.FromSeconds(300);
 
 		/// <summary>logger for the type</summary>
-		private static readonly ILogger log = LoggerProvider.LoggerFor((typeof(SysCacheRegion)));
+		private static readonly IInternalLogger log = LoggerProvider.LoggerFor((typeof(SysCacheRegion)));
 
 		/// <summary>
 		/// List of dependencies that need to be enlisted before being hooked to a cache item

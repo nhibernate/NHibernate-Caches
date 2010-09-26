@@ -36,7 +36,7 @@ namespace NHibernate.Caches.SharedCache
 	/// </summary>
 	public class SharedCacheProvider : ICacheProvider
 	{
-		private static readonly ILogger log;
+		private static readonly IInternalLogger log;
 
 		static SharedCacheProvider()
 		{

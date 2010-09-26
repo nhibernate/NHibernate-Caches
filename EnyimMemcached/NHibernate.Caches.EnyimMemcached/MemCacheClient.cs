@@ -12,7 +12,7 @@ namespace NHibernate.Caches.EnyimMemcached
 {
 	public class MemCacheClient : ICache
 	{
-		private static readonly ILogger log;
+		private static readonly IInternalLogger log;
 		[ThreadStatic] private static HashAlgorithm hasher;
 
 		[ThreadStatic] private static MD5 md5;

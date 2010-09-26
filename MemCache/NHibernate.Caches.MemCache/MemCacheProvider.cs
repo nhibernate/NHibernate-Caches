@@ -41,7 +41,7 @@ namespace NHibernate.Caches.MemCache
 	/// </summary>
 	public class MemCacheProvider : ICacheProvider
 	{
-		private static readonly ILogger log;
+		private static readonly IInternalLogger log;
 		private static readonly string[] servers;
 		private static readonly int[] weights;
 

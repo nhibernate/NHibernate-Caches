@@ -46,7 +46,7 @@ namespace NHibernate.Caches.Velocity
 	public class VelocityClient : ICache
 	{
 		private const string CacheName = "nhibernate";
-		private static readonly ILogger log;
+		private static readonly IInternalLogger log;
 		private readonly System.Data.Caching.Cache cache;
 		private readonly string region;
 

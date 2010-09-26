@@ -14,7 +14,7 @@ namespace NHibernate.Caches.EnyimMemcached
 	/// </summary>
 	public class MemCacheProvider : ICacheProvider
 	{
-		private static readonly ILogger log;
+		private static readonly IInternalLogger log;
 		private static MemcachedClient clientInstance;
 		private static readonly IMemcachedClientConfiguration config;
 		private static readonly object syncObject = new object();
