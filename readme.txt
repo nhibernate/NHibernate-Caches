@@ -19,6 +19,9 @@ It's recommended to research for a while before deciding which one is better for
 ======================================
 Notes
 ======================================
+Build 3.0.0.Beta (rev1421 of contrib) for NHibernate 3.0.0Beta2
+================================================================
+
 Build 3.0.0.Beta1 (rev1341 of contrib) for NHibernate 3.0.0Alpha3
 ================================================================
 
