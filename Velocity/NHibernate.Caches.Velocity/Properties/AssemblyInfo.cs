@@ -12,6 +12,6 @@
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersionAttribute("3.0.0.2000")]
-[assembly: AssemblyInformationalVersionAttribute("3.0.0.2000")]
-[assembly: AssemblyFileVersionAttribute("3.0.0.2000")]
+[assembly: AssemblyVersionAttribute("3.0.0.3000")]
+[assembly: AssemblyInformationalVersionAttribute("3.0.0.3000")]
+[assembly: AssemblyFileVersionAttribute("3.0.0.3000")]
