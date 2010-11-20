@@ -10816,6 +10816,40 @@
             Creates an exact clone of the IQueryOver
             </summary>
         </member>
+        <member name="M:NHibernate.IQueryOver`1.ClearOrders">
+            <summary>
+            Clear all orders from the query.
+            </summary>
+        </member>
+        <member name="M:NHibernate.IQueryOver`1.Skip(System.Int32)">
+            <summary>
+            Set the first result to be retrieved
+            </summary>
+            <param name="firstResult"></param>
+        </member>
+        <member name="M:NHibernate.IQueryOver`1.Take(System.Int32)">
+            <summary>
+            Set a limit upon the number of objects to be retrieved
+            </summary>
+            <param name="maxResults"></param>
+        </member>
+        <member name="M:NHibernate.IQueryOver`1.Cacheable">
+            <summary>
+            Enable caching of this query result set
+            </summary>
+        </member>
+        <member name="M:NHibernate.IQueryOver`1.CacheMode(NHibernate.CacheMode)">
+            <summary> Override the cache mode for this particular query. </summary>
+            <param name="cacheMode">The cache mode to use. </param>
+            <returns> this (for method chaining) </returns>
+        </member>
+        <member name="M:NHibernate.IQueryOver`1.CacheRegion(System.String)">
+            <summary>
+            Set the name of the cache region.
+            </summary>
+            <param name="cacheRegion">the name of a query cache region, or <see langword="null" />
+            for the default query cache</param>
+        </member>
         <member name="M:NHibernate.Criterion.QueryOver`1.GetExecutableQueryOver(NHibernate.ISession)">
             <summary>
             Get an executable instance of <c>IQueryOver&lt;TRoot&gt;</c>,
@@ -10995,6 +11029,11 @@
             <param name="path">Lambda expression</param>
             <returns>criteria instance</returns>
         </member>
+        <member name="M:NHibernate.IQueryOver`2.OrderBy(NHibernate.Criterion.IProjection)">
+            <summary>
+            Order by arbitrary IProjection (e.g., to allow protected member access)
+            </summary>
+        </member>
         <member name="M:NHibernate.IQueryOver`2.OrderByAlias(System.Linq.Expressions.Expression{System.Func{System.Object}})">
             <summary>
             Add order for an aliased projection expressed as a lambda expression
@@ -11016,6 +11055,11 @@
             <param name="path">Lambda expression</param>
             <returns>criteria instance</returns>
         </member>
+        <member name="M:NHibernate.IQueryOver`2.ThenBy(NHibernate.Criterion.IProjection)">
+            <summary>
+            Order by arbitrary IProjection (e.g., to allow protected member access)
+            </summary>
+        </member>
         <member name="M:NHibernate.IQueryOver`2.ThenByAlias(System.Linq.Expressions.Expression{System.Func{System.Object}})">
             <summary>
             Add order for an aliased projection expressed as a lambda expression
@@ -11023,44 +11067,10 @@
             <param name="path">Lambda expression</param>
             <returns>criteria instance</returns>
         </member>
-        <member name="M:NHibernate.IQueryOver`2.ClearOrders">
-            <summary>
-            Clear all orders from the query.
-            </summary>
-        </member>
         <member name="M:NHibernate.IQueryOver`2.TransformUsing(NHibernate.Transform.IResultTransformer)">
             <summary>
             Transform the results using the supplied IResultTransformer
             </summary>
-        </member>
-        <member name="M:NHibernate.IQueryOver`2.Skip(System.Int32)">
-            <summary>
-            Set the first result to be retrieved
-            </summary>
-            <param name="firstResult"></param>
-        </member>
-        <member name="M:NHibernate.IQueryOver`2.Take(System.Int32)">
-            <summary>
-            Set a limit upon the number of objects to be retrieved
-            </summary>
-            <param name="maxResults"></param>
-        </member>
-        <member name="M:NHibernate.IQueryOver`2.Cacheable">
-            <summary>
-            Enable caching of this query result set
-            </summary>
-        </member>
-        <member name="M:NHibernate.IQueryOver`2.CacheMode(NHibernate.CacheMode)">
-            <summary> Override the cache mode for this particular query. </summary>
-            <param name="cacheMode">The cache mode to use. </param>
-            <returns> this (for method chaining) </returns>
-        </member>
-        <member name="M:NHibernate.IQueryOver`2.CacheRegion(System.String)">
-            <summary>
-            Set the name of the cache region.
-            </summary>
-            <param name="cacheRegion">the name of a query cache region, or <see langword="null" />
-            for the default query cache</param>
         </member>
         <member name="M:NHibernate.IQueryOver`2.Fetch(System.Linq.Expressions.Expression{System.Func{`0,System.Object}})">
             <summary>
@@ -37752,95 +37762,6 @@
         <member name="P:NHibernate.Type.ComponentType.IsMutable">
             <summary></summary>
         </member>
-        <member name="T:NHibernate.Type.CompositeCustomType">
-            <summary>
-            Summary description for CompositeCustomType.
-            </summary>
-        </member>
-        <member name="M:NHibernate.Type.CompositeCustomType.GetPropertyValues(System.Object,NHibernate.Engine.ISessionImplementor)">
-            <summary>
-            
-            </summary>
-            <param name="component"></param>
-            <param name="session"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CompositeCustomType.GetCascadeStyle(System.Int32)">
-            <summary>
-            
-            </summary>
-            <param name="i"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CompositeCustomType.Assemble(System.Object,NHibernate.Engine.ISessionImplementor,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="cached"></param>
-            <param name="session"></param>
-            <param name="owner"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CompositeCustomType.GetColumnSpan(NHibernate.Engine.IMapping)">
-            <summary>
-            
-            </summary>
-            <param name="mapping"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CompositeCustomType.NullSafeGet(System.Data.IDataReader,System.String,NHibernate.Engine.ISessionImplementor,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="rs"></param>
-            <param name="name"></param>
-            <param name="session"></param>
-            <param name="owner"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CompositeCustomType.NullSafeGet(System.Data.IDataReader,System.String[],NHibernate.Engine.ISessionImplementor,System.Object)">
-            <summary>
-            
-            </summary>
-            <param name="rs"></param>
-            <param name="names"></param>
-            <param name="session"></param>
-            <param name="owner"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CompositeCustomType.SqlTypes(NHibernate.Engine.IMapping)">
-            <summary>
-            
-            </summary>
-            <param name="mapping"></param>
-            <returns></returns>
-        </member>
-        <member name="M:NHibernate.Type.CompositeCustomType.ToLoggableString(System.Object,NHibernate.Engine.ISessionFactoryImplementor)">
-            <summary>
-            
-            </summary>
-            <param name="value"></param>
-            <param name="factory"></param>
-            <returns></returns>
-        </member>
-        <member name="P:NHibernate.Type.CompositeCustomType.Subtypes">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Type.CompositeCustomType.PropertyNames">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Type.CompositeCustomType.IsComponentType">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Type.CompositeCustomType.Name">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Type.CompositeCustomType.ReturnedClass">
-            <summary></summary>
-        </member>
-        <member name="P:NHibernate.Type.CompositeCustomType.IsMutable">
-            <summary></summary>
-        </member>
         <member name="T:NHibernate.Type.CultureInfoType">
             <summary>
             Maps a <see cref="T:System.Globalization.CultureInfo"/> Property 
@@ -39171,7 +39092,7 @@
             <remarks>
             Applications should use static methods and constants on NHibernate.NHibernateUtil if the default
             IType is good enough.  For example, the TypeFactory should only be used when the String needs
-            to have a length of 300 instead of 255.  At this point NHibernate.String does not get you the 
+            to have a length of 300 instead of 255.  At this point NHibernate.String does not get you the
             correct IType.  Instead use TypeFactory.GetString(300) and keep a local variable that holds
             a reference to the IType.
             </remarks>
@@ -39204,15 +39125,15 @@
             <returns>The Type of Classification</returns>
             <remarks>
             This parses through the string and makes the assumption that no class
-            name and no assembly name will contain the <c>"("</c>.  
+            name and no assembly name will contain the <c>"("</c>.
             <para>
-            If it finds 
-            the <c>"("</c> and then finds a <c>","</c> afterwards then it is a 
-            <c>TypeClassification.PrecisionScale</c>.  
+            If it finds
+            the <c>"("</c> and then finds a <c>","</c> afterwards then it is a
+            <c>TypeClassification.PrecisionScale</c>.
             </para>
             <para>
             If it finds the <c>"("</c>
-            and doesn't find a <c>","</c> afterwards, then it is a 
+            and doesn't find a <c>","</c> afterwards, then it is a
             <c>TypeClassification.Length</c>.
             </para>
             <para>
@@ -39224,7 +39145,7 @@
         <member name="M:NHibernate.Type.TypeFactory.Basic(System.String)">
             <summary>
             Given the name of a Hibernate type such as Decimal, Decimal(19,0)
-            , Int32, or even NHibernate.Type.DecimalType, NHibernate.Type.DecimalType(19,0), 
+            , Int32, or even NHibernate.Type.DecimalType, NHibernate.Type.DecimalType(19,0),
             NHibernate.Type.Int32Type, then return an instance of NHibernate.Type.IType
             </summary>
             <param name="name">The name of the type.</param>
@@ -39235,8 +39156,8 @@
         </member>
         <member name="M:NHibernate.Type.TypeFactory.HeuristicType(System.String)">
             <summary>
-            Uses heuristics to deduce a NHibernate type given a string naming the 
-            type. 
+            Uses heuristics to deduce a NHibernate type given a string naming the
+            type.
             </summary>
             <param name="typeName"></param>
             <returns>An instance of <c>NHibernate.Type.IType</c></returns>
@@ -39244,15 +39165,15 @@
             When looking for the NHibernate type it will look in the cache of the Basic types first.
             If it doesn't find it in the cache then it uses the typeName to get a reference to the
             Class (Type in .NET).  Once we get the reference to the .NET class we check to see if it
-            implements IType, ICompositeUserType, IUserType, ILifecycle (Association), or 
+            implements IType, ICompositeUserType, IUserType, ILifecycle (Association), or
             IPersistentEnum.  If none of those are implemented then we will serialize the Type to the
-            database using NHibernate.Type.SerializableType(typeName)  
+            database using NHibernate.Type.SerializableType(typeName)
             </remarks>
         </member>
         <member name="M:NHibernate.Type.TypeFactory.HeuristicType(System.String,System.Collections.Generic.IDictionary{System.String,System.String})">
             <summary>
-            Uses heuristics to deduce a NHibernate type given a string naming the 
-            type. 
+            Uses heuristics to deduce a NHibernate type given a string naming the
+            type.
             </summary>
             <param name="typeName">the type name</param>
             <param name="parameters">parameters for the type</param>
@@ -39266,7 +39187,7 @@
             <returns>A BinaryType</returns>
             <remarks>
             In addition to returning the BinaryType it will also ensure that it has
-            been added to the basicNameMap with the keys <c>Byte[](length)</c> and 
+            been added to the basicNameMap with the keys <c>Byte[](length)</c> and
             <c>NHibernate.Type.BinaryType(length)</c>.
             </remarks>
         </member>
@@ -39280,7 +39201,7 @@
             <para>
             In addition to returning the SerializableType it will also ensure that it has
             been added to the basicNameMap with the keys <c>Type.FullName</c> (the result
-            of <c>IType.Name</c> and <c>Type.AssemblyQualifiedName</c>.  This is different 
+            of <c>IType.Name</c> and <c>Type.AssemblyQualifiedName</c>.  This is different
             from the other items put in the basicNameMap because it is uses the AQN and the
             FQN as opposed to the short name used in the maps and the FQN.
             </para>
@@ -39313,97 +39234,115 @@
             A many-to-one association type for the given class and cascade style.
             </summary>
         </member>
-        <member name="M:NHibernate.Type.TypeFactory.DeepCopy(System.Object[],NHibernate.Type.IType[],System.Boolean[],System.Object[],NHibernate.Engine.ISessionImplementor)">
-            <summary> Deep copy a series of values from one array to another... </summary>
-            <param name="values">The values to copy (the source) </param>
-            <param name="types">The value types </param>
-            <param name="copy">an array indicating which values to include in the copy </param>
-            <param name="target">The array into which to copy the values </param>
-            <param name="session">The originating session </param>
-        </member>
-        <member name="M:NHibernate.Type.TypeFactory.BeforeAssemble(System.Object[],NHibernate.Type.ICacheAssembler[],NHibernate.Engine.ISessionImplementor)">
-            <summary> Apply the <see cref="M:NHibernate.Type.ICacheAssembler.BeforeAssemble(System.Object,NHibernate.Engine.ISessionImplementor)"/> operation across a series of values. </summary>
-            <param name="row">The values </param>
-            <param name="types">The value types </param>
-            <param name="session">The originating session </param>
-        </member>
-        <member name="M:NHibernate.Type.TypeFactory.FindDirty(NHibernate.Tuple.StandardProperty[],System.Object[],System.Object[],System.Boolean[][],System.Boolean,NHibernate.Engine.ISessionImplementor)">
+        <member name="T:NHibernate.Type.TypeHelper">
             <summary>
-            Determine if any of the given field values are dirty,
-            returning an array containing indexes of
-            the dirty fields or null if no fields are dirty.
+            Collection of convenience methods relating to operations across arrays of types...
             </summary>
         </member>
-        <member name="M:NHibernate.Type.TypeFactory.FindModified(NHibernate.Tuple.StandardProperty[],System.Object[],System.Object[],System.Boolean[][],System.Boolean,NHibernate.Engine.ISessionImplementor)">
-            <summary>
-            Determine if any of the given field values are modified,
-            returning an array containing indexes of
-            the dirty fields or null if no fields are modified.
-            </summary>
+        <member name="M:NHibernate.Type.TypeHelper.DeepCopy(System.Object[],NHibernate.Type.IType[],System.Boolean[],System.Object[],NHibernate.Engine.ISessionImplementor)">
+            <summary>Deep copy a series of values from one array to another</summary>
+            <param name="values">The values to copy (the source)</param>
+            <param name="types">The value types</param>
+            <param name="copy">An array indicating which values to include in the copy</param>
+            <param name="target">The array into which to copy the values</param>
+            <param name="session">The originating session</param>
         </member>
-        <member name="M:NHibernate.Type.TypeFactory.Assemble(System.Object[],NHibernate.Type.ICacheAssembler[],NHibernate.Engine.ISessionImplementor,System.Object)">
+        <member name="M:NHibernate.Type.TypeHelper.BeforeAssemble(System.Object[],NHibernate.Type.ICacheAssembler[],NHibernate.Engine.ISessionImplementor)">
+            <summary>Apply the <see cref="M:NHibernate.Type.ICacheAssembler.BeforeAssemble(System.Object,NHibernate.Engine.ISessionImplementor)"/> operation across a series of values.</summary>
+            <param name="row">The values</param>
+            <param name="types">The value types</param>
+            <param name="session">The originating session</param>
+        </member>
+        <member name="M:NHibernate.Type.TypeHelper.Assemble(System.Object[],NHibernate.Type.ICacheAssembler[],NHibernate.Engine.ISessionImplementor,System.Object)">
             <summary>
-            
+            Apply the <see cref="M:NHibernate.Type.ICacheAssembler.Assemble(System.Object,NHibernate.Engine.ISessionImplementor,System.Object)"/> operation across a series of values.
             </summary>
-            <param name="row"></param>
-            <param name="types"></param>
-            <param name="session"></param>
-            <param name="owner"></param>
+            <param name="row">The values</param>
+            <param name="types">The value types</param>
+            <param name="session">The originating session</param>
+            <param name="owner">The entity "owning" the values</param>
             <returns></returns>
         </member>
-        <member name="M:NHibernate.Type.TypeFactory.Disassemble(System.Object[],NHibernate.Type.ICacheAssembler[],System.Boolean[],NHibernate.Engine.ISessionImplementor,System.Object)">
-            <summary> Apply the {@link Type#disassemble} operation across a series of values. </summary>
-            <param name="row">The values </param>
-            <param name="types">The value types </param>
-            <param name="nonCacheable">An array indicating which values to include in the disassembled state </param>
-            <param name="session">The originating session </param>
-            <param name="owner">The entity "owning" the values </param>
-            <returns> The disassembled state </returns>
+        <member name="M:NHibernate.Type.TypeHelper.Disassemble(System.Object[],NHibernate.Type.ICacheAssembler[],System.Boolean[],NHibernate.Engine.ISessionImplementor,System.Object)">
+            <summary>Apply the <see cref="M:NHibernate.Type.ICacheAssembler.Disassemble(System.Object,NHibernate.Engine.ISessionImplementor,System.Object)"/> operation across a series of values.</summary>
+            <param name="row">The values</param>
+            <param name="types">The value types</param>
+            <param name="nonCacheable">An array indicating which values to include in the disassembled state</param>
+            <param name="session">The originating session</param>
+            <param name="owner">The entity "owning" the values</param>
+            <returns> The disassembled state</returns>
         </member>
-        <member name="M:NHibernate.Type.TypeFactory.Replace(System.Object[],System.Object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary)">
+        <member name="M:NHibernate.Type.TypeHelper.Replace(System.Object[],System.Object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary)">
             <summary>
-             Apply the <see cref="M:NHibernate.Type.IType.Replace(System.Object,System.Object,NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary)"/> operation across a series of values.
+            Apply the <see cref="M:NHibernate.Type.IType.Replace(System.Object,System.Object,NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary)"/> operation across a series of values.
             </summary>
-            <param name="original">The source of the state </param>
-            <param name="target">The target into which to replace the source values. </param>
-            <param name="types">The value types </param>
-            <param name="session">The originating session </param>
-            <param name="owner">The entity "owning" the values </param>
-            <param name="copiedAlready">Represent a cache of already replaced state </param>
-            <returns> The replaced state </returns>
+            <param name="original">The source of the state</param>
+            <param name="target">The target into which to replace the source values.</param>
+            <param name="types">The value types</param>
+            <param name="session">The originating session</param>
+            <param name="owner">The entity "owning" the values</param>
+            <param name="copiedAlready">Represent a cache of already replaced state</param>
+            <returns> The replaced state</returns>
         </member>
-        <member name="M:NHibernate.Type.TypeFactory.Replace(System.Object[],System.Object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)">
+        <member name="M:NHibernate.Type.TypeHelper.Replace(System.Object[],System.Object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)">
             <summary>
-            Apply the <see cref="M:NHibernate.Type.IType.Replace(System.Object,System.Object,NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)"/> 
+            Apply the <see cref="M:NHibernate.Type.IType.Replace(System.Object,System.Object,NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)"/>
             operation across a series of values.
             </summary>
-            <param name="original">The source of the state </param>
-            <param name="target">The target into which to replace the source values. </param>
-            <param name="types">The value types </param>
-            <param name="session">The originating session </param>
-            <param name="owner">The entity "owning" the values </param>
-            <param name="copyCache">A map representing a cache of already replaced state </param>
-            <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
-            <returns> The replaced state </returns>
+            <param name="original">The source of the state</param>
+            <param name="target">The target into which to replace the source values.</param>
+            <param name="types">The value types</param>
+            <param name="session">The originating session</param>
+            <param name="owner">The entity "owning" the values</param>
+            <param name="copyCache">A map representing a cache of already replaced state</param>
+            <param name="foreignKeyDirection">FK directionality to be applied to the replacement</param>
+            <returns> The replaced state</returns>
         </member>
-        <member name="M:NHibernate.Type.TypeFactory.ReplaceAssociations(System.Object[],System.Object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)">
-            <summary> 
-            Apply the <see cref="M:NHibernate.Type.IType.Replace(System.Object,System.Object,NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)"/> 
-            operation across a series of values, as
-            long as the corresponding <see cref="T:NHibernate.Type.IType"/> is an association.
+        <member name="M:NHibernate.Type.TypeHelper.ReplaceAssociations(System.Object[],System.Object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)">
+            <summary>
+            Apply the <see cref="M:NHibernate.Type.IType.Replace(System.Object,System.Object,NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)"/>
+            operation across a series of values, as long as the corresponding <see cref="T:NHibernate.Type.IType"/> is an association.
             </summary>
-            <param name="original">The source of the state </param>
-            <param name="target">The target into which to replace the source values. </param>
-            <param name="types">The value types </param>
-            <param name="session">The originating session </param>
-            <param name="owner">The entity "owning" the values </param>
-            <param name="copyCache">A map representing a cache of already replaced state </param>
-            <param name="foreignKeyDirection">FK directionality to be applied to the replacement </param>
-            <returns> The replaced state </returns>
+            <param name="original">The source of the state</param>
+            <param name="target">The target into which to replace the source values.</param>
+            <param name="types">The value types</param>
+            <param name="session">The originating session</param>
+            <param name="owner">The entity "owning" the values</param>
+            <param name="copyCache">A map representing a cache of already replaced state</param>
+            <param name="foreignKeyDirection">FK directionality to be applied to the replacement</param>
+            <returns> The replaced state</returns>
             <remarks>
-            If the corresponding type is a component type, then apply <see cref="M:NHibernate.Type.TypeFactory.ReplaceAssociations(System.Object[],System.Object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)"/>
+            If the corresponding type is a component type, then apply <see cref="M:NHibernate.Type.TypeHelper.ReplaceAssociations(System.Object[],System.Object[],NHibernate.Type.IType[],NHibernate.Engine.ISessionImplementor,System.Object,System.Collections.IDictionary,NHibernate.Type.ForeignKeyDirection)"/>
             across the component subtypes but do not replace the component value itself.
             </remarks>
+        </member>
+        <member name="M:NHibernate.Type.TypeHelper.FindDirty(NHibernate.Tuple.StandardProperty[],System.Object[],System.Object[],System.Boolean[][],System.Boolean,NHibernate.Engine.ISessionImplementor)">
+            <summary>
+            <para>Determine if any of the given field values are dirty, returning an array containing
+            indices of the dirty fields.</para>
+            <para>If it is determined that no fields are dirty, null is returned.</para>
+            </summary>
+            <param name="properties">The property definitions</param>
+            <param name="x">The current state of the entity</param>
+            <param name="y">The baseline state of the entity</param>
+            <param name="includeColumns">Columns to be included in the dirty checking, per property</param>
+            <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
+            <param name="session">The session from which the dirty check request originated.</param>
+            <returns>Array containing indices of the dirty properties, or null if no properties considered dirty.</returns>
+        </member>
+        <member name="M:NHibernate.Type.TypeHelper.FindModified(NHibernate.Tuple.StandardProperty[],System.Object[],System.Object[],System.Boolean[][],System.Boolean,NHibernate.Engine.ISessionImplementor)">
+            <summary>
+            <para>Determine if any of the given field values are modified, returning an array containing
+            indices of the modified fields.</para>
+            <para>If it is determined that no fields are dirty, null is returned.</para>
+            </summary>
+            <param name="properties">The property definitions</param>
+            <param name="x">The current state of the entity</param>
+            <param name="y">The baseline state of the entity</param>
+            <param name="includeColumns">Columns to be included in the mod checking, per property</param>
+            <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
+            <param name="session">The session from which the dirty check request originated.</param>
+            <returns>Array containing indices of the modified properties, or null if no properties considered modified.</returns>
         </member>
         <member name="T:NHibernate.Type.TypeType">
             <summary>
@@ -39541,23 +39480,23 @@
             <summary></summary>
         </member>
         <member name="T:NHibernate.UserTypes.ICompositeUserType">
-            <summary>
-            A UserType that may be dereferenced in a query.
-            This interface allows a custom type to define "properties".
-            These need not necessarily correspond to physical .NET style properties.
+             <summary>
+             A UserType that may be dereferenced in a query.
+             This interface allows a custom type to define "properties".
+             These need not necessarily correspond to physical .NET style properties.
             
-            A ICompositeUserType may be used in almost every way 
-            that a component may be used. It may even contain many-to-one
-            associations.
+             A ICompositeUserType may be used in almost every way
+             that a component may be used. It may even contain many-to-one
+             associations.
             
-            Implementors must be immutable and must declare a public
-            default constructor.
+             Implementors must be immutable and must declare a public
+             default constructor.
             
-            Unlike UserType, cacheability does not depend upon
-            serializability. Instead, Assemble() and 
-            Disassemble() provide conversion to/from a cacheable
-            representation.
-            </summary>
+             Unlike UserType, cacheability does not depend upon
+             serializability. Instead, Assemble() and
+             Disassemble() provide conversion to/from a cacheable
+             representation.
+             </summary>
         </member>
         <member name="M:NHibernate.UserTypes.ICompositeUserType.GetPropertyValue(System.Object,System.Int32)">
             <summary>
@@ -39600,15 +39539,17 @@
             <param name="owner">the containing entity</param>
             <returns></returns>
         </member>
-        <member name="M:NHibernate.UserTypes.ICompositeUserType.NullSafeSet(System.Data.IDbCommand,System.Object,System.Int32,NHibernate.Engine.ISessionImplementor)">
+        <member name="M:NHibernate.UserTypes.ICompositeUserType.NullSafeSet(System.Data.IDbCommand,System.Object,System.Int32,System.Boolean[],NHibernate.Engine.ISessionImplementor)">
             <summary>
             Write an instance of the mapped class to a prepared statement.
             Implementors should handle possibility of null values.
             A multi-column type should be written to parameters starting from index.
+            If a property is not settable, skip it and don't increment the index.
             </summary>
             <param name="cmd"></param>
             <param name="value"></param>
             <param name="index"></param>
+            <param name="settable"></param>
             <param name="session"></param>
         </member>
         <member name="M:NHibernate.UserTypes.ICompositeUserType.DeepCopy(System.Object)">
@@ -39644,13 +39585,13 @@
             with a new (original) value from the detached entity we are merging. For immutable
             objects, or null values, it is safe to simply return the first parameter. For
             mutable objects, it is safe to return a copy of the first parameter. However, since
-            composite user types often define component values, it might make sense to recursively 
+            composite user types often define component values, it might make sense to recursively
             replace component values in the target object.
             </summary>
         </member>
         <member name="P:NHibernate.UserTypes.ICompositeUserType.PropertyNames">
             <summary>
-            Get the "property names" that may be used in a query. 
+            Get the "property names" that may be used in a query.
             </summary>
         </member>
         <member name="P:NHibernate.UserTypes.ICompositeUserType.PropertyTypes">
