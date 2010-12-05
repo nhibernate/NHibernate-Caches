@@ -8852,9 +8852,9 @@
             <summary>
             Initializes a new instance of the <see cref="T:NHibernate.Criterion.BetweenExpression"/> class.
             </summary>
-            <param name="_projection">The _projection.</param>
-            <param name="_lo">The _lo.</param>
-            <param name="_hi">The _hi.</param>
+            <param name="projection">The _projection.</param>
+            <param name="lo">The _lo.</param>
+            <param name="hi">The _hi.</param>
         </member>
         <member name="M:NHibernate.Criterion.BetweenExpression.#ctor(System.String,System.Object,System.Object)">
             <summary>
@@ -8864,9 +8864,6 @@
             <param name="propertyName">The name of the Property of the Class.</param>
             <param name="lo">The low value for the BetweenExpression.</param>
             <param name="hi">The high value for the BetweenExpression.</param>
-        </member>
-        <member name="M:NHibernate.Criterion.BetweenExpression.ToString">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Criterion.CastProjection">
             <summary>
@@ -9910,25 +9907,25 @@
             </summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetColumn(NHibernate.ICriteria,System.String)">
-            <summary> Get the name of the column mapped by a property path, ignoring projection alias</summary>
+            <summary>Get the name of the column mapped by a property path, ignoring projection alias</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetColumns(NHibernate.ICriteria,System.String)">
-            <summary> Get the names of the columns mapped by a property path, ignoring projection aliases</summary>
+            <summary>Get the names of the columns mapped by a property path, ignoring projection aliases</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetType(NHibernate.ICriteria,System.String)">
-            <summary> Get the type of a property path, ignoring projection aliases</summary>
+            <summary>Get the type of a property path, ignoring projection aliases</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetColumnsUsingProjection(NHibernate.ICriteria,System.String)">
-            <summary> Get the names of the columns mapped by a property path</summary>
+            <summary>Get the names of the columns mapped by a property path</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetTypeUsingProjection(NHibernate.ICriteria,System.String)">
-            <summary> Get the type of a property path</summary>
+            <summary>Get the type of a property path</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetTypedValue(NHibernate.ICriteria,System.String,System.Object)">
-            <summary> Get the a typed value for the given property value.</summary>
+            <summary>Get the a typed value for the given property value.</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetEntityName(NHibernate.ICriteria)">
-            <summary> Get the entity name of an entity</summary>
+            <summary>Get the entity name of an entity</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetEntityName(NHibernate.ICriteria,System.String)">
             <summary> 
@@ -9937,7 +9934,7 @@
             </summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetSQLAlias(NHibernate.ICriteria)">
-            <summary> Get the root table alias of an entity</summary>
+            <summary>Get the root table alias of an entity</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetSQLAlias(NHibernate.ICriteria,System.String)">
             <summary> 
@@ -9946,19 +9943,13 @@
             </summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetPropertyName(System.String)">
-            <summary> Get the property name, given a possibly qualified property name</summary>
+            <summary>Get the property name, given a possibly qualified property name</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetIdentifierColumns(NHibernate.ICriteria)">
-            <summary> Get the identifier column names of this entity</summary>
+            <summary>Get the identifier column names of this entity</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.GetIdentifierType(NHibernate.ICriteria)">
-            <summary> Get the identifier type of this entity</summary>
-        </member>
-        <member name="M:NHibernate.Criterion.ICriteriaQuery.AddUsedTypedValues(NHibernate.Engine.TypedValue[])">
-            <summary>
-            When adding values to the query string it is imperative that they are reported via this function back to the query builder. 
-            Do not report the same item multiple times as it will be assumed to be a separate parameter.
-            </summary>
+            <summary>Get the identifier type of this entity</summary>
         </member>
         <member name="M:NHibernate.Criterion.ICriteriaQuery.CreatePagingParameter(System.Int32)">
             <summary>
@@ -9973,7 +9964,7 @@
         </member>
         <member name="T:NHibernate.Criterion.InExpression">
             <summary>
-            An <see cref="T:NHibernate.Criterion.ICriterion"/> that constrains the property 
+            An <see cref="T:NHibernate.Criterion.ICriterion"/> that constrains the property
             to a specified list of values.
             </summary>
             <remarks>
@@ -9985,17 +9976,7 @@
             Initializes a new instance of the <see cref="T:NHibernate.Criterion.InExpression"/> class.
             </summary>
             <param name="projection">The projection.</param>
-            <param name="_values">The _values.</param>
-        </member>
-        <member name="M:NHibernate.Criterion.InExpression.#ctor(System.String,System.Object[])">
-            <summary>
-            
-            </summary>
-            <param name="propertyName"></param>
-            <param name="values"></param>
-        </member>
-        <member name="M:NHibernate.Criterion.InExpression.ToString">
-            <summary></summary>
+            <param name="values">The _values.</param>
         </member>
         <member name="T:NHibernate.Criterion.InsensitiveLikeExpression">
             <summary>
@@ -10025,9 +10006,6 @@
             </summary>
             <param name="propertyName">The name of the Property in the class.</param>
             <param name="value">The value for the Property.</param>
-        </member>
-        <member name="M:NHibernate.Criterion.InsensitiveLikeExpression.ToString">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Criterion.IsEmptyExpression">
             <summary>
@@ -10085,7 +10063,7 @@
             An <see cref="T:NHibernate.Criterion.ICriterion"/> that represents an "like" constraint.
             </summary>
             <remarks>
-            The case sensitivity depends on the database settings for string 
+            The case sensitivity depends on the database settings for string
             comparisons.  Use <see cref="T:NHibernate.Criterion.InsensitiveLikeExpression"/> if the
             string comparison should not be case sensitive.
             </remarks>
@@ -10309,20 +10287,9 @@
             Represents an order imposed upon a <see cref="T:NHibernate.ICriteria"/>
             result set.
             </summary>
-        </member>
-        <member name="M:NHibernate.Criterion.Order.#ctor(NHibernate.Criterion.IProjection,System.Boolean)">
-            <summary>
-            Constructor for Order.
-            </summary>
-            <param name="projection"></param>
-            <param name="ascending"></param>
-        </member>
-        <member name="M:NHibernate.Criterion.Order.#ctor(System.String,System.Boolean)">
-            <summary>
-            Constructor for Order.
-            </summary>
-            <param name="propertyName"></param>
-            <param name="ascending"></param>
+            <remarks>
+            Should Order implement ICriteriaQuery?
+            </remarks>
         </member>
         <member name="M:NHibernate.Criterion.Order.ToSqlString(NHibernate.ICriteria,NHibernate.Criterion.ICriteriaQuery)">
             <summary>
@@ -11356,9 +11323,6 @@
             </summary>
             <returns>A SqlString that contains a valid Sql fragment.</returns>
         </member>
-        <member name="M:NHibernate.Criterion.SimpleExpression.ToString">
-            <summary></summary>
-        </member>
         <member name="P:NHibernate.Criterion.SimpleExpression.PropertyName">
             <summary>
             Gets the named Property for the Expression.
@@ -11391,9 +11355,6 @@
             This allows for database specific Expressions at the cost of needing to 
             write a correct <see cref="T:NHibernate.SqlCommand.SqlString"/>.
             </remarks>
-        </member>
-        <member name="M:NHibernate.Criterion.SQLCriterion.ToString">
-            <summary></summary>
         </member>
         <member name="T:NHibernate.Criterion.SQLProjection">
             <summary>
@@ -19051,12 +19012,12 @@
             <param name="event">The evict event to be handled.</param>
         </member>
         <member name="T:NHibernate.Event.Default.DefaultFlushEntityEventListener">
-            <summary> 
-            An event that occurs for each entity instance at flush time 
+            <summary>
+            An event that occurs for each entity instance at flush time
             </summary>
         </member>
         <member name="M:NHibernate.Event.Default.DefaultFlushEntityEventListener.OnFlushEntity(NHibernate.Event.FlushEntityEvent)">
-            <summary> 
+            <summary>
             Flushes a single entity's state to the database, by scheduling an update action, if necessary
             </summary>
         </member>
@@ -19070,7 +19031,7 @@
             <param name="entityMode">The entity mode.</param>
         </member>
         <member name="M:NHibernate.Event.Default.DefaultFlushEntityEventListener.IsUpdateNecessary(NHibernate.Event.FlushEntityEvent)">
-            <summary> 
+            <summary>
             Performs all necessary checking to determine if an entity needs an SQL update
             to synchronize its state to the database. Modifies the event by side-effect!
             Note: this method is quite slow, avoid calling if possible!
@@ -39323,8 +39284,8 @@
             <para>If it is determined that no fields are dirty, null is returned.</para>
             </summary>
             <param name="properties">The property definitions</param>
-            <param name="x">The current state of the entity</param>
-            <param name="y">The baseline state of the entity</param>
+            <param name="currentState">The current state of the entity</param>
+            <param name="previousState">The baseline state of the entity</param>
             <param name="includeColumns">Columns to be included in the dirty checking, per property</param>
             <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
             <param name="session">The session from which the dirty check request originated.</param>
@@ -39337,8 +39298,8 @@
             <para>If it is determined that no fields are dirty, null is returned.</para>
             </summary>
             <param name="properties">The property definitions</param>
-            <param name="x">The current state of the entity</param>
-            <param name="y">The baseline state of the entity</param>
+            <param name="currentState">The current state of the entity</param>
+            <param name="previousState">The baseline state of the entity</param>
             <param name="includeColumns">Columns to be included in the mod checking, per property</param>
             <param name="anyUninitializedProperties">Does the entity currently hold any uninitialized property values?</param>
             <param name="session">The session from which the dirty check request originated.</param>
