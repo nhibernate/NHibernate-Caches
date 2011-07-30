@@ -19,6 +19,8 @@ It's recommended to research for a while before deciding which one is better for
 ======================================
 Notes
 ======================================
+Build 3.2.0.GA (rev1686 of contrib) for NHibernate 3.2.0GA
+================================================================
 Build 3.0.0.GA (rev1442 of contrib) for NHibernate 3.0.0CR1
 ================================================================
 Build 3.0.0.CR (rev1440 of contrib) for NHibernate 3.0.0CR1
