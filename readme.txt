@@ -1,11 +1,11 @@
 Documentation and examples are available at www.nhforge.org
 Any feedback or issue can be sent to NHibernate user group(http://groups.google.com/group/nhusers) and will be greatly anticipated. 
 
-Up-to-date source code available in the SVN:
-http://nhcontrib.svn.sourceforge.net/svnroot/nhcontrib/trunk/src/
+Up-to-date source code available at GitHub:
+https://github.com/nhibernate/NHibernate.Caches
 
 Website:
-http://sourceforge.net/projects/nhcontrib/
+https://github.com/nhibernate/NHibernate.Caches/
 
 ======================================
 What is NHibernate.Caches ?
