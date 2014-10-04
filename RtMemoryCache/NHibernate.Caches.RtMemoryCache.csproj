@@ -64,6 +64,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\NHibernate.Caches.snk" />
+    <None Include="NHibernate.Caches.RtMemoryCache.nuspec" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
