@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<package >
+<package>
   <metadata>
     <id>$id$</id>
     <version>$version$</version>
@@ -9,7 +9,10 @@
     <projectUrl>https://github.com/nhibernate/NHibernate-Caches</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <copyright>Copyright 2013</copyright>
+    <copyright>Copyright 2014</copyright>
     <tags>nhibernate cache</tags>
+    <dependencies>
+      <dependency id="NHibernate" version="4.0.1.4000" />
+    </dependencies>
   </metadata>
 </package>
