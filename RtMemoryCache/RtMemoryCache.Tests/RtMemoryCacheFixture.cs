@@ -28,7 +28,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Caching;
 using System.Threading;
-using log4net.Config;
 using NHibernate.Cache;
 using NUnit.Framework;
 
@@ -43,7 +42,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			XmlConfigurator.Configure();
 			props = new Dictionary<string, string>();
 			props.Add("expiration", 120.ToString());
 			props.Add("priority", 1.ToString());

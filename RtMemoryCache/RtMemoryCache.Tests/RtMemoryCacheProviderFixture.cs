@@ -23,7 +23,6 @@
 #endregion
 
 using System.Collections.Generic;
-using log4net.Config;
 using NHibernate.Cache;
 using NUnit.Framework;
 
@@ -48,7 +47,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		[TestFixtureSetUp]
 		public void FixtureSetup()
 		{
-			XmlConfigurator.Configure();
 			props = new Dictionary<string, string> {{"expiration", 120.ToString()}, {"priority", 2.ToString()}};
 		}
 
