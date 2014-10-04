@@ -42,6 +42,7 @@ namespace NHibernate.Caches.EnyimMemcached
 		{
 		}
 
+		[CLSCompliant(false)]
 		public MemCacheClient(string regionName, IDictionary<string, string> properties, MemcachedClient memcachedClient)
 		{
 			region = regionName;

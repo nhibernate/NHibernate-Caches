@@ -6,7 +6,7 @@
     <title>$title$</title>
     <authors>$author$</authors>
     <owners>$author$</owners>
-    <projectUrl>https://github.com/diegose/NHibernate.Diegose</projectUrl>
+    <projectUrl>https://github.com/nhibernate/NHibernate-Caches</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
     <copyright>Copyright 2013</copyright>

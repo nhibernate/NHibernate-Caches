@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>NHibernate.Caches.Prevalence.Tests</RootNamespace>
     <AssemblyName>NHibernate.Caches.Prevalence.Tests</AssemblyName>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
@@ -31,6 +31,7 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -52,29 +53,26 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Bamboo.Prevalence, Version=1.4.4.4, Culture=neutral, PublicKeyToken=0edf2245780ab2d7">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\net\3.5\Bamboo.Prevalence.dll</HintPath>
+    <Reference Include="Bamboo.Prevalence">
+      <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.dll</HintPath>
     </Reference>
-    <Reference Include="Bamboo.Prevalence.Util, Version=1.4.4.4, Culture=neutral, PublicKeyToken=0edf2245780ab2d7">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\net\3.5\Bamboo.Prevalence.Util.dll</HintPath>
+    <Reference Include="Bamboo.Prevalence.Util">
+      <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.Util.dll</HintPath>
     </Reference>
-    <Reference Include="Iesi.Collections, Version=1.0.1.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\net\3.5\Iesi.Collections.dll</HintPath>
+      <HintPath>..\..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="log4net, Version=1.2.10.0, Culture=neutral, PublicKeyToken=1b44e1d426115821, processorArchitecture=MSIL">
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\net\3.5\log4net.dll</HintPath>
+      <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate, Version=3.0.0.1002, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+    <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\net\3.5\NHibernate.dll</HintPath>
+      <HintPath>..\..\packages\NHibernate.4.0.1.4000\lib\net40\NHibernate.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\net\3.5\nunit.framework.dll</HintPath>
+    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -89,6 +87,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.csproj">

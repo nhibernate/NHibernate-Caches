@@ -56,24 +56,20 @@
     <Reference Include="Commons">
       <HintPath>..\..\packages\Memcached.ClientLibrary.1.0\lib\net20\Commons.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib">
-      <HintPath>..\..\packages\Memcached.ClientLibrary.1.0\lib\net20\ICSharpCode.SharpZipLib.dll</HintPath>
-    </Reference>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
-    </Reference>
-    <Reference Include="log4net">
-      <HintPath>..\..\packages\Memcached.ClientLibrary.1.0\lib\net20\log4net.dll</HintPath>
-    </Reference>
-    <Reference Include="Memcached.ClientLibrary">
-      <HintPath>..\..\packages\Memcached.ClientLibrary.1.0\lib\net20\Memcached.ClientLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="NHibernate">
-      <HintPath>..\..\packages\NHibernate.4.0.0.4000\lib\net40\NHibernate.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.5.5.10112, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Lib\net\3.5\nunit.framework.dll</HintPath>
+      <HintPath>..\..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
+    </Reference>
+    <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
+    </Reference>
+    <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NHibernate.4.0.1.4000\lib\net40\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -93,7 +89,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MemCache\NHibernate.Caches.MemCache.csproj">
+    <ProjectReference Include="..\NHibernate.Caches.MemCache\NHibernate.Caches.MemCache.csproj">
       <Project>{A824DAC6-D317-4DBD-B08A-1CA8C3CFB7C1}</Project>
       <Name>NHibernate.Caches.MemCache</Name>
     </ProjectReference>

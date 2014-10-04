@@ -2,10 +2,10 @@ Documentation and examples are available at www.nhforge.org
 Any feedback or issue can be sent to NHibernate user group(http://groups.google.com/group/nhusers) and will be greatly anticipated. 
 
 Up-to-date source code available at GitHub:
-https://github.com/nhibernate/NHibernate.Caches
+https://github.com/nhibernate/NHibernate-Caches
 
 Website:
-https://github.com/nhibernate/NHibernate.Caches/
+https://github.com/nhibernate/NHibernate-Caches/
 
 ======================================
 What is NHibernate.Caches ?
@@ -19,7 +19,7 @@ It's recommended to research for a while before deciding which one is better for
 ======================================
 Notes
 ======================================
-Build 3.2.0.GA (rev1686 of contrib) for NHibernate 3.2.0GA
+Build 4.0.1GA for NHibernate 4.0.1GA
 ================================================================
 Build 3.0.0.GA (rev1442 of contrib) for NHibernate 3.0.0CR1
 ================================================================

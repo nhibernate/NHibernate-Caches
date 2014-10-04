@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -55,13 +55,18 @@
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Iesi.Collections">
-      <HintPath>..\..\packages\Iesi.Collections.4.0.0.4000\lib\net40\Iesi.Collections.dll</HintPath>
+    <Reference Include="Iesi.Collections, Version=4.0.0.0, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Iesi.Collections.4.0.1.4000\lib\net40\Iesi.Collections.dll</HintPath>
     </Reference>
-    <Reference Include="NHibernate">
-      <HintPath>..\..\packages\NHibernate.4.0.0.4000\lib\net40\NHibernate.dll</HintPath>
+    <Reference Include="log4net">
+      <HintPath>..\..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
-    <Reference Include="nunit.framework">
+    <Reference Include="NHibernate, Version=4.0.0.4000, Culture=neutral, PublicKeyToken=aa95f207798dfdb4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NHibernate.4.0.1.4000\lib\net40\NHibernate.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.6.3.13283, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
       <HintPath>..\..\packages\NUnit.2.6.3\lib\nunit.framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
@@ -77,7 +82,7 @@
     <Compile Include="SysCacheSectionHandlerFixture.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SysCache\NHibernate.Caches.SysCache.csproj">
+    <ProjectReference Include="..\NHibernate.Caches.SysCache\NHibernate.Caches.SysCache.csproj">
       <Project>{2D48853D-7F90-4E1F-BE98-035CAB2D4F1F}</Project>
       <Name>NHibernate.Caches.SysCache</Name>
     </ProjectReference>
