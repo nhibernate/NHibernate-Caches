@@ -21,8 +21,6 @@
 				<include name="**/*.cs"/>
 			</sources>
 			<references>
-				<include name="System.dll" />
-				<include name="System.Xml.dll" />
 				<include name="${folders.lib}/NHibernate.dll" />
 				<include name="${folders.lib}/Bamboo.Prevalence.dll"/>
 				<include name="${folders.lib}/Bamboo.Prevalence.Util.dll"/>

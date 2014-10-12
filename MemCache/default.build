@@ -22,9 +22,6 @@
 				<include name="**/*.cs"/>
 			</sources>
 			<references>
-				<include name="System.dll" />
-				<include name="System.Configuration.dll" />
-				<include name="System.Xml.dll" />
 				<include name="${folders.lib}/NHibernate.dll" />
 				<include name="${folders.lib}/Memcached.ClientLibrary.dll"/>
 			</references>

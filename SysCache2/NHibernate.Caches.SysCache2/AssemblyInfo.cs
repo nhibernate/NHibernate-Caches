@@ -10,5 +10,5 @@ using System.Reflection;
 [assembly: AssemblyVersionAttribute("4.0.0.4000")]
 [assembly: AssemblyInformationalVersionAttribute("4.0.0.4000")]
 [assembly: AssemblyFileVersionAttribute("4.0.0.4000")]
-//[assembly: AssemblyKeyFileAttribute("../../src/NHibernate.snk")]
-//[assembly: AssemblyDelaySignAttribute(false)]
+[assembly: AssemblyKeyFileAttribute("../../NHibernate.Caches.snk")]
+[assembly: AssemblyDelaySignAttribute(false)]

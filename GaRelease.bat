@@ -1,1 +1,1 @@
-nant -D:project.config=release release
+Tools\NAnt\Bin\nant -D:project.config=release release

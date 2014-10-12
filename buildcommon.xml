@@ -18,7 +18,7 @@
 	-->
   <property name="lib.dir" value="lib" dynamic="true" />
   <property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
-  <if test="${nant-version.current != nant-version.beta1_086 or framework::get-target-framework() != 'net-3.5'}">
+  <if test="${nant-version.current != nant-version.beta1_086 or framework::get-target-framework() != 'net-4.0'}">
     <property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
   </if>
   <!-- 
@@ -26,7 +26,7 @@
 	-->
   <property name="project.company" value="nhforge.org" />
 
-  <property name="project.version" value="3.2.0.GA" overwrite="false" />
+  <property name="project.version" value="4.0.1.GA" overwrite="false" />
 
   <!-- Compute short project version (major.minor) using a regex -->
   <regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />

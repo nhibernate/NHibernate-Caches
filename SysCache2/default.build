@@ -20,11 +20,6 @@
 				<include name="**/*.cs"/>
 			</sources>
 			<references>
-				<include name="System.dll" />
-				<include name="System.Configuration.dll" />
-				<include name="System.Data.dll" />
-				<include name="System.Web.dll" />
-				<include name="System.Xml.dll" />
 				<include name="${folders.lib}/NHibernate.dll"/>
 			</references>
 		</csc>
