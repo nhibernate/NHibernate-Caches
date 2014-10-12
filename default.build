@@ -37,7 +37,7 @@
   <target name="bin-pack" depends="init build">
     <property name="bin-pack.tmpdir" value="${build.dir}/tmp-bin" />
 
-    <copy file="readme.txt" todir="${bin-pack.tmpdir}"/>
+    <copy file="readme.md" todir="${bin-pack.tmpdir}"/>
     <copy file="lgpl.txt" todir="${bin-pack.tmpdir}"/>
     <nant target="bin-pack">
       <buildfiles refid="buildfiles.all" />
