@@ -453,11 +453,19 @@ namespace NHibernate.Caches.SysCache2
 						}
 					}
 
-					var commandEnlister = new SqlCommandCacheDependencyEnlister(commandConfig.Command, commandConfig.IsStoredProcedure,
-					                                                            commandConfig.CommandTimeout, connectionName, 
-                                                                                connectionStringProvider);
+				    if (connectionStringProvider.IsCompatibleWithCommandCacheDependencies(connectionName))
+				    {
+				        var commandEnlister = new SqlCommandCacheDependencyEnlister(commandConfig.Command,
+				            commandConfig.IsStoredProcedure,
+				            commandConfig.CommandTimeout, connectionName,
+				            connectionStringProvider);
 
-					_dependencyEnlisters.Add(commandEnlister);
+				        _dependencyEnlisters.Add(commandEnlister);
+				    }
+				    else
+				    {
+				        log.Warn("provided connection string is not compatible with SQL Command Cache Dependencies - not enlisting.");
+				    }
 				}
 			}
 		}

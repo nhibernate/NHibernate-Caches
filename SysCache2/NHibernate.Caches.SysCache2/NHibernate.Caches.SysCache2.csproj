@@ -80,6 +80,7 @@
     <Compile Include="CommandCacheDependencyCollection.cs" />
     <Compile Include="CommandCacheDependencyElement.cs" />
     <Compile Include="ConfigConnectionStringProvider.cs" />
+    <Compile Include="ConnectionStringProviderExtensions.cs" />    
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="ICacheDependencyEnlister.cs" />
     <Compile Include="IConnectionStringProvider.cs" />

@@ -68,7 +68,7 @@ namespace NHibernate.Caches.SysCache2
             this.commandTimeout = commandTimeout;
 		    this.connectionName = connectionName;
 
-			connectionString = String.IsNullOrEmpty(this.connectionName) ? connectionStringProvider.GetConnectionString() : connectionStringProvider.GetConnectionString(this.connectionName);
+			connectionString = connectionStringProvider.GetConnectionStringFromName(this.connectionName);
 		}
 
 		#region ICacheDependencyEnlister Members
