@@ -300,7 +300,7 @@ namespace NHibernate.Caches.SysCache
 				cacheKey,
 				new DictionaryEntry(key, value),
 				new CacheDependency(null, new[] {rootCacheKey}),
-				DateTime.Now.Add(expiration),
+				DateTime.UtcNow.Add(expiration),
 				System.Web.Caching.Cache.NoSlidingExpiration,
 				priority,
 				null);
