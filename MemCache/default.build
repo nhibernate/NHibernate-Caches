@@ -51,8 +51,8 @@
 
   <target name="build-test" depends="build">
     <csc target="library"
-			 output="${folders.build}/NHibernate.Caches.MemCache.Tests.dll"
-		>
+       output="${folders.build}/NHibernate.Caches.MemCache.Tests.dll"
+       keyfile="${key.file}">
       <nowarn>
         <warning number="1591" />
         <!-- No XML comment for publicly visible member -->

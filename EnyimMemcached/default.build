@@ -10,8 +10,9 @@
 
   <target name="build" depends="init copy-reference">
 		<csc target="library"
-			 output="${folders.build}/NHibernate.Caches.EnyimMemcached.dll">
-      
+			 output="${folders.build}/NHibernate.Caches.EnyimMemcached.dll"
+			 keyfile="${key.file}">
+
 			<nowarn>
 				<warning number="1591" />
 				<!-- No XML comment for publicly visible member -->
