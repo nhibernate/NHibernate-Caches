@@ -1,5 +1,5 @@
 Documentation and examples are available at www.nhforge.org
-Any feedback or issue can be sent to NHibernate user group([http://groups.google.com/group/nhusers][userGroup]) and will be greatly anticipated. 
+Any feedback or issue can be sent to NHibernate user group([http://groups.google.com/group/nhusers][userGroup]) and will be greatly appreciated. 
 
 Up-to-date source code available at [**GitHub Website**][nhGithub]
 
@@ -12,7 +12,7 @@ Website:
 
 NHibernate is able to use external caching plugins to minimize the access to the database and improve the performance.
 The NHibernate Contrib contains several packages to work with different caching servers and frameworks. 
-It's recommended to research for a while before deciding which one is better for you, since some providers require installing adicional services 
+It's recommended to research for a while before deciding which one is better for you, since some providers require installing additional services 
 (which provides an awesome performance, but might be harder to install in some scenarios)
 
 
@@ -30,7 +30,7 @@ It's recommended to research for a while before deciding which one is better for
 
 #### Build 3.0.0.Alpha2 (rev1318 of contrib) for NHibernate 3.0.0Alpha2
 * Breaking changes
-    * All chache provider works with .NET3.5
+    * All cache provider works with .NET3.5
 
 ** Improvement
     * [NHCH-24] - Strong naming and signing assemblies
