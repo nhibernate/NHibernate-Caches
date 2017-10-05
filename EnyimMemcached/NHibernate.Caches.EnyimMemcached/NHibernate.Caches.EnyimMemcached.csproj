@@ -5,7 +5,7 @@
     <Product>NHibernate.Caches.EnyimMemcached</Product>
     <Description>Cache provider for NHibernate using MemCached with Enyim client.</Description>
 
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

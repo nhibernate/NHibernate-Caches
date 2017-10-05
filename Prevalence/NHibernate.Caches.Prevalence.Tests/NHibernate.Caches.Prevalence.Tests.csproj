@@ -5,7 +5,7 @@
     <Product>NHibernate.Caches.Prevalence</Product>
     <Description>Unit tests of cache provider for NHibernate using Bamboo.Prevalence engine.</Description>
 
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

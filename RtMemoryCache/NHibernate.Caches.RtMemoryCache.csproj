@@ -5,7 +5,7 @@
     <Product>NHibernate.Caches.RtMemoryCache</Product>
     <Description>Cache provider for NHibernate using MemoryCache.</Description>
 
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

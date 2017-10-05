@@ -5,7 +5,7 @@
     <Product>NHibernate.Caches.SharedCache</Product>
     <Description>Unit tests of cache provider for NHibernate using http://www.sharedcache.com</Description>
 
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

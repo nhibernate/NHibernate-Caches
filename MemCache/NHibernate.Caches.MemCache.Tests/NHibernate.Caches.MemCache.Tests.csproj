@@ -5,7 +5,7 @@
     <Product>NHibernate.Caches.MemCache</Product>
     <Description>Unit tests of cache provider for NHibernate using MemCached.</Description>
 
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>

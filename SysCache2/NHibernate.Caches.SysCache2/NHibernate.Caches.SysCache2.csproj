@@ -5,7 +5,7 @@
     <Product>NHibernate.Caches.SysCache2</Product>
     <Description>Cache provider for NHibernate using ASP.NET Cache object.</Description>
 
-    <TargetFramework>net40</TargetFramework>
+    <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
