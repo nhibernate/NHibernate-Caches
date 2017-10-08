@@ -12,80 +12,19 @@
   <!-- Nant 0.85 release version -->
   <property name="nant-version.beta1_086" value="0.86.2898.0" />
   <!-- Nant 0.86 Beta 1 -->
-  <!-- 
-		Path to the folder that contain the external assemblies.  For net-2.0 the values will
-		be lib, lib/net, and lib/net/2.0 respectively.
-	-->
+  <!--
+      Path to the folder that contain the external assemblies.  For net-2.0 the values will
+      be lib, lib/net, and lib/net/2.0 respectively.
+  -->
   <property name="lib.dir" value="lib" dynamic="true" />
   <property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
   <if test="${nant-version.current != nant-version.beta1_086 or framework::get-target-framework() != 'net-4.0'}">
     <property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
   </if>
-  <!-- 
-		These are used to set the correct attributes in AssemblyInfo.cs.  
-	-->
-  <property name="project.company" value="nhforge.org" />
 
-  <property name="project.version" value="4.0.1.GA" overwrite="false" />
-
-  <!-- Compute short project version (major.minor) using a regex -->
-  <regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
-  <property name="project.version.short" value="${shortversion}" />
-
-  <!-- Compute and set project.version.numeric from project.version if it hasn't been set already -->
-  <if test="${not property::exists('project.version.numeric')}">
-
-    <script language="C#">
-      <code>
-        <![CDATA[
-				public const int BaseAlpha = 1000;
-				public const int BaseBeta  = 2000;
-				public const int BaseCR    = 3000;
-				public const int BaseGA    = 4000;
-				// SP is same as GA because GA has no number and SP's start with 1.
-				public const int BaseSP    = 4000;
-
-				public static void ScriptMain(Project project)
-				{
-					project.Properties["project.version.numeric"] = ToNumericVersion(
-						project.Properties["project.version"]);
-				}
-
-				public static string ToNumericVersion(string version)
-				{
-					int qualifierStart = version.LastIndexOf('.') + 1;
-					int qualifierNumberStart = version.IndexOfAny(
-						"0123456789".ToCharArray(),
-						qualifierStart);
-
-					if (qualifierNumberStart < 0) qualifierNumberStart = version.Length;
-
-					string qualifier = version.Substring(qualifierStart, qualifierNumberStart - qualifierStart);
-					int qualifierNumber = qualifierNumberStart < version.Length
-						? int.Parse(version.Substring(qualifierNumberStart))
-						: 0;
-
-					int revisionBase;
-
-					switch (qualifier)
-					{
-						case "Alpha": revisionBase = BaseAlpha; break;
-						case "Beta":  revisionBase = BaseBeta; break;
-						case "CR":    revisionBase = BaseCR; break;
-						case "GA":    revisionBase = BaseGA; break;
-						case "SP":    revisionBase = BaseSP; break;
-
-						default: throw new BuildException("Unknown version qualifier " + qualifier);
-					}
-
-					string revisionNumber = (revisionBase + qualifierNumber).ToString();
-
-					return version.Substring(0, qualifierStart) + revisionNumber;
-				}
-			]]>
-      </code>
-    </script>
-  </if>
+  <!-- This is used only for build folder -->
+  <!-- TODO: Either remove or refactor to use NHibernate.props -->
+  <property name="project.version" value="5.0.0" overwrite="false" />
 
   <!-- named project configurations -->
   <target name="set-debug-project-configuration" description="Perform a 'debug' build">

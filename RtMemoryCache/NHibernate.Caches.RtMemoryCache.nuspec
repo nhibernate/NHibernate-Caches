@@ -9,10 +9,10 @@
     <projectUrl>https://github.com/nhibernate/NHibernate-Caches</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>$description$</description>
-    <copyright>Copyright 2014</copyright>
+    <copyright>Copyright 2017</copyright>
     <tags>nhibernate cache</tags>
     <dependencies>
-      <dependency id="NHibernate" version="4.0.1.4000" />
+      <dependency id="NHibernate" version="5.0.0" />
     </dependencies>
   </metadata>
 </package>
