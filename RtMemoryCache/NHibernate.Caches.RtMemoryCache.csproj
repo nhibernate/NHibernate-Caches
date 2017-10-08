@@ -6,7 +6,13 @@
     <Description>Cache provider for NHibernate using MemoryCache.</Description>
 
     <TargetFramework>net461</TargetFramework>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.1.4000" />

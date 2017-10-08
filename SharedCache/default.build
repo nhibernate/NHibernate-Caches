@@ -1,27 +1,12 @@
 <?xml version="1.0"?>
-<project name="NHibernate.Caches.SharedCache" default="build" description="NHibernate cache provider using the integrated ASP.NET cache"
-xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+<project
+    name="NHibernate.Caches.SharedCache"
+    default="common.compile-all"
+    description="NHibernate cache provider using the integrated ASP.NET cache"
+    xmlns="http://nant.sf.net/release/0.85/nant.xsd">
 
   <property name="root.dir" value=".." />
   <include buildfile="${root.dir}/buildcommon.xml" />
-
-  <target name="build" depends="init copy-reference">
-    <csc target="library"
-         output="${folders.build}/NHibernate.Caches.SharedCache.dll">
-      <nowarn>
-        <warning number="1591" />
-        <!-- No XML comment for publicly visible member -->
-      </nowarn>
-      <sources basedir="NHibernate.Caches.SharedCache">
-        <include name="**/*.cs" />
-      </sources>
-      <references>
-        <include name="${folders.lib}/NHibernate.dll" />
-        <include name="${folders.lib}/NLog.dll" />
-        <include name="${folders.lib}/MergeSystem.Indexus.WinServiceCommon.dll" />
-      </references>
-    </csc>
-	</target>
 
   <fileset id="SharedCache-required-assemblies">
     <include name="${folders.lib}/MergeSystem.Indexus.WinServiceCommon.dll" />
@@ -34,54 +19,30 @@ xmlns="http://nant.sf.net/release/0.85/nant.xsd">
     </copy>
   </target>
 
-  <target name="prepare-bin-pack-specific" depends="init build">
+  <target name="prepare-bin-pack-specific" depends="init copy-reference">
     <property name="bin-pack.project.name" value="SharedCache" />
   </target>
 
-  <target name="bin-pack" depends="init build prepare-bin-pack-specific bin-pack-common">
+  <target name="bin-pack" depends="init prepare-bin-pack-specific bin-pack-common">
     <copy todir="${bin-pack.project.deploy}" flatten="true">
       <fileset refid="SharedCache-required-assemblies" />
     </copy>
   </target>
 
-  <target name="build-test" depends="build">
-    <csc target="library" output="${folders.build}/NHibernate.Caches.SharedCache.Tests.dll">
-      <nowarn>
-        <warning number="1591" />
-        <!-- No XML comment for publicly visible member -->
-      </nowarn>
-      <sources basedir="NHibernate.Caches.SharedCache.Tests">
-        <include name="**/*.cs" />
-      </sources>
-      <references>
-        <include name="System.dll" />
-        <include name="System.Xml.dll" />
-        <include name="${folders.lib}/log4net.dll" />
-        <include name="${folders.lib}/NHibernate.dll" />
-        <include name="${folders.lib}/NLog.dll" />
-        <include name="${folders.lib}/MergeSystem.Indexus.WinServiceCommon.dll" />
-        <include name="${folders.lib}/nunit.framework.dll" />
-        <include name="${folders.build}/NHibernate.Caches.SharedCache.dll" />
-      </references>
-      <resources basedir="NHibernate.Caches.SharedCache.Tests" prefix="NHibernate.Caches.SharedCache.Tests" dynamicprefix="true">
-        <include name="**/*.hbm.xml" />
-        <exclude name="**/bin/**/*.hbm.xml" />
-        <exclude name="**/obj/**/*.hbm.xml" />
-      </resources>
-    </csc>
-    <copy file="NHibernate.Caches.SharedCache.Tests/App.config" 
-          tofile="${folders.build}/NHibernate.Caches.SharedCache.Tests.dll.config" 
+  <target name="copy-test-config">
+    <copy file="NHibernate.Caches.SharedCache.Tests/App.config"
+          tofile="${folders.build}/NHibernate.Caches.SharedCache.Tests.dll.config"
           if="${file::exists('NHibernate.Caches.SharedCache.Tests/App.config')}" />
   </target>
-  
-    <target name="test" depends="build-test">
-		<nunit2>
-			<formatter type="Xml" usefile="true" extension=".xml" />
-			<test assemblyname="${folders.build}/NHibernate.Caches.SharedCache.Tests.dll" />
-		</nunit2>
-	</target>
-  
-	<target name="clean">
-		<delete dir="${folders.build}" failonerror="false" />
-	</target>
+
+  <target name="test" depends="copy-test-config">
+    <nunit2>
+      <formatter type="Xml" usefile="true" extension=".xml" />
+      <test assemblyname="${folders.build}/NHibernate.Caches.SharedCache.Tests.dll" />
+    </nunit2>
+  </target>
+
+  <target name="clean">
+    <delete dir="${folders.build}" failonerror="false" />
+  </target>
 </project>

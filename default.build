@@ -1,7 +1,7 @@
-<project 
-	name="NHibernateCacheProviders" 
-	default="build"
-	xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+<project
+    name="NHibernateCacheProviders"
+    default="build"
+    xmlns="http://nant.sf.net/release/0.85/nant.xsd">
 
   <property name="root.dir" value="." />
   <include buildfile="${root.dir}/buildcommon.xml" />
@@ -16,25 +16,15 @@
     <include name="EnyimMemcached/default.build" />
     <include name="RtMemoryCache/default.build" />
   </fileset>
-  
-  <target name="build" depends="init"
-		description="Builds NHibernate in the current configuration">
-    <nant target="build">
-      <buildfiles refid="buildfiles.all" />
-    </nant>
+
+  <target name="build" depends="common.compile-all"
+          description="Builds NHibernate.Caches in the current configuration">
   </target>
-  
-  <target name="build-test"
-		description="Builds NHibernate in the current configuration">
-    <nant target="build-test">
-      <buildfiles refid="buildfiles.all" />
-    </nant>
-  </target>
-  
+
   <target name="clean" depends="set-project-configuration">
     <delete dir="${build.root.dir}" failonerror="false"/>
   </target>
-  
+
   <target name="bin-pack" depends="init build">
     <property name="bin-pack.tmpdir" value="${build.dir}/tmp-bin" />
 
@@ -54,7 +44,7 @@
   </target>
 
   <target name="release" depends="init build binaries-zip"
-		description="Creates files for the partial (Alpha-Beta-Candidate) Release on SourceForge">
+          description="Creates files for the partial (Alpha-Beta-Candidate) Release on SourceForge">
 
     <echo message="Created a '${project.config}' package in ${build.dir}" />
   </target>

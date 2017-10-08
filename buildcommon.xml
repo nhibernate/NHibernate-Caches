@@ -54,6 +54,7 @@
 
   <target name="init" depends="set-project-configuration">
     <property name="folders.build" value="${bin.dir}" />
+    <property name="tools.dir" value="${root.dir}/Tools" />
     <mkdir dir="${folders.build}"/>
   </target>
 
@@ -76,4 +77,17 @@
     <copy file="${folders.build}/NHibernate.Caches.${bin-pack.project.name}.dll" todir="${bin-pack.project.deploy}"/>
   </target>
 
+  <target name="common.compile-all" depends="init copy-common-reference">
+    <exec program="${path::combine(tools.dir, 'dotnet.cmd')}" verbose="true">
+      <arg value="${root.dir}/NHibernate.Caches.Everything.sln" />
+      <arg value="/p:OutputPath=&quot;${path::get-full-path(folders.build)}&quot;" />
+      <arg value="/p:Platform=&quot;Any CPU&quot;" />
+      <arg value="/p:Configuration=&quot;Debug&quot;" if="${build.debug == 'true'}" />
+      <arg value="/p:Configuration=&quot;Release&quot;" if="${build.release == 'true'}" />
+      <arg value="/t:Restore" />
+      <arg value="/t:Rebuild" />
+      <arg value="/v:q" />
+      <arg value="/m" />
+    </exec>
+  </target>
 </project>
