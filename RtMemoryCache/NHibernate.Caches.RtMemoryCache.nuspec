@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
-<package>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
   <metadata>
-    <id>$id$</id>
-    <version>$version$</version>
-    <title>$title$</title>
-    <authors>$author$</authors>
-    <owners>$author$</owners>
+    <id>NHibernate.Caches.RtMemoryCache</id>
+    <version>5.0.0</version>
+    <title>NHibernate.Caches.RtMemoryCache</title>
+    <authors>NHibernate.org</authors>
+    <owners>diegose</owners>
+    <licenseUrl>http://www.gnu.org/licenses/lgpl.html</licenseUrl>
     <projectUrl>https://github.com/nhibernate/NHibernate-Caches</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>$description$</description>
+    <description>Cache provider for NHibernate using MemoryCache.</description>
     <copyright>Copyright 2017</copyright>
     <tags>nhibernate cache</tags>
     <dependencies>
