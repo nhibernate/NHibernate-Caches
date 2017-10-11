@@ -25,6 +25,8 @@ using System.Collections;
 using System.Runtime.Caching;
 using NHibernate.Cache;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace NHibernate.Caches.RtMemoryCache
 {
@@ -285,14 +287,14 @@ namespace NHibernate.Caches.RtMemoryCache
 				StoreRootCacheKey();
 			}
 
-		    cache.Add(cacheKey, new DictionaryEntry(key, value),
-		              new CacheItemPolicy
-		                  {
-		                      AbsoluteExpiration = DateTime.Now.Add(expiration),
-		                      Priority = priority,
-		                      SlidingExpiration = ObjectCache.NoSlidingExpiration,
-		                      ChangeMonitors = {cache.CreateCacheEntryChangeMonitor(new[] {rootCacheKey})}
-		                  });
+			cache.Add(cacheKey, new DictionaryEntry(key, value),
+			          new CacheItemPolicy
+			          {
+			              AbsoluteExpiration = DateTime.Now.Add(expiration),
+			              Priority = priority,
+			              SlidingExpiration = ObjectCache.NoSlidingExpiration,
+			              ChangeMonitors = {cache.CreateCacheEntryChangeMonitor(new[] {rootCacheKey})}
+			          });
 		}
 
 		public void Remove(object key)
@@ -331,16 +333,16 @@ namespace NHibernate.Caches.RtMemoryCache
 		private void StoreRootCacheKey()
 		{
 			rootCacheKeyStored = true;
-		    cache.Add(
-		        rootCacheKey,
-		        rootCacheKey,
-		        new CacheItemPolicy
-		            {
-		                AbsoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration,
-		                SlidingExpiration = ObjectCache.NoSlidingExpiration,
-		                Priority = CacheItemPriority.Default,
-		                RemovedCallback = RootCacheItemRemoved
-		            });
+			cache.Add(
+				rootCacheKey,
+				rootCacheKey,
+				new CacheItemPolicy
+				{
+					AbsoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration,
+					SlidingExpiration = ObjectCache.NoSlidingExpiration,
+					Priority = CacheItemPriority.Default,
+					RemovedCallback = RootCacheItemRemoved
+				});
 		}
 
 		private void RemoveRootCacheKey()
@@ -377,5 +379,68 @@ namespace NHibernate.Caches.RtMemoryCache
 		{
 			get { return region; }
 		}
+
+		#region ICache async methods delegated to sync implementation
+
+		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return Task.FromResult(Get(key));
+		}
+
+		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Put(key, value);
+			return Task.CompletedTask;
+		}
+
+		public Task RemoveAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Remove(key);
+			return Task.CompletedTask;
+		}
+
+		public Task ClearAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Clear();
+			return Task.CompletedTask;
+		}
+
+		public Task LockAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Lock(key);
+			return Task.CompletedTask;
+		}
+
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Unlock(key);
+			return Task.CompletedTask;
+		}
+
+		#endregion
 	}
 }

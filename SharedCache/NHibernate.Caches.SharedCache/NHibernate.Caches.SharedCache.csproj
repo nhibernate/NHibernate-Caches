@@ -1,18 +1,14 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../NHibernate.Caches.props" />
-
   <PropertyGroup>
     <Product>NHibernate.Caches.SharedCache</Product>
     <Description>Cache provider for NHibernate using http://www.sharedcache.com</Description>
-
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.1.4000" />
-    <PackageReference Include="NHibernate" Version="4.0.1.4000" />
+    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
+    <PackageReference Include="NHibernate" Version="5.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="MergeSystem.Indexus.WinServiceCommon">
       <HintPath>..\..\Lib\net\4.0\MergeSystem.Indexus.WinServiceCommon.dll</HintPath>

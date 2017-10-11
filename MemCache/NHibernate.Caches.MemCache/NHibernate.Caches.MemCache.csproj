@@ -1,25 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../NHibernate.Caches.props" />
-
   <PropertyGroup>
     <Product>NHibernate.Caches.MemCache</Product>
     <Description>Cache provider for NHibernate using MemCached.</Description>
-
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
-
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
   </ItemGroup>
-
   <ItemGroup>
+    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
     <PackageReference Include="Memcached.ClientLibrary" Version="1.0" />
-    <PackageReference Include="Iesi.Collections" Version="4.0.1.4000" />
-    <PackageReference Include="NHibernate" Version="4.0.1.4000" />
+    <PackageReference Include="NHibernate" Version="5.0.0" />
   </ItemGroup>
-
   <ItemGroup>
     <Reference Include="System.Configuration" />
   </ItemGroup>

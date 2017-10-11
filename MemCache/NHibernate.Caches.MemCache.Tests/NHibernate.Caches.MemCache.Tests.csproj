@@ -1,22 +1,18 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../NHibernate.Caches.props" />
-
   <PropertyGroup>
     <Product>NHibernate.Caches.MemCache</Product>
     <Description>Unit tests of cache provider for NHibernate using MemCached.</Description>
-
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
+    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
     <PackageReference Include="Memcached.ClientLibrary" Version="1.0" />
-    <PackageReference Include="Iesi.Collections" Version="4.0.1.4000" />
     <PackageReference Include="log4net" Version="1.2.10" />
-    <PackageReference Include="NHibernate" Version="4.0.1.4000" />
+    <PackageReference Include="NHibernate" Version="5.0.0" />
     <PackageReference Include="NUnit" Version="2.6.3" />
   </ItemGroup>
-
-   <ItemGroup>
-     <ProjectReference Include="..\NHibernate.Caches.MemCache\NHibernate.Caches.MemCache.csproj" />
-   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.Caches.MemCache\NHibernate.Caches.MemCache.csproj" />
+  </ItemGroup>
 </Project>

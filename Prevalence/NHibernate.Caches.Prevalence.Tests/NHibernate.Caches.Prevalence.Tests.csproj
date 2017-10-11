@@ -1,30 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../NHibernate.Caches.props" />
-
   <PropertyGroup>
     <Product>NHibernate.Caches.Prevalence</Product>
     <Description>Unit tests of cache provider for NHibernate using Bamboo.Prevalence engine.</Description>
-
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.1.4000" />
+    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
     <PackageReference Include="log4net" Version="2.0.3" />
-    <PackageReference Include="NHibernate" Version="4.0.1.4000" />
+    <PackageReference Include="NHibernate" Version="5.0.0" />
     <PackageReference Include="NUnit" Version="2.6.3" />
   </ItemGroup>
-
-   <ItemGroup>
-     <ProjectReference Include="..\NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.csproj" />
-   </ItemGroup>
-
-   <ItemGroup>
-     <Reference Include="Bamboo.Prevalence">
-       <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.dll</HintPath>
-     </Reference>
-     <Reference Include="Bamboo.Prevalence.Util">
-       <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.Util.dll</HintPath>
-     </Reference>
-   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Bamboo.Prevalence">
+      <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.dll</HintPath>
+    </Reference>
+    <Reference Include="Bamboo.Prevalence.Util">
+      <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.Util.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>

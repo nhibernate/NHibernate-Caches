@@ -1,27 +1,22 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../NHibernate.Caches.props" />
-
   <PropertyGroup>
     <Product>NHibernate.Caches.SharedCache</Product>
     <Description>Unit tests of cache provider for NHibernate using http://www.sharedcache.com</Description>
-
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.1.4000" />
+    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
     <PackageReference Include="log4net" Version="2.0.3" />
-    <PackageReference Include="NHibernate" Version="4.0.1.4000" />
+    <PackageReference Include="NHibernate" Version="5.0.0" />
     <PackageReference Include="NUnit" Version="2.6.3" />
   </ItemGroup>
-
-   <ItemGroup>
-     <ProjectReference Include="..\NHibernate.Caches.SharedCache\NHibernate.Caches.SharedCache.csproj" />
-   </ItemGroup>
-
-   <ItemGroup>
-     <Reference Include="MergeSystem.Indexus.WinServiceCommon">
-       <HintPath>..\..\Lib\net\4.0\MergeSystem.Indexus.WinServiceCommon.dll</HintPath>
-     </Reference>
-   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.Caches.SharedCache\NHibernate.Caches.SharedCache.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="MergeSystem.Indexus.WinServiceCommon">
+      <HintPath>..\..\Lib\net\4.0\MergeSystem.Indexus.WinServiceCommon.dll</HintPath>
+    </Reference>
+  </ItemGroup>
 </Project>
