@@ -12,7 +12,7 @@ namespace NHibernate.Caches.EnyimMemcached.Tests
 		private Dictionary<string, string> props;
 		private ICacheProvider provider;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();
@@ -21,7 +21,7 @@ namespace NHibernate.Caches.EnyimMemcached.Tests
 			provider.Start(props);
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureStop()
 		{
 			provider.Stop();

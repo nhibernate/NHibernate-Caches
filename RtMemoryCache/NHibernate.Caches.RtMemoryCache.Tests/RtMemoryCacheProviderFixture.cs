@@ -44,7 +44,7 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		private RtMemoryCacheProvider provider;
 		private Dictionary<string, string> props;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			props = new Dictionary<string, string> {{"expiration", 120.ToString()}, {"priority", 2.ToString()}};

@@ -49,7 +49,7 @@ namespace NHibernate.Caches.Velocity.Tests
 		private VelocityProvider provider;
 		private Dictionary<string, string> props;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();
@@ -58,7 +58,7 @@ namespace NHibernate.Caches.Velocity.Tests
 			provider.Start(props);
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureStop()
 		{
 			provider.Stop();

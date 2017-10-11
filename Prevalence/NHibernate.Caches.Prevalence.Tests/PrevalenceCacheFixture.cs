@@ -36,7 +36,7 @@ namespace NHibernate.Caches.Prevalence.Tests
 		private PrevalenceCacheProvider provider;
 		private Dictionary<string, string> props;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();
@@ -45,7 +45,7 @@ namespace NHibernate.Caches.Prevalence.Tests
 			provider.Start(props);
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTeardown()
 		{
 			provider.Stop();

@@ -38,7 +38,7 @@ namespace NHibernate.Caches.SysCache2.Tests
 		private SysCacheProvider provider;
 		private Dictionary<string, string> props;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			props = new Dictionary<string, string> { { "expiration", 120.ToString() }, { "priority", 4.ToString() } };

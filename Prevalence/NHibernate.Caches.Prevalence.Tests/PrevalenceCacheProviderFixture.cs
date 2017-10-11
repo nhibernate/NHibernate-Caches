@@ -56,7 +56,7 @@ namespace NHibernate.Caches.Prevalence.Tests
 		private Dictionary<string, string> props;
 		private string testDir;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();

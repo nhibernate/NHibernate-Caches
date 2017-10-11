@@ -35,7 +35,7 @@ namespace NHibernate.Caches.SysCache2.Tests
 		public void TestGetConfig()
 		{
 			var section = SysCacheSection.GetSection();
-			Assert.That(section.CacheRegions.Count, Is.EqualTo(1), "Unexpected region count");
+			Assert.That(section.CacheRegions, Has.Count.EqualTo(1), "Unexpected region count");
 			var region = section.CacheRegions[0];
 			Assert.That(region.Name, Is.EqualTo("foo"), "Unexpected region name");
 			Assert.That(region.Priority, Is.EqualTo(CacheItemPriority.AboveNormal), "Unexpected region priority");

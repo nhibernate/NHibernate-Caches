@@ -38,7 +38,7 @@ namespace NHibernate.Caches.SharedCache.Tests
 		private SharedCacheProvider provider;
 		private Dictionary<string, string> props;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();
@@ -47,7 +47,7 @@ namespace NHibernate.Caches.SharedCache.Tests
 			provider.Start(props);
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureStop()
 		{
 			provider.Stop();
