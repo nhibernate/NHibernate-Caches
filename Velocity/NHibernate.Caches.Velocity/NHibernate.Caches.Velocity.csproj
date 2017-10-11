@@ -2,6 +2,7 @@
   <Import Project="../../NHibernate.Caches.props" />
   <PropertyGroup>
     <Product>NHibernate.Caches.Velocity</Product>
+    <Title>NHibernate.Caches.Velocity</Title>
     <Description>Cache provider for NHibernate using Velocity.</Description>
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
@@ -9,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+    <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.2" />
@@ -22,10 +24,5 @@
       <HintPath>..\..\Lib\net\4.0\ClientLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System.Configuration" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\default.build">
-      <Link>default.build</Link>
-    </Content>
   </ItemGroup>
 </Project>

@@ -45,4 +45,8 @@
   <target name="clean">
     <delete dir="${folders.build}" failonerror="false" />
   </target>
+
+  <target name="nuget-packages">
+    <!-- No NuGet packages are maintained for this cache. -->
+  </target>
 </project>

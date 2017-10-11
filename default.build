@@ -50,7 +50,19 @@
     </zip>
   </target>
 
-  <target name="release" depends="init build binaries-zip"
+  <target name="clean-nuget-packages" depends="init">
+    <delete dir="${nuget.nupackages.dir}" failonerror="false"/>
+  </target>
+
+  <target name="nuget-packages" depends="init common.nuget-restore common.solution-restore clean-nuget-packages"
+          description="Builds NHibernate.Caches NuGet packages in the current configuration">
+    <nant target="nuget-packages">
+      <buildfiles refid="buildfiles.all" />
+    </nant>
+    <call target="common.nuget-pushbat" />
+  </target>
+
+  <target name="release" depends="init build binaries-zip nuget-packages"
           description="Creates files for the partial (Alpha-Beta-Candidate) Release on SourceForge">
 
     <echo message="Created a '${project.config}' package in ${build.dir}" />

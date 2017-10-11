@@ -32,4 +32,9 @@
   <target name="clean">
     <delete dir="${folders.build}" failonerror="false"/>
   </target>
+
+  <target name="nuget-packages" depends="init">
+    <property name="nuget.package.project" value="NHibernate.Caches.SysCache2\NHibernate.Caches.SysCache2.csproj" />
+    <call target="common.nuget-package" />
+  </target>
 </project>

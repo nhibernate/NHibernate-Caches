@@ -2,6 +2,7 @@
   <Import Project="../../NHibernate.Caches.props" />
   <PropertyGroup>
     <Product>NHibernate.Caches.SharedCache</Product>
+    <Title>NHibernate.Caches.SharedCache</Title>
     <Description>Cache provider for NHibernate using http://www.sharedcache.com</Description>
     <TargetFramework>net461</TargetFramework>
   </PropertyGroup>
@@ -16,8 +17,6 @@
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="..\default.build">
-      <Link>default.build</Link>
-    </Content>
+    <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
 </Project>

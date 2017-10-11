@@ -2,6 +2,7 @@
   <Import Project="../../NHibernate.Caches.props" />
   <PropertyGroup>
     <Product>NHibernate.Caches.Prevalence</Product>
+    <Title>NHibernate.Caches.Prevalence</Title>
     <Description>Cache provider for NHibernate using Bamboo.Prevalence engine.</Description>
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
@@ -9,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+    <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.2" />
@@ -21,10 +23,5 @@
     <Reference Include="Bamboo.Prevalence.Util">
       <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.Util.dll</HintPath>
     </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\default.build">
-      <Link>default.build</Link>
-    </Content>
   </ItemGroup>
 </Project>

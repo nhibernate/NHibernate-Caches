@@ -11,5 +11,9 @@
 
     <Company>NHibernate.info</Company>
     <Copyright>Licensed under LGPL.</Copyright>
+    <Authors>NHibernate.org</Authors>
+    <PackageLicenseUrl>http://www.gnu.org/licenses/lgpl.html</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/nhibernate/NHibernate-Caches</PackageProjectUrl>
+    <PackageTags>nhibernate cache</PackageTags>
   </PropertyGroup>
 </Project>

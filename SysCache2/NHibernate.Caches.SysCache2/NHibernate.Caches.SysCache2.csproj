@@ -2,6 +2,7 @@
   <Import Project="../../NHibernate.Caches.props" />
   <PropertyGroup>
     <Product>NHibernate.Caches.SysCache2</Product>
+    <Title>NHibernate.Caches.SysCache2</Title>
     <Description>Cache provider for NHibernate using ASP.NET Cache object. Supports SqlCacheDependency, allowing SQL Server changes to invalidate the cache.</Description>
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
@@ -9,6 +10,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+    <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.2" />
@@ -17,10 +19,5 @@
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="..\default.build">
-      <Link>default.build</Link>
-    </Content>
   </ItemGroup>
 </Project>
