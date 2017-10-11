@@ -9,7 +9,7 @@
     <licenseUrl>http://www.gnu.org/licenses/lgpl.html</licenseUrl>
     <projectUrl>https://github.com/nhibernate/NHibernate-Caches</projectUrl>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Cache provider for NHibernate using ASP.NET Cache object.</description>
+    <description>Cache provider for NHibernate using ASP.NET Cache object. Supports SqlCacheDependency, allowing SQL Server changes to invalidate the cache.</description>
     <copyright>Copyright 2017</copyright>
     <tags>nhibernate cache</tags>
     <dependencies>

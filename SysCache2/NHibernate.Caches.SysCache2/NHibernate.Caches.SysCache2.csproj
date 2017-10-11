@@ -2,7 +2,7 @@
   <Import Project="../../NHibernate.Caches.props" />
   <PropertyGroup>
     <Product>NHibernate.Caches.SysCache2</Product>
-    <Description>Cache provider for NHibernate using ASP.NET Cache object.</Description>
+    <Description>Cache provider for NHibernate using ASP.NET Cache object. Supports SqlCacheDependency, allowing SQL Server changes to invalidate the cache.</Description>
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
