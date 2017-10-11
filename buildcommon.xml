@@ -55,7 +55,9 @@
   <target name="init" depends="set-project-configuration">
     <property name="folders.build" value="${bin.dir}" />
     <property name="tools.dir" value="${root.dir}/Tools" />
+    <property name="testresults.dir" value="${folders.build}/test-results" />
     <mkdir dir="${folders.build}"/>
+    <mkdir dir="${testresults.dir}"/>
   </target>
   
   <target name="bin-pack-common">
@@ -100,4 +102,31 @@
       <arg value="${root.dir}/NHibernate.Caches.Everything.sln" />
     </exec>
   </target>
+
+  <target name="common.get-nuget-package-path">
+    <xmlpeek
+      file="${tools.dir}/packages.config"
+      xpath="/packages/package[@id = '${nuget-package-id}']/@version"
+      property="nuget-package-version" />
+    <property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
+  </target>
+
+  <target name="common.find-nunit">
+    <property name="nuget-package-id" value="NUnit.ConsoleRunner" />
+    <call target="common.get-nuget-package-path" />
+    <property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
+  </target>
+
+  <target name="common.run-tests"
+          description="Run NUnit tests">
+    <call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
+    <property name="common.run-tests.failonerror" value="${not property::exists(test.file + '.IgnoreFail')}"/>
+    <property name="common.run-tests.x86" value="--x86" unless="${property::exists('nunit-x64')}" />
+    <property name="common.run-tests.x86" value="" if="${property::exists('nunit-x64')}" />
+    <exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
+      <arg line="${folders.build}/${test.file}.dll --result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2 --framework=${framework::get-target-framework()} ${common.run-tests.x86}" />
+    </exec>
+
+  </target>
+
 </project>

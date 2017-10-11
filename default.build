@@ -21,6 +21,13 @@
           description="Builds NHibernate.Caches in the current configuration">
   </target>
 
+  <target name="test" depends="common.compile-all"
+          description="Builds NHibernate.Caches in the current configuration and test it">
+    <nant target="test">
+      <buildfiles refid="buildfiles.all" />
+    </nant>
+  </target>
+
   <target name="clean" depends="set-project-configuration">
     <delete dir="${build.root.dir}" failonerror="false"/>
   </target>

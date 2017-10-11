@@ -29,17 +29,17 @@
     </copy>
   </target>
 
-  <target name="copy-test-config">
+  <target name="copy-test-config" depends="init">
     <copy file="NHibernate.Caches.SharedCache.Tests/App.config"
           tofile="${folders.build}/NHibernate.Caches.SharedCache.Tests.dll.config"
           if="${file::exists('NHibernate.Caches.SharedCache.Tests/App.config')}" />
   </target>
 
   <target name="test" depends="copy-test-config">
-    <nunit2>
-      <formatter type="Xml" usefile="true" extension=".xml" />
-      <test assemblyname="${folders.build}/NHibernate.Caches.SharedCache.Tests.dll" />
-    </nunit2>
+    <property name="test.file" value="NHibernate.Caches.SharedCache.Tests" />
+    <!-- Requires a SharedCache instance -->
+    <property name="NHibernate.Caches.SharedCache.Tests.IgnoreFail" value="true" />
+    <call target="common.run-tests" />
   </target>
 
   <target name="clean">

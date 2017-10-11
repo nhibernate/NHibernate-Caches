@@ -32,17 +32,17 @@
     </copy>
   </target>
 
-  <target name="copy-test-config">
+  <target name="copy-test-config" depends="init">
     <copy file="NHibernate.Caches.Velocity.Tests/App.config"
           tofile="${folders.build}/NHibernate.Caches.Velocity.Tests.dll.config"
           if="${file::exists('NHibernate.Caches.Velocity.Tests/App.config')}" />
   </target>
 
   <target name="test" depends="copy-test-config">
-    <nunit2>
-      <formatter type="Xml" usefile="true" extension=".xml" />
-      <test assemblyname="${folders.build}/NHibernate.Caches.Velocity.Tests.dll"/>
-    </nunit2>
+    <property name="test.file" value="NHibernate.Caches.Velocity.Tests" />
+    <!-- Requires a Velocity instance -->
+    <property name="NHibernate.Caches.Velocity.Tests.IgnoreFail" value="true" />
+    <call target="common.run-tests" />
   </target>
 
   <target name="clean">
