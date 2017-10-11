@@ -22,6 +22,7 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 using log4net.Config;
@@ -46,7 +47,7 @@ namespace NHibernate.Caches.Prevalence.Tests
 		{
 			if (Directory.Exists(testDir))
 			{
-				Directory.Delete(testDir);
+				Directory.Delete(testDir, true);
 			}
 		}
 
@@ -61,7 +62,7 @@ namespace NHibernate.Caches.Prevalence.Tests
 		{
 			XmlConfigurator.Configure();
 			props = new Dictionary<string, string>();
-			testDir = @"C:\temp\prevalence";
+			testDir = Path.Combine(Path.GetDirectoryName(typeof(PrevalenceCacheFixture).Assembly.Location), "CacheStorage");
 			props.Add("prevalenceBase", testDir);
 		}
 
@@ -84,8 +85,18 @@ namespace NHibernate.Caches.Prevalence.Tests
 		[Test]
 		public void TestBuildCacheStringNull()
 		{
-			ICache cache = provider.BuildCache("a_region", null);
-			Assert.IsNotNull(cache, "no cache returned");
+			var backupCurrentDir = Directory.GetCurrentDirectory();
+			Directory.CreateDirectory(testDir);
+			Directory.SetCurrentDirectory(testDir);
+			try
+			{
+				ICache cache = provider.BuildCache("a_region", null);
+				Assert.IsNotNull(cache, "no cache returned");
+			}
+			finally
+			{
+				Directory.SetCurrentDirectory(backupCurrentDir);
+			}
 		}
 
 		[Test]
