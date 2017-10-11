@@ -18,4 +18,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\default.build">
+      <Link>default.build</Link>
+    </Content>
+  </ItemGroup>
 </Project>

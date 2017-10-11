@@ -13,7 +13,7 @@
     <include name="${folders.lib}/NLog.dll" />
   </fileset>
 
-  <target name="copy-reference" depends="init copy-common-reference">
+  <target name="copy-reference" depends="init">
     <copy todir="${folders.build}" flatten="true">
       <fileset refid="SharedCache-required-assemblies" />
     </copy>

@@ -8,7 +8,7 @@
   <property name="root.dir" value=".." />
   <include buildfile="${root.dir}/buildcommon.xml" />
 
-  <target name="copy-reference" depends="init copy-common-reference">
+  <target name="copy-reference" depends="init">
   </target>
 
   <target name="prepare-bin-pack-specific" depends="init copy-reference">

@@ -14,7 +14,7 @@
     <include name="${folders.lib}/ICSharpCode.SharpZipLib.dll"/>
   </fileset>
 
-  <target name="copy-reference" depends="init copy-common-reference">
+  <target name="copy-reference" depends="init">
     <copy todir="${folders.build}" flatten="true">
       <fileset refid="MemCache-required-assemblies" />
     </copy>

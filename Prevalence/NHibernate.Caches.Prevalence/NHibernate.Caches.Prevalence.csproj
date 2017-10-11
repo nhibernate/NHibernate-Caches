@@ -22,4 +22,9 @@
       <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.Util.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\default.build">
+      <Link>default.build</Link>
+    </Content>
+  </ItemGroup>
 </Project>

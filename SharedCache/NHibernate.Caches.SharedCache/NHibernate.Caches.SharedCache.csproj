@@ -15,4 +15,9 @@
     </Reference>
     <Reference Include="System.Configuration" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\default.build">
+      <Link>default.build</Link>
+    </Content>
+  </ItemGroup>
 </Project>
