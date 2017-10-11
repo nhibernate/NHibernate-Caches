@@ -12,7 +12,7 @@
     <PackageReference Include="NUnit" Version="2.6.3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\NHibernate.Caches.RtMemoryCache.csproj" />
+    <ProjectReference Include="..\NHibernate.Caches.RtMemoryCache\NHibernate.Caches.RtMemoryCache.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Runtime.Caching" />

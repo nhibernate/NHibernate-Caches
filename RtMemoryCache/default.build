@@ -19,9 +19,9 @@
   </target>
 
   <target name="copy-test-config">
-    <copy file="RtMemoryCache.Tests/App.config"
+    <copy file="NHibernate.Caches.RtMemoryCache.Tests/App.config"
           tofile="${folders.build}/NHibernate.Caches.RtMemoryCache.Tests.dll.config"
-          if="${file::exists('RtMemoryCache.Tests/App.config')}" />
+          if="${file::exists('NHibernate.Caches.RtMemoryCache.Tests/App.config')}" />
   </target>
 
   <target name="test" depends="copy-test-config">
