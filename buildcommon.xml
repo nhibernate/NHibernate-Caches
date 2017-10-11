@@ -129,4 +129,10 @@
 
   </target>
 
+  <target name="common.find-async-generator-console">
+    <property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
+    <call target="common.get-nuget-package-path" />
+    <property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
+  </target>
+
 </project>

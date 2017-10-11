@@ -7,6 +7,7 @@ using NUnit.Framework;
 
 namespace NHibernate.Caches.EnyimMemcached.Tests
 {
+	[TestFixture]
 	public class MemCacheFixture
 	{
 		private Dictionary<string, string> props;
