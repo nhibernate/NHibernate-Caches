@@ -67,7 +67,7 @@ namespace NHibernate.Caches.SysCache2
 			//build the cache from preconfigured values if the region has configuration values
 			if (cacheRegionSettingsList != null)
 			{
-				CacheRegionElement regionSettings = cacheRegionSettingsList[regionName];
+				CacheRegionElement regionSettings = regionName == null ? null : cacheRegionSettingsList[regionName];
 
 				if (regionSettings != null)
 				{

@@ -25,7 +25,10 @@
   </target>
 
   <target name="test" depends="copy-test-config">
-    <echo message="This project hasn't tests yet. This target exists for convention with the root default.build" />
+    <nunit2>
+      <formatter type="Xml" usefile="true" extension=".xml" />
+      <test assemblyname="${folders.build}/NHibernate.Caches.SysCache2.Tests.dll" />
+    </nunit2>
   </target>
 
   <target name="clean">
