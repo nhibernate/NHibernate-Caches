@@ -23,67 +23,32 @@
 
 #endregion
 
+using System;
 using System.Collections.Generic;
 using log4net.Config;
 using NHibernate.Cache;
+using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.SharedCache.Tests
 {
 	[TestFixture]
-	public class SharedCacheProviderFixture
+	public class SharedCacheProviderFixture : CacheProviderFixture
 	{
-		private ICacheProvider provider;
-		private Dictionary<string, string> props;
-
-		[OneTimeSetUp]
-		public void FixtureSetup()
+		protected override void Configure(Dictionary<string, string> defaultProperties)
 		{
 			XmlConfigurator.Configure();
-			props = new Dictionary<string, string>();
-			provider = new SharedCacheProvider();
-			provider.Start(props);
+			base.Configure(defaultProperties);
 		}
 
-		[OneTimeTearDown]
-		public void Stop()
-		{
-			provider.Stop();
-		}
+		protected override Func<ICacheProvider> ProviderBuilder =>
+			() => new SharedCacheProvider();
 
 		[Test]
 		public void TestBuildCacheFromConfig()
 		{
-			ICache cache = provider.BuildCache("foo", null);
-			Assert.IsNotNull(cache, "pre-configured cache not found");
-		}
-
-		[Test]
-		public void TestBuildCacheNullNull()
-		{
-			ICache cache = provider.BuildCache(null, null);
-			Assert.IsNotNull(cache, "no cache returned");
-		}
-
-		[Test]
-		public void TestBuildCacheStringICollection()
-		{
-			ICache cache = provider.BuildCache("another_region", props);
-			Assert.IsNotNull(cache, "no cache returned");
-		}
-
-		[Test]
-		public void TestBuildCacheStringNull()
-		{
-			ICache cache = provider.BuildCache("a_region", null);
-			Assert.IsNotNull(cache, "no cache returned");
-		}
-
-		[Test]
-		public void TestNextTimestamp()
-		{
-			long ts = provider.NextTimestamp();
-			Assert.IsNotNull(ts, "no timestamp returned");
+			var cache = DefaultProvider.BuildCache("foo", null);
+			Assert.That(cache, Is.Not.Null, "pre-configured cache not found");
 		}
 	}
 }

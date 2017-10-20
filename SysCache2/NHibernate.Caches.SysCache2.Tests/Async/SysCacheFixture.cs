@@ -35,214 +35,57 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using System.Web;
+using log4net.Config;
 using NHibernate.Cache;
+using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.SysCache2.Tests
 {
 	using System.Threading.Tasks;
-	[TestFixture]
-	public class SysCacheFixtureAsync
+	using System.Threading;
+	public partial class SysCacheFixture : CacheFixture
 	{
-		private SysCacheProvider provider;
-		private Dictionary<string, string> props;
-
-		[OneTimeSetUp]
-		public void FixtureSetup()
-		{
-			props = new Dictionary<string, string> { { "expiration", 120.ToString() }, { "priority", 4.ToString() } };
-			provider = new SysCacheProvider();
-		}
-
-		[Test]
-		public async Task TestPutAsync()
-		{
-			const string key = "key1";
-			const string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			Assert.IsNull(await (cache.GetAsync(key, CancellationToken.None)), "cache returned an item we didn't add !?!");
-
-			await (cache.PutAsync(key, value, CancellationToken.None));
-			object item = await (cache.GetAsync(key, CancellationToken.None));
-			Assert.IsNotNull(item);
-			Assert.AreEqual(value, item, "didn't return the item we added");
-		}
-
-		[Test]
-		public async Task TestRemoveAsync()
-		{
-			const string key = "key1";
-			const string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			// add the item
-			await (cache.PutAsync(key, value, CancellationToken.None));
-
-			// make sure it's there
-			object item = await (cache.GetAsync(key, CancellationToken.None));
-			Assert.IsNotNull(item, "item just added is not there");
-
-			// remove it
-			await (cache.RemoveAsync(key, CancellationToken.None));
-
-			// make sure it's not there
-			item = await (cache.GetAsync(key, CancellationToken.None));
-			Assert.IsNull(item, "item still exists in cache");
-		}
-
-		[Test]
-		public async Task TestClearAsync()
-		{
-			const string key = "key1";
-			const string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			// add the item
-			await (cache.PutAsync(key, value, CancellationToken.None));
-
-			// make sure it's there
-			object item = await (cache.GetAsync(key, CancellationToken.None));
-			Assert.IsNotNull(item, "couldn't find item in cache");
-
-			// clear the cache
-			await (cache.ClearAsync(CancellationToken.None));
-
-			// make sure we don't get an item
-			item = await (cache.GetAsync(key, CancellationToken.None));
-			Assert.IsNull(item, "item still exists in cache");
-		}
-
-		[Test]
-		public void TestNullKeyPutAsync()
-		{
-			ICache cache = new SysCacheRegion();
-			Assert.ThrowsAsync<ArgumentNullException>(() => cache.PutAsync(null, null, CancellationToken.None));
-		}
-
-		[Test]
-		public void TestNullValuePutAsync()
-		{
-			ICache cache = new SysCacheRegion();
-			Assert.ThrowsAsync<ArgumentNullException>(() => cache.PutAsync("nunit", null, CancellationToken.None));
-		}
-
-		[Test]
-		public async Task TestNullKeyGetAsync()
-		{
-			ICache cache = new SysCacheRegion();
-			await (cache.PutAsync("nunit", "value", CancellationToken.None));
-			object item = await (cache.GetAsync(null, CancellationToken.None));
-			Assert.IsNull(item);
-		}
-
-		[Test]
-		public void TestNullKeyRemoveAsync()
-		{
-			ICache cache = new SysCacheRegion();
-			Assert.ThrowsAsync<ArgumentNullException>(() => cache.RemoveAsync(null, CancellationToken.None));
-		}
-
-		[Test]
-		public async Task TestRegionsAsync()
-		{
-			const string key = "key";
-			ICache cache1 = provider.BuildCache("nunit1", props);
-			ICache cache2 = provider.BuildCache("nunit2", props);
-			const string s1 = "test1";
-			const string s2 = "test2";
-			await (cache1.PutAsync(key, s1, CancellationToken.None));
-			await (cache2.PutAsync(key, s2, CancellationToken.None));
-			object get1 = await (cache1.GetAsync(key, CancellationToken.None));
-			object get2 = await (cache2.GetAsync(key, CancellationToken.None));
-			Assert.IsFalse(get1 == get2);
-		}
-
-		private class SomeObject
-		{
-			public int Id;
-
-			public override int GetHashCode()
-			{
-				return 1;
-			}
-
-			public override string ToString()
-			{
-				return "TestObject";
-			}
-
-			public override bool Equals(object obj)
-			{
-				var other = obj as SomeObject;
-
-				return other?.Id == Id;
-			}
-		}
-
-		[Test]
-		public async Task TestNonEqualObjectsWithEqualHashCodeAndToStringAsync()
-		{
-			var obj1 = new SomeObject();
-			var obj2 = new SomeObject();
-
-			obj1.Id = 1;
-			obj2.Id = 2;
-
-			ICache cache = provider.BuildCache("nunit", props);
-
-			Assert.IsNull(await (cache.GetAsync(obj2, CancellationToken.None)));
-			await (cache.PutAsync(obj1, obj1, CancellationToken.None));
-			Assert.AreEqual(obj1, await (cache.GetAsync(obj1, CancellationToken.None)));
-			Assert.IsNull(await (cache.GetAsync(obj2, CancellationToken.None)));
-		}
 
 		[Test]
 		public async Task TestAfterClearCanPutAsync()
 		{
-			const string key = "key1";
+			const string key = "keyTestAfterClearCanPut";
 			const string value = "value";
 
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
+			var cache = GetDefaultCache();
+			Assert.That(cache, Is.Not.Null, "no cache returned");
 
 			// add the item
 			await (cache.PutAsync(key, value, CancellationToken.None));
 
-			Assert.IsTrue(HttpRuntime.Cache.Count > 0, "cache is empty");
+			Assert.That(HttpRuntime.Cache.Count, Is.GreaterThan(0), "cache is empty");
 
 			// clear the System.Web.HttpRuntime.Cache
-			IList keys = new ArrayList();
+			var keys = new List<string>();
 
 			foreach (DictionaryEntry entry in HttpRuntime.Cache)
 			{
 				keys.Add(entry.Key.ToString());
 			}
 
-			foreach (string cachekey in keys)
+			foreach (var cachekey in keys)
 			{
 				HttpRuntime.Cache.Remove(cachekey);
 			}
 
-			Assert.AreEqual(0, HttpRuntime.Cache.Count, "cache isn't empty");
+			Assert.That(HttpRuntime.Cache.Count, Is.EqualTo(0), "cache isn't empty");
 
 			// make sure we don't get an item
 			object item = await (cache.GetAsync(key, CancellationToken.None));
-			Assert.IsNull(item, "item still exists in cache");
+			Assert.That(item, Is.Null, "item still exists in cache");
 
 			// add the item again
 			await (cache.PutAsync(key, value, CancellationToken.None));
 
 			item = await (cache.GetAsync(key, CancellationToken.None));
-			Assert.IsNotNull(item, "couldn't find item in cache");
+			Assert.That(item, Is.Not.Null, "couldn't find item in cache");
 		}
 	}
 }

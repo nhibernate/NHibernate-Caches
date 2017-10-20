@@ -1,16 +1,16 @@
 ﻿projects:
-- filePath: EnyimMemcached\NHibernate.Caches.EnyimMemcached.Tests\NHibernate.Caches.EnyimMemcached.Tests.csproj
+- filePath: NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj
   concurrentRun: true
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: SetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
@@ -22,9 +22,49 @@
     typeConversion:
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
-    - conversion: NewType
+    - conversion: Partial
       hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
+    - conversion: Partial
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: EnyimMemcached\NHibernate.Caches.EnyimMemcached.Tests\NHibernate.Caches.EnyimMemcached.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Ignore
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Ignore
+      hasAttributeName: SetUpAttribute
+    - conversion: Ignore
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: Partial
+      hasAttributeName: TestFixtureAttribute
+    - conversion: Partial
       anyBaseTypeRule: HasTestFixtureAttribute
     ignoreSearchForMethodReferences:
     - hasAttributeName: TheoryAttribute
@@ -44,13 +84,13 @@
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: SetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
@@ -62,9 +102,9 @@
     typeConversion:
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
-    - conversion: NewType
+    - conversion: Partial
       hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
+    - conversion: Partial
       anyBaseTypeRule: HasTestFixtureAttribute
     ignoreSearchForMethodReferences:
     - hasAttributeName: TheoryAttribute
@@ -84,13 +124,13 @@
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: SetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
@@ -102,9 +142,9 @@
     typeConversion:
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
-    - conversion: NewType
+    - conversion: Partial
       hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
+    - conversion: Partial
       anyBaseTypeRule: HasTestFixtureAttribute
     ignoreSearchForMethodReferences:
     - hasAttributeName: TheoryAttribute
@@ -124,13 +164,13 @@
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: SetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
@@ -142,9 +182,9 @@
     typeConversion:
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
-    - conversion: NewType
+    - conversion: Partial
       hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
+    - conversion: Partial
       anyBaseTypeRule: HasTestFixtureAttribute
     ignoreSearchForMethodReferences:
     - hasAttributeName: TheoryAttribute
@@ -164,13 +204,13 @@
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: SetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
@@ -182,9 +222,9 @@
     typeConversion:
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
-    - conversion: NewType
+    - conversion: Partial
       hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
+    - conversion: Partial
       anyBaseTypeRule: HasTestFixtureAttribute
     ignoreSearchForMethodReferences:
     - hasAttributeName: TheoryAttribute
@@ -204,13 +244,13 @@
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: SetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
@@ -222,9 +262,9 @@
     typeConversion:
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
-    - conversion: NewType
+    - conversion: Partial
       hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
+    - conversion: Partial
       anyBaseTypeRule: HasTestFixtureAttribute
     ignoreSearchForMethodReferences:
     - hasAttributeName: TheoryAttribute
@@ -244,13 +284,13 @@
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: SetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
@@ -262,9 +302,9 @@
     typeConversion:
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
-    - conversion: NewType
+    - conversion: Partial
       hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
+    - conversion: Partial
       anyBaseTypeRule: HasTestFixtureAttribute
     ignoreSearchForMethodReferences:
     - hasAttributeName: TheoryAttribute
@@ -284,13 +324,13 @@
   applyChanges: true
   analyzation:
     methodConversion:
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeSetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: OneTimeTearDownAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: SetUpAttribute
-    - conversion: Copy
+    - conversion: Ignore
       hasAttributeName: TearDownAttribute
     - conversion: Smart
       hasAttributeName: TestAttribute
@@ -302,9 +342,9 @@
     typeConversion:
     - conversion: Ignore
       hasAttributeName: IgnoreAttribute
-    - conversion: NewType
+    - conversion: Partial
       hasAttributeName: TestFixtureAttribute
-    - conversion: NewType
+    - conversion: Partial
       anyBaseTypeRule: HasTestFixtureAttribute
     ignoreSearchForMethodReferences:
     - hasAttributeName: TheoryAttribute

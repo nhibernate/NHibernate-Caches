@@ -53,10 +53,10 @@ namespace NHibernate.Caches.MemCache.Tests
 		public void TestGetConfigFromFile()
 		{
 			object result = handler.Create(null, null, section);
-			Assert.IsNotNull(result);
+			Assert.That(result, Is.Not.Null);
 			Assert.IsTrue(result is MemCacheConfig[]);
 			var caches = result as MemCacheConfig[];
-			Assert.AreEqual(1, caches.Length);
+			Assert.That(caches.Length, Is.EqualTo(1));
 		}
 
 		[Test]
@@ -64,10 +64,10 @@ namespace NHibernate.Caches.MemCache.Tests
 		{
 			section = new XmlDocument();
 			object result = handler.Create(null, null, section);
-			Assert.IsNotNull(result);
+			Assert.That(result, Is.Not.Null);
 			Assert.IsTrue(result is MemCacheConfig[]);
 			var caches = result as MemCacheConfig[];
-			Assert.AreEqual(0, caches.Length);
+			Assert.That(caches.Length, Is.EqualTo(0));
 		}
 	}
 }
