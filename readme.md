@@ -18,6 +18,8 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.0.0 for NHibernate 5.0.0
+
 #### Build 4.0.1GA for NHibernate 4.0.1GA
 
 #### Build 3.0.0.GA (rev1442 of contrib) for NHibernate 3.0.0CR1
