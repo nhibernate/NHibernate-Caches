@@ -1,0 +1,23 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../NHibernate.Caches.props" />
+  <PropertyGroup>
+    <Product>NHibernate.Caches.RtMemoryCache</Product>
+    <Title>NHibernate.Caches.RtMemoryCache</Title>
+    <Description>Cache provider for NHibernate using MemoryCache.</Description>
+    <TargetFramework>net461</TargetFramework>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+    <None Include="..\default.build" Link="default.build" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
+    <PackageReference Include="NHibernate" Version="5.0.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+</Project>

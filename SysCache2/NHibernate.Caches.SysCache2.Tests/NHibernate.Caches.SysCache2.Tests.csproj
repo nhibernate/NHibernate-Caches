@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../NHibernate.Caches.props" />
+  <PropertyGroup>
+    <Product>NHibernate.Caches.SysCache2</Product>
+    <Description>Unit tests of cache provider for NHibernate using ASP.NET Cache object.</Description>
+    <TargetFramework>net461</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
+    <PackageReference Include="log4net" Version="2.0.3" />
+    <PackageReference Include="NHibernate" Version="5.0.0" />
+    <PackageReference Include="NUnit" Version="3.8.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\NHibernate.Caches.SysCache2\NHibernate.Caches.SysCache2.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Web" />
+  </ItemGroup>
+</Project>

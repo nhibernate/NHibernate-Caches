@@ -12,6 +12,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		buildcommon.xml = buildcommon.xml
 		NHibernate.Caches.snk = NHibernate.Caches.snk
 		readme.md = readme.md
+		NHibernate.Caches.props = NHibernate.Caches.props
+		default.build = default.build
+		AsyncGenerator.yml = AsyncGenerator.yml
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache", "SysCache\NHibernate.Caches.SysCache\NHibernate.Caches.SysCache.csproj", "{2D48853D-7F90-4E1F-BE98-035CAB2D4F1F}"
@@ -39,6 +42,12 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.EnyimMemcached", "EnyimMemcached\NHibernate.Caches.EnyimMemcached\NHibernate.Caches.EnyimMemcached.csproj", "{8B477613-1694-4467-A351-E43349D14527}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.EnyimMemcached.Tests", "EnyimMemcached\NHibernate.Caches.EnyimMemcached.Tests\NHibernate.Caches.EnyimMemcached.Tests.csproj", "{49F3BCBF-924F-4CFD-A5F7-4C8C4F8FC319}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache2.Tests", "SysCache2\NHibernate.Caches.SysCache2.Tests\NHibernate.Caches.SysCache2.Tests.csproj", "{F56E6488-DE96-4D1A-9913-D36CBC16E945}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.RtMemoryCache", "RtMemoryCache\NHibernate.Caches.RtMemoryCache\NHibernate.Caches.RtMemoryCache.csproj", "{C0295AB5-00FB-4B45-82F6-2060080D01F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.RtMemoryCache.Tests", "RtMemoryCache\NHibernate.Caches.RtMemoryCache.Tests\NHibernate.Caches.RtMemoryCache.Tests.csproj", "{0B67ADE8-929E-46D2-A4E6-C0D621378EAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -98,6 +107,18 @@ Global
 		{49F3BCBF-924F-4CFD-A5F7-4C8C4F8FC319}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{49F3BCBF-924F-4CFD-A5F7-4C8C4F8FC319}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{49F3BCBF-924F-4CFD-A5F7-4C8C4F8FC319}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F56E6488-DE96-4D1A-9913-D36CBC16E945}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F56E6488-DE96-4D1A-9913-D36CBC16E945}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F56E6488-DE96-4D1A-9913-D36CBC16E945}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F56E6488-DE96-4D1A-9913-D36CBC16E945}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0295AB5-00FB-4B45-82F6-2060080D01F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0295AB5-00FB-4B45-82F6-2060080D01F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0295AB5-00FB-4B45-82F6-2060080D01F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0295AB5-00FB-4B45-82F6-2060080D01F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0B67ADE8-929E-46D2-A4E6-C0D621378EAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0B67ADE8-929E-46D2-A4E6-C0D621378EAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0B67ADE8-929E-46D2-A4E6-C0D621378EAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0B67ADE8-929E-46D2-A4E6-C0D621378EAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -116,5 +137,8 @@ Global
 		{CA4F0A59-844B-4717-8F3B-6F53DC0F0B2E} = {55271617-8CB8-4225-B338-069033160497}
 		{8B477613-1694-4467-A351-E43349D14527} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
 		{49F3BCBF-924F-4CFD-A5F7-4C8C4F8FC319} = {55271617-8CB8-4225-B338-069033160497}
+		{F56E6488-DE96-4D1A-9913-D36CBC16E945} = {55271617-8CB8-4225-B338-069033160497}
+		{C0295AB5-00FB-4B45-82F6-2060080D01F9} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
+		{0B67ADE8-929E-46D2-A4E6-C0D621378EAE} = {55271617-8CB8-4225-B338-069033160497}
 	EndGlobalSection
 EndGlobal

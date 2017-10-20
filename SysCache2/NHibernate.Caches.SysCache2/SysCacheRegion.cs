@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
 using NHibernate.Cache;
@@ -280,6 +282,69 @@ namespace NHibernate.Caches.SysCache2
 		public void Unlock(object key)
 		{
 			//nothing to do since we arent locking
+		}
+
+		#endregion
+
+		#region ICache async methods delegated to sync implementation
+
+		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return Task.FromResult(Get(key));
+		}
+
+		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Put(key, value);
+			return Task.CompletedTask;
+		}
+
+		public Task RemoveAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Remove(key);
+			return Task.CompletedTask;
+		}
+
+		public Task ClearAsync(CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Clear();
+			return Task.CompletedTask;
+		}
+
+		public Task LockAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Lock(key);
+			return Task.CompletedTask;
+		}
+
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled(cancellationToken);
+			}
+			Unlock(key);
+			return Task.CompletedTask;
 		}
 
 		#endregion

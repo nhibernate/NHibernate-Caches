@@ -1,0 +1,325 @@
+﻿projects:
+- filePath: EnyimMemcached\NHibernate.Caches.EnyimMemcached.Tests\NHibernate.Caches.EnyimMemcached.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: NewType
+      hasAttributeName: TestFixtureAttribute
+    - conversion: NewType
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: MemCache\NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: NewType
+      hasAttributeName: TestFixtureAttribute
+    - conversion: NewType
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: Prevalence\NHibernate.Caches.Prevalence.Tests\NHibernate.Caches.Prevalence.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: NewType
+      hasAttributeName: TestFixtureAttribute
+    - conversion: NewType
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: RtMemoryCache\NHibernate.Caches.RtMemoryCache.Tests\NHibernate.Caches.RtMemoryCache.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: NewType
+      hasAttributeName: TestFixtureAttribute
+    - conversion: NewType
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: SharedCache\NHibernate.Caches.SharedCache.Tests\NHibernate.Caches.SharedCache.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: NewType
+      hasAttributeName: TestFixtureAttribute
+    - conversion: NewType
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: SysCache\NHibernate.Caches.SysCache.Tests\NHibernate.Caches.SysCache.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: NewType
+      hasAttributeName: TestFixtureAttribute
+    - conversion: NewType
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: SysCache2\NHibernate.Caches.SysCache2.Tests\NHibernate.Caches.SysCache2.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: NewType
+      hasAttributeName: TestFixtureAttribute
+    - conversion: NewType
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: Velocity\NHibernate.Caches.Velocity.Tests\NHibernate.Caches.Velocity.Tests.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Copy
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Copy
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Copy
+      hasAttributeName: SetUpAttribute
+    - conversion: Copy
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: NewType
+      hasAttributeName: TestFixtureAttribute
+    - conversion: NewType
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+typeRules:
+- filters:
+  - hasAttributeName: TestFixtureAttribute
+  name: HasTestFixtureAttribute

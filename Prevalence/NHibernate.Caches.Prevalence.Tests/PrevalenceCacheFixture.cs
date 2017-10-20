@@ -24,6 +24,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using log4net.Config;
 using NHibernate.Cache;
 using NUnit.Framework;
@@ -36,16 +37,22 @@ namespace NHibernate.Caches.Prevalence.Tests
 		private PrevalenceCacheProvider provider;
 		private Dictionary<string, string> props;
 
-		[TestFixtureSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			XmlConfigurator.Configure();
-			props = new Dictionary<string, string>();
+			props = new Dictionary<string, string>
+			{
+				{
+					"prevalenceBase",
+					Path.Combine(Path.GetDirectoryName(typeof(PrevalenceCacheFixture).Assembly.Location), "CacheStorage")
+				}
+			};
 			provider = new PrevalenceCacheProvider();
 			provider.Start(props);
 		}
 
-		[TestFixtureTearDown]
+		[OneTimeTearDown]
 		public void FixtureTeardown()
 		{
 			provider.Stop();

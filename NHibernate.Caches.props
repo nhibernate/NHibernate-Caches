@@ -1,0 +1,19 @@
+<Project>
+  <PropertyGroup>
+    <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">0</VersionMinor>
+    <VersionPatch Condition="'$(VersionPatch)' == ''">0</VersionPatch>
+    <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
+
+    <VersionPrefix>$(VersionMajor).$(VersionMinor).$(VersionPatch)</VersionPrefix>
+    <AssemblyVersion>$(VersionMajor).$(VersionMinor).0.0</AssemblyVersion>
+    <FileVersion>$(VersionPrefix).0</FileVersion>
+
+    <Company>NHibernate.info</Company>
+    <Copyright>Licensed under LGPL.</Copyright>
+    <Authors>NHibernate.org</Authors>
+    <PackageLicenseUrl>http://www.gnu.org/licenses/lgpl.html</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/nhibernate/NHibernate-Caches</PackageProjectUrl>
+    <PackageTags>nhibernate cache</PackageTags>
+  </PropertyGroup>
+</Project>

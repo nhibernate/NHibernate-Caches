@@ -12,80 +12,19 @@
   <!-- Nant 0.85 release version -->
   <property name="nant-version.beta1_086" value="0.86.2898.0" />
   <!-- Nant 0.86 Beta 1 -->
-  <!-- 
-		Path to the folder that contain the external assemblies.  For net-2.0 the values will
-		be lib, lib/net, and lib/net/2.0 respectively.
-	-->
+  <!--
+      Path to the folder that contain the external assemblies.  For net-2.0 the values will
+      be lib, lib/net, and lib/net/2.0 respectively.
+  -->
   <property name="lib.dir" value="lib" dynamic="true" />
   <property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
   <if test="${nant-version.current != nant-version.beta1_086 or framework::get-target-framework() != 'net-4.0'}">
     <property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
   </if>
-  <!-- 
-		These are used to set the correct attributes in AssemblyInfo.cs.  
-	-->
-  <property name="project.company" value="nhforge.org" />
 
-  <property name="project.version" value="4.0.1.GA" overwrite="false" />
-
-  <!-- Compute short project version (major.minor) using a regex -->
-  <regex input="${project.version}" pattern="^(?'shortversion'\d+\.\d+)" />
-  <property name="project.version.short" value="${shortversion}" />
-
-  <!-- Compute and set project.version.numeric from project.version if it hasn't been set already -->
-  <if test="${not property::exists('project.version.numeric')}">
-
-    <script language="C#">
-      <code>
-        <![CDATA[
-				public const int BaseAlpha = 1000;
-				public const int BaseBeta  = 2000;
-				public const int BaseCR    = 3000;
-				public const int BaseGA    = 4000;
-				// SP is same as GA because GA has no number and SP's start with 1.
-				public const int BaseSP    = 4000;
-
-				public static void ScriptMain(Project project)
-				{
-					project.Properties["project.version.numeric"] = ToNumericVersion(
-						project.Properties["project.version"]);
-				}
-
-				public static string ToNumericVersion(string version)
-				{
-					int qualifierStart = version.LastIndexOf('.') + 1;
-					int qualifierNumberStart = version.IndexOfAny(
-						"0123456789".ToCharArray(),
-						qualifierStart);
-
-					if (qualifierNumberStart < 0) qualifierNumberStart = version.Length;
-
-					string qualifier = version.Substring(qualifierStart, qualifierNumberStart - qualifierStart);
-					int qualifierNumber = qualifierNumberStart < version.Length
-						? int.Parse(version.Substring(qualifierNumberStart))
-						: 0;
-
-					int revisionBase;
-
-					switch (qualifier)
-					{
-						case "Alpha": revisionBase = BaseAlpha; break;
-						case "Beta":  revisionBase = BaseBeta; break;
-						case "CR":    revisionBase = BaseCR; break;
-						case "GA":    revisionBase = BaseGA; break;
-						case "SP":    revisionBase = BaseSP; break;
-
-						default: throw new BuildException("Unknown version qualifier " + qualifier);
-					}
-
-					string revisionNumber = (revisionBase + qualifierNumber).ToString();
-
-					return version.Substring(0, qualifierStart) + revisionNumber;
-				}
-			]]>
-      </code>
-    </script>
-  </if>
+  <!-- This is used only for build folder -->
+  <!-- TODO: Either remove or refactor to use NHibernate.props -->
+  <property name="project.version" value="5.0.0" overwrite="false" />
 
   <!-- named project configurations -->
   <target name="set-debug-project-configuration" description="Perform a 'debug' build">
@@ -115,18 +54,11 @@
 
   <target name="init" depends="set-project-configuration">
     <property name="folders.build" value="${bin.dir}" />
+    <property name="tools.dir" value="${root.dir}/Tools" />
+    <property name="testresults.dir" value="${folders.build}/test-results" />
+    <property name="nuget.nupackages.dir" value="${path::get-full-path(path::combine(build.dir, 'nuget_gallery'))}" />
     <mkdir dir="${folders.build}"/>
-  </target>
-
-  <target name="copy-common-reference" depends="init">
-    <copy todir="${folders.build}" flatten="true">
-      <fileset>
-        <include name="${folders.lib}/NHibernate.dll" />
-        <include name="${folders.lib}/Iesi.Collections.dll" />
-        <include name="${folders.lib}/log4net.dll" />
-        <include name="${folders.lib}/nunit.framework.dll" />
-      </fileset>
-    </copy>
+    <mkdir dir="${testresults.dir}"/>
   </target>
   
   <target name="bin-pack-common">
@@ -135,6 +67,104 @@
     <mkdir dir="${bin-pack.project.deploy}"/>
     <copy file="${root.dir}/NHibernate.Caches.snk" todir="${bin-pack.project.deploy}"/>
     <copy file="${folders.build}/NHibernate.Caches.${bin-pack.project.name}.dll" todir="${bin-pack.project.deploy}"/>
+  </target>
+
+  <target name="common.compile-all" depends="init common.solution-restore">
+    <exec program="${path::combine(tools.dir, 'dotnet.cmd')}" verbose="true">
+      <arg value="${root.dir}/NHibernate.Caches.Everything.sln" />
+      <arg value="/p:OutputPath=&quot;${path::get-full-path(folders.build)}&quot;" />
+      <arg value="/p:Platform=&quot;Any CPU&quot;" />
+      <arg value="/p:Configuration=&quot;Debug&quot;" if="${build.debug == 'true'}" />
+      <arg value="/p:Configuration=&quot;Release&quot;" if="${build.release == 'true'}" />
+      <arg value="/t:Restore" />
+      <arg value="/t:Rebuild" />
+      <arg value="/v:q" />
+      <arg value="/m" />
+    </exec>
+  </target>
+
+  <target name="common.download-nuget" depends="init">
+    <get
+      src="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+      dest="${tools.dir}/nuget.exe"
+      usetimestamp="true"
+    />
+  </target>
+
+  <target name="common.nuget-restore" depends="init common.download-nuget">
+    <exec basedir="${tools.dir}" workingdir="${root.dir}/Tools" program="NuGet.exe">
+      <arg value="install" />
+    </exec>
+  </target>
+
+  <target name="common.solution-restore" depends="common.nuget-restore">
+    <exec program="${path::combine(tools.dir, 'dotnet.cmd')}" verbose="true">
+      <arg value="/t:Restore" />
+      <arg value="${root.dir}/NHibernate.Caches.Everything.sln" />
+    </exec>
+  </target>
+
+  <target name="common.get-nuget-package-path">
+    <xmlpeek
+      file="${tools.dir}/packages.config"
+      xpath="/packages/package[@id = '${nuget-package-id}']/@version"
+      property="nuget-package-version" />
+    <property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
+  </target>
+
+  <target name="common.find-nunit">
+    <property name="nuget-package-id" value="NUnit.ConsoleRunner" />
+    <call target="common.get-nuget-package-path" />
+    <property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
+  </target>
+
+  <target name="common.run-tests"
+          description="Run NUnit tests">
+    <call target="common.find-nunit" unless="${property::exists('nunit.found')}" />
+    <property name="common.run-tests.failonerror" value="${not property::exists(test.file + '.IgnoreFail')}"/>
+    <property name="common.run-tests.x86" value="--x86" unless="${property::exists('nunit-x64')}" />
+    <property name="common.run-tests.x86" value="" if="${property::exists('nunit-x64')}" />
+    <exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
+      <arg line="${folders.build}/${test.file}.dll --result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2 --framework=${framework::get-target-framework()} ${common.run-tests.x86}" />
+    </exec>
+
+  </target>
+
+  <target name="common.find-async-generator-console">
+    <property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
+    <call target="common.get-nuget-package-path" />
+    <property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
+  </target>
+
+  <target name="common.nuget-package">
+    <exec program="${path::combine(tools.dir, 'nuget-package.cmd')}" verbose="true">
+      <arg value="${nuget.package.project}" />
+      <arg value="-c &quot;Debug&quot;" if="${build.debug == 'true'}" />
+      <arg value="-c &quot;Release&quot;" if="${build.release == 'true'}" />
+      <arg value="--include-symbols" />
+      <arg value="--include-source" />
+      <arg value="-o &quot;${nuget.nupackages.dir}&quot;" />
+    </exec>
+  </target>
+
+  <target name="common.nuget-pushbat"
+          description="Creates files for the release on nuget gallery.">
+
+    <copy file="${tools.dir}/NuGet.exe" todir="${nuget.nupackages.dir}"/>
+    <property name="nuget.nupackages.pushbatfile" value="${path::combine(nuget.nupackages.dir, 'NuGetPush.bat')}" />
+
+    <echo message="rem In order to use this bat you have to be sure you have executed 'nuget SetApiKey' ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="false"/>
+    <foreach item="File" property="filename">
+      <in>
+        <items>
+          <include name="${nuget.nupackages.dir}/*.nupkg"/>
+          <exclude name="${nuget.nupackages.dir}/*.symbols.nupkg"/>
+        </items>
+      </in>
+      <do>
+        <echo message="nuget push -source https://www.nuget.org/api/v2/package ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+      </do>
+    </foreach>
   </target>
 
 </project>
