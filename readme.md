@@ -1,4 +1,4 @@
-Documentation and examples are available at www.nhforge.org
+Documentation and examples are available at http://nhibernate.info/
 Any feedback or issue can be sent to NHibernate user group([http://groups.google.com/group/nhusers][userGroup]) and will be greatly appreciated. 
 
 Up-to-date source code available at [**GitHub Website**][nhGithub]
@@ -13,12 +13,14 @@ Website:
 NHibernate is able to use external caching plugins to minimize the access to the database and improve the performance.
 The NHibernate Contrib contains several packages to work with different caching servers and frameworks. 
 It's recommended to research for a while before deciding which one is better for you, since some providers require installing additional services 
-(which provides an awesome performance, but might be harder to install in some scenarios)
+(which provides an awesome performance, but might be harder to install in some scenarios).
 
 
 ## Notes
 
 #### Build 5.0.0 for NHibernate 5.0.0
+* Breaking changes
+    * All cache provider works with .NET 4.6.1
 
 #### Build 4.0.1GA for NHibernate 4.0.1GA
 
