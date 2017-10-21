@@ -48,7 +48,11 @@ namespace NHibernate.Caches.Common.Tests
 			{
 				provider.Stop();
 			}
+			OnOneTimeTearDown();
 		}
+
+		protected virtual void OnOneTimeTearDown()
+		{}
 
 		protected ICacheProvider GetNewProvider()
 		{

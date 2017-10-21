@@ -49,7 +49,7 @@ namespace NHibernate.Caches.EnyimMemcached
 		{
 			region = regionName;
 
-			client = memcachedClient;
+			client = memcachedClient ?? throw new ArgumentNullException(nameof(memcachedClient));
 
 			expiry = 300;
 

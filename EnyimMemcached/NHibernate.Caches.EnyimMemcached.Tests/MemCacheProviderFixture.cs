@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using log4net.Config;
 using NHibernate.Cache;
 using NHibernate.Caches.Common.Tests;
@@ -24,6 +25,13 @@ namespace NHibernate.Caches.EnyimMemcached.Tests
 		{
 			var cache = DefaultProvider.BuildCache("foo", null);
 			Assert.That(cache, Is.Not.Null, "pre-configured cache not found");
+		}
+
+		protected override void OnOneTimeTearDown()
+		{
+			var clientField = typeof(MemCacheProvider).GetField("clientInstance", BindingFlags.NonPublic | BindingFlags.Static);
+			Assert.That(clientField, Is.Not.Null, "Unable to locate client field");
+			Assert.That(clientField.GetValue(null), Is.Null, "Provider was not stopped");
 		}
 	}
 }
