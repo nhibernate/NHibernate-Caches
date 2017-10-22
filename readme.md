@@ -1,3 +1,5 @@
+## NHibernate.Caches [![Build status](https://ci.appveyor.com/api/projects/status/42rw3tks2mg6vxvk/branch/master?svg=true)](https://ci.appveyor.com/project/nhibernate/nhibernate-caches/branch/master)
+
 Documentation and examples are available at http://nhibernate.info/
 Any feedback or issue can be sent to NHibernate user group([http://groups.google.com/group/nhusers][userGroup]) and will be greatly appreciated. 
 
