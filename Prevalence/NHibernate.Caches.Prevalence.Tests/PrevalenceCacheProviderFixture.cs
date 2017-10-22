@@ -27,83 +27,40 @@ using System.Collections.Generic;
 using System.IO;
 using log4net.Config;
 using NHibernate.Cache;
+using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.Prevalence.Tests
 {
 	[TestFixture]
-	public class PrevalenceCacheProviderFixture
+	public class PrevalenceCacheProviderFixture : CacheProviderFixture
 	{
-		#region Setup/Teardown
+		private string _testDir;
 
-		[SetUp]
-		public void Setup()
-		{
-			provider = new PrevalenceCacheProvider();
-		}
-
-		[TearDown]
-		public void Teardown()
-		{
-			if (Directory.Exists(testDir))
-			{
-				Directory.Delete(testDir, true);
-			}
-		}
-
-		#endregion
-
-		private PrevalenceCacheProvider provider;
-		private Dictionary<string, string> props;
-		private string testDir;
-
-		[OneTimeSetUp]
-		public void FixtureSetup()
+		protected override void Configure(Dictionary<string, string> defaultProperties)
 		{
 			XmlConfigurator.Configure();
-			props = new Dictionary<string, string>();
-			testDir = Path.Combine(Path.GetDirectoryName(typeof(PrevalenceCacheFixture).Assembly.Location), "CacheStorage");
-			props.Add("prevalenceBase", testDir);
+			base.Configure(defaultProperties);
+			_testDir = Path.Combine(Path.GetDirectoryName(typeof(PrevalenceCacheFixture).Assembly.Location), "CacheStorage");
+			defaultProperties.Add("prevalenceBase",
+				Path.Combine(Path.GetDirectoryName(typeof(PrevalenceCacheFixture).Assembly.Location), "CacheStorage"));
 		}
 
-		[Test]
-		public void TestBuildCacheNullNull()
-		{
-			ICache cache = provider.BuildCache(null, null);
-			Assert.IsNotNull(cache, "no cache returned");
-		}
+		protected override Func<ICacheProvider> ProviderBuilder =>
+			() => new PrevalenceCacheProvider();
 
-		[Test]
-		public void TestBuildCacheStringICollection()
+		[SetUp]
+		public void SetUp()
 		{
-			Assert.IsFalse(Directory.Exists(testDir));
-			ICache cache = provider.BuildCache("another_region", props);
-			Assert.IsTrue(Directory.Exists(testDir));
-			Assert.IsNotNull(cache, "no cache returned");
-		}
-
-		[Test]
-		public void TestBuildCacheStringNull()
-		{
-			var backupCurrentDir = Directory.GetCurrentDirectory();
-			Directory.CreateDirectory(testDir);
-			Directory.SetCurrentDirectory(testDir);
-			try
+			if (Directory.Exists(_testDir))
 			{
-				ICache cache = provider.BuildCache("a_region", null);
-				Assert.IsNotNull(cache, "no cache returned");
-			}
-			finally
-			{
-				Directory.SetCurrentDirectory(backupCurrentDir);
+				Directory.Delete(_testDir, true);
 			}
 		}
 
-		[Test]
-		public void TestNextTimestamp()
+		[Ignore("Must supply prevalenceBase or have write access right in current execution directory")]
+		public override void TestBuildCacheRegionNoProperties()
 		{
-			long ts = provider.NextTimestamp();
-			Assert.IsNotNull(ts, "no timestamp returned");
 		}
 	}
 }

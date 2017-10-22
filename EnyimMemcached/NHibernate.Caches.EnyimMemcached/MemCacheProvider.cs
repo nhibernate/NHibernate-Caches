@@ -18,6 +18,7 @@ namespace NHibernate.Caches.EnyimMemcached
 		private static MemcachedClient clientInstance;
 		private static readonly IMemcachedClientConfiguration config;
 		private static readonly object syncObject = new object();
+		private static int _usageCount;
 
 		static MemCacheProvider()
 		{
@@ -78,6 +79,7 @@ namespace NHibernate.Caches.EnyimMemcached
 				{
 					clientInstance = new MemcachedClient(config);
 				}
+				_usageCount++;
 			}
 		}
 
@@ -85,8 +87,13 @@ namespace NHibernate.Caches.EnyimMemcached
 		{
 			lock (syncObject)
 			{
-				clientInstance.Dispose();
-				clientInstance = null;
+				_usageCount--;
+				if (_usageCount <= 0)
+				{
+					clientInstance?.Dispose();
+					clientInstance = null;
+					_usageCount = 0;
+				}
 			}
 		}
 

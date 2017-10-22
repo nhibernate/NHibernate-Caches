@@ -1,0 +1,13 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../NHibernate.Caches.props" />
+  <PropertyGroup>
+    <Product>NHibernate.Caches.Common.Tests</Product>
+    <Description>Unit tests base for cache providers.</Description>
+    <TargetFramework>net461</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
+    <PackageReference Include="NHibernate" Version="5.0.0" />
+    <PackageReference Include="NUnit" Version="3.8.1" />
+  </ItemGroup>
+</Project>

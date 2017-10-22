@@ -36,168 +36,37 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
 using log4net.Config;
 using NHibernate.Cache;
+using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.Velocity.Tests
 {
 	[TestFixture]
-	public class VelocityFixture
+	public class VelocityFixture : CacheFixture
 	{
-		private VelocityProvider provider;
-		private Dictionary<string, string> props;
+		protected override bool SupportsDefaultExpiration => false;
 
-		[OneTimeSetUp]
-		public void FixtureSetup()
+		protected override void Configure(Dictionary<string, string> defaultProperties)
 		{
 			XmlConfigurator.Configure();
-			props = new Dictionary<string, string>();
-			provider = new VelocityProvider();
-			provider.Start(props);
+			base.Configure(defaultProperties);
 		}
 
-		[OneTimeTearDown]
-		public void FixtureStop()
-		{
-			provider.Stop();
-		}
-
-		[Test]
-		public void TestClear()
-		{
-			string key = "key1";
-			string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			// add the item
-			cache.Put(key, value);
-			Thread.Sleep(1000);
-
-			// make sure it's there
-			object item = cache.Get(key);
-			Assert.IsNotNull(item, "couldn't find item in cache");
-
-			// clear the cache
-			cache.Clear();
-
-			// make sure we don't get an item
-			item = cache.Get(key);
-			Assert.IsNull(item, "item still exists in cache");
-		}
+		protected override Func<ICacheProvider> ProviderBuilder =>
+			() => new VelocityProvider();
 
 		[Test]
 		public void TestDefaultConstructor()
 		{
-			ICache cache = new VelocityClient();
-			Assert.IsNotNull(cache);
-		}
-
-		[Test]
-		public void TestEmptyProperties()
-		{
-			ICache cache = new VelocityClient("nunit", new Dictionary<string, string>());
-			Assert.IsNotNull(cache);
+			Assert.That(() => new VelocityClient(), Throws.Nothing);
 		}
 
 		[Test]
 		public void TestNoPropertiesConstructor()
 		{
-			ICache cache = new VelocityClient("nunit");
-			Assert.IsNotNull(cache);
-		}
-
-		[Test]
-		public void TestNullKeyGet()
-		{
-			ICache cache = new VelocityClient();
-			cache.Put("nunit", "value");
-			Thread.Sleep(1000);
-			object item = cache.Get(null);
-			Assert.IsNull(item);
-		}
-
-		[Test]
-		public void TestNullKeyPut()
-		{
-			ICache cache = new VelocityClient();
-			Assert.Throws<ArgumentNullException>(() => cache.Put(null, null));
-		}
-
-		[Test]
-		public void TestNullKeyRemove()
-		{
-			ICache cache = new VelocityClient();
-			Assert.Throws<ArgumentNullException>(() => cache.Remove(null));
-		}
-
-		[Test]
-		public void TestNullValuePut()
-		{
-			ICache cache = new VelocityClient();
-			Assert.Throws<ArgumentNullException>(() => cache.Put("nunit", null));
-		}
-
-		[Test]
-		public void TestPut()
-		{
-			string key = "key1";
-			string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			Assert.IsNull(cache.Get(key), "cache returned an item we didn't add !?!");
-
-			cache.Put(key, value);
-			Thread.Sleep(1000);
-			object item = cache.Get(key);
-			Assert.IsNotNull(item);
-			Assert.AreEqual(value, item, "didn't return the item we added");
-		}
-
-		[Test]
-		public void TestRegions()
-		{
-			string key = "key";
-			ICache cache1 = provider.BuildCache("nunit1", props);
-			ICache cache2 = provider.BuildCache("nunit2", props);
-			string s1 = "test1";
-			string s2 = "test2";
-			cache1.Put(key, s1);
-			cache2.Put(key, s2);
-			Thread.Sleep(1000);
-			object get1 = cache1.Get(key);
-			object get2 = cache2.Get(key);
-			Assert.IsFalse(get1 == get2);
-		}
-
-		[Test]
-		public void TestRemove()
-		{
-			string key = "key1";
-			string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			// add the item
-			cache.Put(key, value);
-			Thread.Sleep(1000);
-
-			// make sure it's there
-			object item = cache.Get(key);
-			Assert.IsNotNull(item, "item just added is not there");
-
-			// remove it
-			cache.Remove(key);
-
-			// make sure it's not there
-			item = cache.Get(key);
-			Assert.IsNull(item, "item still exists in cache");
+			Assert.That(() => new VelocityClient("TestNoPropertiesConstructor"), Throws.Nothing);
 		}
 	}
 }

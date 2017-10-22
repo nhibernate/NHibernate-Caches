@@ -55,30 +55,31 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 			var handler = new RtMemoryCacheSectionHandler();
 			var section = new XmlDocument();
 			object result = handler.Create(null, null, section);
-			Assert.IsNotNull(result);
+			Assert.That(result, Is.Not.Null);
 			Assert.IsTrue(result is CacheConfig[]);
 			var caches = result as CacheConfig[];
-			Assert.AreEqual(0, caches.Length);
+			Assert.That(caches.Length, Is.EqualTo(0));
 		}
 
 		[Test]
 		public void TestGetConfigFromFile()
 		{
-            const string xmlSimple = "<rtmemorycache><cache region=\"foo\" expiration=\"500\" priority=\"4\" /></rtmemorycache>";
+			const string xmlSimple = "<rtmemorycache><cache region=\"foo\" expiration=\"500\" priority=\"4\" /></rtmemorycache>";
 
 			var handler = new RtMemoryCacheSectionHandler();
 			XmlNode section = GetConfigurationSection(xmlSimple);
 			object result = handler.Create(null, null, section);
-			Assert.IsNotNull(result);
+			Assert.That(result, Is.Not.Null);
 			Assert.IsTrue(result is CacheConfig[]);
 			var caches = result as CacheConfig[];
-			Assert.AreEqual(1, caches.Length);
+			Assert.That(caches.Length, Is.EqualTo(1));
 		}
 
 		[Test]
 		public void RecognizeMnemonicPriorityValues()
 		{
-            const string xmlSimple = "<rtmemorycache><cache region='foo' expiration='500' priority='NotRemovable' /></rtmemorycache>";
+			const string xmlSimple =
+				"<rtmemorycache><cache region='foo' expiration='500' priority='NotRemovable' /></rtmemorycache>";
 
 			var handler = new RtMemoryCacheSectionHandler();
 			XmlNode section = GetConfigurationSection(xmlSimple);
@@ -89,12 +90,12 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		[Test]
 		public void RecognizeNumericPriorityValues()
 		{
-            const string xmlSimple = "<rtmemorycache><cache region='foo' expiration='500' priority='1' /></rtmemorycache>";
+			const string xmlSimple = "<rtmemorycache><cache region='foo' expiration='500' priority='1' /></rtmemorycache>";
 
 			var handler = new RtMemoryCacheSectionHandler();
 			XmlNode section = GetConfigurationSection(xmlSimple);
-			RtMemoryCache[] cache = CreateCache((CacheConfig[])handler.Create(null, null, section));
-            Assert.That(cache[0].Priority, Is.EqualTo(CacheItemPriority.NotRemovable));
+			RtMemoryCache[] cache = CreateCache((CacheConfig[]) handler.Create(null, null, section));
+			Assert.That(cache[0].Priority, Is.EqualTo(CacheItemPriority.NotRemovable));
 		}
 	}
 }

@@ -55,10 +55,10 @@ namespace NHibernate.Caches.SysCache.Tests
 			var handler = new SysCacheSectionHandler();
 			var section = new XmlDocument();
 			object result = handler.Create(null, null, section);
-			Assert.IsNotNull(result);
+			Assert.That(result, Is.Not.Null);
 			Assert.IsTrue(result is CacheConfig[]);
 			var caches = result as CacheConfig[];
-			Assert.AreEqual(0, caches.Length);
+			Assert.That(caches.Length, Is.EqualTo(0));
 		}
 
 		[Test]
@@ -69,10 +69,10 @@ namespace NHibernate.Caches.SysCache.Tests
 			var handler = new SysCacheSectionHandler();
 			XmlNode section = GetConfigurationSection(xmlSimple);
 			object result = handler.Create(null, null, section);
-			Assert.IsNotNull(result);
+			Assert.That(result, Is.Not.Null);
 			Assert.IsTrue(result is CacheConfig[]);
 			var caches = result as CacheConfig[];
-			Assert.AreEqual(1, caches.Length);
+			Assert.That(caches.Length, Is.EqualTo(1));
 		}
 
 		[Test]

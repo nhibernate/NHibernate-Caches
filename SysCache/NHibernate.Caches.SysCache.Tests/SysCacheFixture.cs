@@ -25,308 +25,86 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Threading;
 using System.Web;
+using log4net.Config;
 using NHibernate.Cache;
+using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.SysCache.Tests
 {
 	[TestFixture]
-	public class SysCacheFixture
+	public partial class SysCacheFixture : CacheFixture
 	{
-		private SysCacheProvider provider;
-		private Dictionary<string, string> props;
-
-		[OneTimeSetUp]
-		public void FixtureSetup()
+		protected override void Configure(Dictionary<string, string> defaultProperties)
 		{
-			props = new Dictionary<string, string>();
-			props.Add("expiration", 120.ToString());
-			props.Add("priority", 4.ToString());
-			provider = new SysCacheProvider();
+			XmlConfigurator.Configure();
+			base.Configure(defaultProperties);
+			defaultProperties.Add("priority", 4.ToString());
 		}
 
-		[Test]
-		public void TestPut()
-		{
-			const string key = "key1";
-			const string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			Assert.IsNull(cache.Get(key), "cache returned an item we didn't add !?!");
-
-			cache.Put(key, value);
-			object item = cache.Get(key);
-			Assert.IsNotNull(item);
-			Assert.AreEqual(value, item, "didn't return the item we added");
-		}
-
-		[Test]
-		public void TestRemove()
-		{
-			const string key = "key1";
-			const string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			// add the item
-			cache.Put(key, value);
-
-			// make sure it's there
-			object item = cache.Get(key);
-			Assert.IsNotNull(item, "item just added is not there");
-
-			// remove it
-			cache.Remove(key);
-
-			// make sure it's not there
-			item = cache.Get(key);
-			Assert.IsNull(item, "item still exists in cache");
-		}
-
-		[Test]
-		public void TestClear()
-		{
-			const string key = "key1";
-			const string value = "value";
-
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
-
-			// add the item
-			cache.Put(key, value);
-
-			// make sure it's there
-			object item = cache.Get(key);
-			Assert.IsNotNull(item, "couldn't find item in cache");
-
-			// clear the cache
-			cache.Clear();
-
-			// make sure we don't get an item
-			item = cache.Get(key);
-			Assert.IsNull(item, "item still exists in cache");
-		}
+		protected override Func<ICacheProvider> ProviderBuilder =>
+			() => new SysCacheProvider();
 
 		[Test]
 		public void TestDefaultConstructor()
 		{
-			ICache cache = new SysCache();
-			Assert.IsNotNull(cache);
+			Assert.That(() => new SysCache(), Throws.Nothing);
 		}
 
 		[Test]
 		public void TestNoPropertiesConstructor()
 		{
-			ICache cache = new SysCache("nunit");
-			Assert.IsNotNull(cache);
+			Assert.That(() => new SysCache("TestNoPropertiesConstructor"), Throws.Nothing);
 		}
 
 		[Test]
 		public void TestPriorityOutOfRange()
 		{
-			var h = new Dictionary<string, string>();
-			h.Add("priority", 7.ToString());
-			Assert.Throws<IndexOutOfRangeException>(()=> new SysCache("nunit", h));
-		}
-
-		[Test]
-		public void TestBadRelativeExpiration()
-		{
-			var h = new Dictionary<string, string>();
-			h.Add("expiration", "foobar");
-			Assert.Throws<ArgumentException>(() => new SysCache("nunit", h));
-		}
-
-		[Test]
-		public void TestEmptyProperties()
-		{
-			ICache cache = new SysCache("nunit", new Dictionary<string, string>());
-			Assert.IsNotNull(cache);
-		}
-
-		[Test]
-		public void TestNullKeyPut()
-		{
-			ICache cache = new SysCache();
-			Assert.Throws<ArgumentNullException>(() => cache.Put(null, null));
-		}
-
-		[Test]
-		public void TestNullValuePut()
-		{
-			ICache cache = new SysCache();
-			Assert.Throws<ArgumentNullException>(() => cache.Put("nunit", null));
-		}
-
-		[Test]
-		public void TestNullKeyGet()
-		{
-			ICache cache = new SysCache();
-			cache.Put("nunit", "value");
-			object item = cache.Get(null);
-			Assert.IsNull(item);
-		}
-
-		[Test]
-		public void TestNullKeyRemove()
-		{
-			ICache cache = new SysCache();
-			Assert.Throws<ArgumentNullException>(() => cache.Remove(null));
-		}
-
-		[Test]
-		public void TestRegions()
-		{
-			const string key = "key";
-			ICache cache1 = provider.BuildCache("nunit1", props);
-			ICache cache2 = provider.BuildCache("nunit2", props);
-			const string s1 = "test1";
-			const string s2 = "test2";
-			cache1.Put(key, s1);
-			cache2.Put(key, s2);
-			object get1 = cache1.Get(key);
-			object get2 = cache2.Get(key);
-			Assert.IsFalse(get1 == get2);
-		}
-
-		private class SomeObject
-		{
-			public int Id;
-
-			public override int GetHashCode()
-			{
-				return 1;
-			}
-
-			public override string ToString()
-			{
-				return "TestObject";
-			}
-
-			public override bool Equals(object obj)
-			{
-				var other = obj as SomeObject;
-
-				if (other == null)
-				{
-					return false;
-				}
-
-				return other.Id == Id;
-			}
-		}
-
-		[Test]
-		public void TestNonEqualObjectsWithEqualHashCodeAndToString()
-		{
-			var obj1 = new SomeObject();
-			var obj2 = new SomeObject();
-
-			obj1.Id = 1;
-			obj2.Id = 2;
-
-			ICache cache = provider.BuildCache("nunit", props);
-
-			Assert.IsNull(cache.Get(obj2));
-			cache.Put(obj1, obj1);
-			Assert.AreEqual(obj1, cache.Get(obj1));
-			Assert.IsNull(cache.Get(obj2));
-		}
-
-		[Test]
-		public void TestObjectExpiration()
-		{
-			const int expirySeconds = 3;
-			const string key = "key";
-			var obj = new SomeObject();
-
-			obj.Id = 2;
-
-			var localProps = new Dictionary<string, string>();
-			localProps.Add("expiration", expirySeconds.ToString());
-
-			ICache cache = provider.BuildCache("nunit", localProps);
-
-			Assert.IsNull(cache.Get(obj));
-			cache.Put(key, obj);
-
-			// Wait
-			Thread.Sleep(TimeSpan.FromSeconds(expirySeconds + 2));
-
-			// Check it expired
-			Assert.IsNull(cache.Get(key));
-		}
-
-		[Test]
-		public void TestObjectExpirationAfterUpdate()
-		{
-			const int expirySeconds = 3;
-			const string key = "key";
-			var obj = new SomeObject();
-
-			obj.Id = 2;
-
-			var localProps = new Dictionary<string, string>();
-			localProps.Add("expiration", expirySeconds.ToString());
-
-			ICache cache = provider.BuildCache("nunit", localProps);
-
-			Assert.IsNull(cache.Get(obj));
-			cache.Put(key, obj);
-
-			// This forces an object update
-			cache.Put(key, obj);
-
-			// Wait
-			Thread.Sleep(TimeSpan.FromSeconds(expirySeconds + 2));
-
-			// Check it expired
-			Assert.IsNull(cache.Get(key));
+			var props = GetDefaultProperties();
+			props["priority"] = 7.ToString();
+			Assert.That(() => DefaultProvider.BuildCache("TestPriorityOutOfRange", props),
+				Throws.TypeOf<IndexOutOfRangeException>());
 		}
 
 		[Test]
 		public void TestAfterClearCanPut()
 		{
-			const string key = "key1";
+			const string key = "keyTestAfterClearCanPut";
 			const string value = "value";
 
-			ICache cache = provider.BuildCache("nunit", props);
-			Assert.IsNotNull(cache, "no cache returned");
+			var cache = GetDefaultCache();
+			Assert.That(cache, Is.Not.Null, "no cache returned");
 
 			// add the item
 			cache.Put(key, value);
 
-			Assert.IsTrue(HttpRuntime.Cache.Count > 0, "cache is empty");
+			Assert.That(HttpRuntime.Cache.Count, Is.GreaterThan(0), "cache is empty");
 
 			// clear the System.Web.HttpRuntime.Cache
-			IList keys = new ArrayList();
+			var keys = new List<string>();
 
 			foreach (DictionaryEntry entry in HttpRuntime.Cache)
 			{
 				keys.Add(entry.Key.ToString());
 			}
 
-			foreach (string cachekey in keys)
+			foreach (var cachekey in keys)
 			{
 				HttpRuntime.Cache.Remove(cachekey);
 			}
 
-			Assert.AreEqual(0, HttpRuntime.Cache.Count, "cache isn't empty");
+			Assert.That(HttpRuntime.Cache.Count, Is.EqualTo(0), "cache isn't empty");
 
 			// make sure we don't get an item
-			object item = cache.Get(key);
-			Assert.IsNull(item, "item still exists in cache");
+			var item = cache.Get(key);
+			Assert.That(item, Is.Null, "item still exists in cache");
 
 			// add the item again
 			cache.Put(key, value);
 
 			item = cache.Get(key);
-			Assert.IsNotNull(item, "couldn't find item in cache");
+			Assert.That(item, Is.Not.Null, "couldn't find item in cache");
 		}
 	}
 }
