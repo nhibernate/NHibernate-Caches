@@ -1,0 +1,23 @@
+version: 5.0.0.{build}
+image: Visual Studio 2017
+install:
+# memcache server
+- curl -L -O -S -s http://downloads.northscale.com/memcached-1.4.5-amd64.zip
+- 7z x memcached-1.4.5-amd64.zip
+- ps: $MemCached = Start-Process memcached-amd64\memcached.exe -PassThru
+before_build:
+- which msbuild.exe
+- nuget restore NHibernate.Caches.Everything.sln
+build:
+  project: NHibernate.Caches.Everything.sln
+  verbosity: minimal
+test:
+  assemblies:
+    only:
+    - NHibernate.Caches.EnyimMemcached.Tests.dll
+    - NHibernate.Caches.Prevalence.Tests.dll
+    - NHibernate.Caches.RtMemoryCache.Tests.dll
+    - NHibernate.Caches.SysCache.Tests.dll
+    - NHibernate.Caches.SysCache2.Tests.dll
+on_finish:
+- ps: Stop-Process -Id $MemCached.Id
