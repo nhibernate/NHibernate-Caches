@@ -290,7 +290,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			cache.Add(cacheKey, new DictionaryEntry(key, value),
 			          new CacheItemPolicy
 			          {
-			              AbsoluteExpiration = DateTime.Now.Add(expiration),
+			              AbsoluteExpiration = DateTimeOffset.UtcNow.Add(expiration),
 			              Priority = priority,
 			              SlidingExpiration = ObjectCache.NoSlidingExpiration,
 			              ChangeMonitors = {cache.CreateCacheEntryChangeMonitor(new[] {rootCacheKey})}

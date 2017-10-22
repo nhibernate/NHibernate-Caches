@@ -631,10 +631,13 @@ namespace NHibernate.Caches.SysCache2
 			//time of day expiration if that is specified
 			if (_relativeExpiration.HasValue)
 			{
-				expiration = DateTime.Now.Add(_relativeExpiration.Value);
+				expiration = DateTime.UtcNow.Add(_relativeExpiration.Value);
 			}
 			else if (_timeOfDayExpiration.HasValue)
 			{
+				// Done in local time. Recommendation for supplying expiration is UTC, but that would
+				// shift the _timeOfDayExpiration hour.
+
 				//calculate the expiration by starting at 12 am of today
 				DateTime timeExpiration = DateTime.Today;
 
