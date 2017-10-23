@@ -358,14 +358,15 @@ namespace NHibernate.Caches.SysCache2
 		{
 			log.Debug("Configuring cache region");
 
-			//these are some default conenction values that can be later used by the data dependencies
-			//if no custome settings are specified
+			// these are some default connection values that can be later used by the data dependencies
+			// if no custom settings are specified
 			string connectionName = null;
 			string connectionString = null;
+			var defaultExpiration = defaultRelativeExpiration;
 
 			if (additionalProperties != null)
 			{
-				//pick up connection settings that might be used later for data dependencis if any are specified
+				// pick up connection settings that might be used later for data dependencis if any are specified
 				if (additionalProperties.ContainsKey(Environment.ConnectionStringName))
 				{
 					connectionName = additionalProperties[Environment.ConnectionStringName];
@@ -374,6 +375,26 @@ namespace NHibernate.Caches.SysCache2
 				if (additionalProperties.ContainsKey(Environment.ConnectionString))
 				{
 					connectionString = additionalProperties[Environment.ConnectionString];
+				}
+
+				if (!additionalProperties.TryGetValue("expiration", out var expirationString))
+				{
+					additionalProperties.TryGetValue(Cfg.Environment.CacheDefaultExpiration, out expirationString);
+				}
+
+				if (expirationString != null)
+				{
+					try
+					{
+						var seconds = Convert.ToInt32(expirationString);
+						defaultExpiration = TimeSpan.FromSeconds(seconds);
+						log.DebugFormat("default expiration value: {0}",  seconds);
+					}
+					catch (Exception ex)
+					{
+						log.Error("error parsing expiration value");
+						throw new ArgumentException("could not parse 'expiration' as a number of seconds", ex);
+					}
 				}
 			}
 
@@ -385,16 +406,16 @@ namespace NHibernate.Caches.SysCache2
 
 				if (log.IsDebugEnabled)
 				{
-					log.DebugFormat("using priority: {0}", settings.Priority.ToString("g"));
+					log.DebugFormat("using priority: {0:g}", settings.Priority);
 
 					if (_relativeExpiration.HasValue)
 					{
-						log.DebugFormat("using relative expiration :{0}", _relativeExpiration);
+						log.DebugFormat("using relative expiration: {0}", _relativeExpiration);
 					}
 
 					if (_timeOfDayExpiration.HasValue)
 					{
-						log.DebugFormat("using time of day expiration : {0}", _timeOfDayExpiration);
+						log.DebugFormat("using time of day expiration: {0}", _timeOfDayExpiration);
 					}
 				}
 
@@ -406,18 +427,18 @@ namespace NHibernate.Caches.SysCache2
 
 				if (log.IsDebugEnabled)
 				{
-					log.DebugFormat("no priority specified using default : {0}", _priority.ToString("g"));
+					log.DebugFormat("no priority specified, using default: {0:g}", _priority);
 				}
 			}
 
-			//use the default expiration of no expiration was set
+			//use the default expiration as no expiration was set
 			if (_relativeExpiration.HasValue == false && _timeOfDayExpiration.HasValue == false)
 			{
-				_relativeExpiration = defaultRelativeExpiration;
+				_relativeExpiration = defaultExpiration;
 
 				if (log.IsDebugEnabled)
 				{
-					log.DebugFormat("no expiration specified using default : {0}", _relativeExpiration);
+					log.DebugFormat("no expiration specified, using default: {0}", _relativeExpiration);
 				}
 			}
 		}
