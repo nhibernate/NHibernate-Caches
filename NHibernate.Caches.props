@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
-    <VersionMinor Condition="'$(VersionMinor)' == ''">0</VersionMinor>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">1</VersionMinor>
     <VersionPatch Condition="'$(VersionPatch)' == ''">0</VersionPatch>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 
@@ -11,9 +11,14 @@
 
     <Company>NHibernate.info</Company>
     <Copyright>Licensed under LGPL.</Copyright>
-    <Authors>NHibernate.org</Authors>
-    <PackageLicenseUrl>http://www.gnu.org/licenses/lgpl.html</PackageLicenseUrl>
+    <Authors>NHibernate community</Authors>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <PackageLicenseUrl>https://raw.githubusercontent.com/nhibernate/NHibernate-Caches/master/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/nhibernate/NHibernate-Caches</PackageProjectUrl>
-    <PackageTags>nhibernate cache</PackageTags>
+    <PackageTags>nhibernate; cache</PackageTags>
+    <RepositoryUrl>https://github.com/nhibernate/NHibernate-Caches.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
   </PropertyGroup>
 </Project>

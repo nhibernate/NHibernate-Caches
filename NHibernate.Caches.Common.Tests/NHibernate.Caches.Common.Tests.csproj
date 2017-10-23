@@ -4,6 +4,7 @@
     <Product>NHibernate.Caches.Common.Tests</Product>
     <Description>Unit tests base for cache providers.</Description>
     <TargetFramework>net461</TargetFramework>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.2" />

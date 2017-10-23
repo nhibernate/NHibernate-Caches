@@ -4,6 +4,7 @@
     <Product>NHibernate.Caches.EnyimMemcached</Product>
     <Description>Unit tests of cache provider for NHibernate using MemCached with Enyim client.</Description>
     <TargetFramework>net461</TargetFramework>
+    <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="EnyimMemcached" Version="2.12.0" />
