@@ -358,7 +358,7 @@ namespace NHibernate.Caches.MemCache
 		/// <returns>The hashed key as a string</returns>
 		private static string ComputeHash(string fullKeyString, HashAlgorithm hashAlgorithm)
 		{
-			byte[] bytes = Encoding.ASCII.GetBytes(fullKeyString);
+			byte[] bytes = Encoding.UTF8.GetBytes(fullKeyString);
 			byte[] computedHash = hashAlgorithm.ComputeHash(bytes);
 			return Convert.ToBase64String(computedHash);
 		}
