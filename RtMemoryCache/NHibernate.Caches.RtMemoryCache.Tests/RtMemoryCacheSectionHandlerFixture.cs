@@ -64,7 +64,7 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		[Test]
 		public void TestGetConfigFromFile()
 		{
-			const string xmlSimple = "<rtmemorycache><cache region=\"foo\" expiration=\"500\" priority=\"4\" sliding=\"true\" /></rtmemorycache>";
+			const string xmlSimple = "<rtmemorycache><cache region=\"foo\" expiration=\"500\" sliding=\"true\" /></rtmemorycache>";
 
 			var handler = new RtMemoryCacheSectionHandler();
 			XmlNode section = GetConfigurationSection(xmlSimple);
@@ -74,29 +74,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 			var caches = result as CacheConfig[];
 			Assert.That(caches.Length, Is.EqualTo(1));
 			Assert.That(caches[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
-		}
-
-		[Test]
-		public void RecognizeMnemonicPriorityValues()
-		{
-			const string xmlSimple =
-				"<rtmemorycache><cache region='foo' expiration='500' priority='NotRemovable' /></rtmemorycache>";
-
-			var handler = new RtMemoryCacheSectionHandler();
-			XmlNode section = GetConfigurationSection(xmlSimple);
-			RtMemoryCache[] cache = CreateCache((CacheConfig[]) handler.Create(null, null, section));
-			Assert.That(cache[0].Priority, Is.EqualTo(CacheItemPriority.NotRemovable));
-		}
-
-		[Test]
-		public void RecognizeNumericPriorityValues()
-		{
-			const string xmlSimple = "<rtmemorycache><cache region='foo' expiration='500' priority='1' /></rtmemorycache>";
-
-			var handler = new RtMemoryCacheSectionHandler();
-			XmlNode section = GetConfigurationSection(xmlSimple);
-			RtMemoryCache[] cache = CreateCache((CacheConfig[]) handler.Create(null, null, section));
-			Assert.That(cache[0].Priority, Is.EqualTo(CacheItemPriority.NotRemovable));
 		}
 	}
 }

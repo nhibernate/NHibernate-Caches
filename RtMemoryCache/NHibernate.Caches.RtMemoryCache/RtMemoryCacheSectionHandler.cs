@@ -27,11 +27,9 @@ namespace NHibernate.Caches.RtMemoryCache
 				string region = null;
 				string expiration = null;
 				string sliding = null;
-				var priority = "3";
 				var r = node.Attributes["region"];
 				var e = node.Attributes["expiration"];
 				var s = node.Attributes["sliding"];
-				var p = node.Attributes["priority"];
 				if (r != null)
 				{
 					region = r.Value;
@@ -44,13 +42,9 @@ namespace NHibernate.Caches.RtMemoryCache
 				{
 					sliding = s.Value;
 				}
-				if (p != null)
-				{
-					priority = p.Value;
-				}
 				if (region != null && expiration != null)
 				{
-					caches.Add(new CacheConfig(region, expiration, sliding, priority));
+					caches.Add(new CacheConfig(region, expiration, sliding));
 				}
 			}
 			return caches.ToArray();

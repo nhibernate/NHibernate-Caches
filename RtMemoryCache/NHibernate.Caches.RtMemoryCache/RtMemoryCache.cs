@@ -42,7 +42,6 @@ namespace NHibernate.Caches.RtMemoryCache
 		private readonly ObjectCache cache;
 		private TimeSpan expiration;
 		private bool _useSlidingExpiration;
-		private CacheItemPriority priority;
 		// The name of the cache key used to clear the cache. All cached items depend on this key.
 		private readonly string rootCacheKey;
 		private bool rootCacheKeyStored;
@@ -103,9 +102,11 @@ namespace NHibernate.Caches.RtMemoryCache
 			get { return expiration; }
 		}
 
+		// Since v5.1
+		[Obsolete("There are not many levels of priority for RtMemoryCache, only Default and NotRemovable. Now yields always Default.")]
 		public CacheItemPriority Priority
 		{
-			get { return priority; }
+			get { return CacheItemPriority.Default; }
 		}
 
 		private void Configure(IDictionary<string, string> props)
@@ -118,12 +119,10 @@ namespace NHibernate.Caches.RtMemoryCache
 				}
 				expiration = DefaultExpiration;
 				_useSlidingExpiration = DefaultUseSlidingExpiration;
-				priority = CacheItemPriority.Default;
 				regionPrefix = DefaultRegionPrefix;
 			}
 			else
 			{
-				priority = GetPriority(props);
 				expiration= GetExpiration(props);
 				_useSlidingExpiration = GetUseSlidingExpiration(props);
 				regionPrefix= GetRegionPrefix(props);
@@ -183,49 +182,6 @@ namespace NHibernate.Caches.RtMemoryCache
 			var sliding = PropertiesHelper.GetBoolean("cache.use_sliding_expiration", props, DefaultUseSlidingExpiration);
 			log.DebugFormat("Use sliding expiration value: {0}", sliding);
 			return sliding;
-		}
-
-		private static CacheItemPriority GetPriority(IDictionary<string, string> props)
-		{
-			CacheItemPriority result = CacheItemPriority.Default;
-			string priorityString;
-			if (props.TryGetValue("priority", out priorityString))
-			{
-				result = ConvertCacheItemPriorityFromXmlString(priorityString);
-				log.DebugFormat("new priority: {0}", result);
-			}
-			return result;
-		}
-
-
-		private static CacheItemPriority ConvertCacheItemPriorityFromXmlString(string priorityString)
-		{
-			if(string.IsNullOrEmpty(priorityString))
-			{
-				return CacheItemPriority.Default;
-			}
-			var ps = priorityString.Trim().ToLowerInvariant();
-			if(ps.Length == 1 && char.IsDigit(priorityString,0))
-			{
-				// the priority is specified as a number
-				int priorityAsInt = int.Parse(ps);
-				if(priorityAsInt >= 1 && priorityAsInt <=6)
-				{
-					return (CacheItemPriority) priorityAsInt;
-				}
-			}
-			else
-			{
-				switch (ps)
-				{
-					case "default":
-						return CacheItemPriority.Default;
-					case "notremovable":
-						return CacheItemPriority.NotRemovable;
-				}
-			}
-			log.ErrorFormat("priority value out of range: {0}", priorityString);
-			throw new IndexOutOfRangeException("Priority must be a valid System.Runtime.Caching.CacheItemPriority; was: " + priorityString);
 		}
 
 		private string GetCacheKey(object key)
@@ -291,7 +247,6 @@ namespace NHibernate.Caches.RtMemoryCache
 			          new CacheItemPolicy
 			          {
 			              AbsoluteExpiration = _useSlidingExpiration ? ObjectCache.InfiniteAbsoluteExpiration : DateTimeOffset.UtcNow.Add(expiration),
-			              Priority = priority,
 			              SlidingExpiration = _useSlidingExpiration ? expiration : ObjectCache.NoSlidingExpiration,
 			              ChangeMonitors = {cache.CreateCacheEntryChangeMonitor(new[] {rootCacheKey})}
 			          });

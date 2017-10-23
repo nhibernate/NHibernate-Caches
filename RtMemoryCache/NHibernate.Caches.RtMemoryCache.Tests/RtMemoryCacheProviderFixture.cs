@@ -38,7 +38,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		{
 			XmlConfigurator.Configure();
 			base.Configure(defaultProperties);
-			defaultProperties.Add("priority", 2.ToString());
 		}
 
 		protected override Func<ICacheProvider> ProviderBuilder =>
