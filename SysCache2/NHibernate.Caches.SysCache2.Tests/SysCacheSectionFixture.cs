@@ -40,6 +40,7 @@ namespace NHibernate.Caches.SysCache2.Tests
 			Assert.That(region.Name, Is.EqualTo("foo"), "Unexpected region name");
 			Assert.That(region.Priority, Is.EqualTo(CacheItemPriority.AboveNormal), "Unexpected region priority");
 			Assert.That(region.RelativeExpiration, Is.EqualTo(TimeSpan.FromSeconds(500)), "Unexpected region relative expiration");
+			Assert.That(region.UseSlidingExpiration, Is.EqualTo(true), "Unexpected region use sliding expiration");
 		}
 	}
 }

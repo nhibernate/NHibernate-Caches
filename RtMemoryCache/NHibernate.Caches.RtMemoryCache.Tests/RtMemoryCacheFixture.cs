@@ -35,6 +35,8 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 	[TestFixture]
 	public partial class RtMemoryCacheFixture : CacheFixture
 	{
+		protected override bool SupportsSlidingExpiration => true;
+
 		protected override void Configure(Dictionary<string, string> defaultProperties)
 		{
 			XmlConfigurator.Configure();

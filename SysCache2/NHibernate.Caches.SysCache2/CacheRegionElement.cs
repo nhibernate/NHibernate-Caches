@@ -32,6 +32,11 @@ namespace NHibernate.Caches.SysCache2
 
 			properties.Add(relativeExpirationProperty);
 
+			var useSlidingExpirationProperty = new ConfigurationProperty("useSlidingExpiration", typeof(bool?), null,
+				ConfigurationPropertyOptions.None);
+
+			properties.Add(useSlidingExpirationProperty);
+
 			var timeOfDayExpirationProperty = new ConfigurationProperty("timeOfDayExpiration", typeof (TimeSpan?), null, null,
 			                                                            new NullableTimeSpanValidator(new TimeSpan(0, 0, 0),
 			                                                                                          new TimeSpan(23, 59, 59),
@@ -66,6 +71,15 @@ namespace NHibernate.Caches.SysCache2
 		public TimeSpan? RelativeExpiration
 		{
 			get { return (TimeSpan?) base["relativeExpiration"]; }
+		}
+
+		/// <summary>
+		/// The number of seconds from the time an object is added into the cache until it will 
+		/// expire from the cache.
+		/// </summary>
+		public bool? UseSlidingExpiration
+		{
+			get { return (bool?) base["useSlidingExpiration"]; }
 		}
 
 		/// <summary>
