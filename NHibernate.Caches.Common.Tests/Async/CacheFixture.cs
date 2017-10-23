@@ -11,7 +11,6 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
-using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NUnit.Framework;
 
