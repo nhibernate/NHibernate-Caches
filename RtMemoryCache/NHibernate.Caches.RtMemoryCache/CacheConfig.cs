@@ -16,10 +16,28 @@ namespace NHibernate.Caches.RtMemoryCache
 		/// <param name="region"></param>
 		/// <param name="expiration"></param>
 		/// <param name="priority"></param>
-		public CacheConfig(string region, string expiration, string priority)
+		public CacheConfig(string region, string expiration, string priority) :
+			this(region, expiration, null, priority)
+		{
+		}
+
+		/// <summary>
+		/// build a configuration
+		/// </summary>
+		/// <param name="region"></param>
+		/// <param name="expiration"></param>
+		/// <param name="sliding"></param>
+		/// <param name="priority"></param>
+		public CacheConfig(string region, string expiration, string sliding, string priority)
 		{
 			regionName = region;
-			properties = new Dictionary<string, string> {{"expiration", expiration}, {"priority", priority}};
+			properties = new Dictionary<string, string>();
+			if (!string.IsNullOrEmpty(expiration))
+				properties["expiration"] = expiration;
+			if (!string.IsNullOrEmpty(priority))
+				properties["priority"] = priority;
+			if (!string.IsNullOrEmpty(sliding))
+				properties["cache.use_sliding_expiration"] = sliding;
 		}
 
 		/// <summary></summary>
