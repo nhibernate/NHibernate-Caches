@@ -64,7 +64,7 @@ namespace NHibernate.Caches.SysCache.Tests
 		[Test]
 		public void TestGetConfigFromFile()
 		{
-			const string xmlSimple = "<syscache><cache region=\"foo\" expiration=\"500\" priority=\"4\" /></syscache>";
+			const string xmlSimple = "<syscache><cache region=\"foo\" expiration=\"500\" priority=\"4\" sliding=\"true\" /></syscache>";
 
 			var handler = new SysCacheSectionHandler();
 			XmlNode section = GetConfigurationSection(xmlSimple);
@@ -73,6 +73,7 @@ namespace NHibernate.Caches.SysCache.Tests
 			Assert.IsTrue(result is CacheConfig[]);
 			var caches = result as CacheConfig[];
 			Assert.That(caches.Length, Is.EqualTo(1));
+			Assert.That(caches[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
 		}
 
 		[Test]
