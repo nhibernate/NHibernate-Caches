@@ -7,6 +7,14 @@
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
+    <PackageReleaseNotes>* Bug
+    * [NHCH-53] - RtMemoryCache accepts invalid priorities
+
+* New Feature
+    * [NHCH-38] - add useSlidingExpiration property to choose between absolute or sliding expiration
+
+* Improvement
+    * [NHCH-50] - Non-compliant absolut expiration</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
@@ -19,5 +27,13 @@
   <ItemGroup>
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../readme.md">
+      <PackagePath>./NHibernate.Caches.readme.md</PackagePath>
+    </Content>
+    <Content Include="../../LICENSE.txt">
+      <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
+    </Content>
   </ItemGroup>
 </Project>

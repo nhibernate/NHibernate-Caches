@@ -20,6 +20,20 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.1.0 for NHibernate 5.0.0
+* Bug
+    * [NHCH-25] - TransactionScope promotes SysCache2 command dependency to a distributed transaction
+    * [NHCH-43] - QueryCache CJK language not supported
+    * [NHCH-51] - EnyimMemcached cannot be used by many session factories
+    * [NHCH-53] - RtMemoryCache accepts invalid priorities
+
+* New Feature
+    * [NHCH-38] - add useSlidingExpiration property to choose between absolute or sliding expiration
+
+* Improvement
+    * [NHCH-50] - Non-compliant absolut expiration
+    * [NHCH-52] - Add default expiration support to SysCache2
+
 #### Build 5.0.0 for NHibernate 5.0.0
 * Breaking changes
     * All cache provider works with .NET 4.6.1

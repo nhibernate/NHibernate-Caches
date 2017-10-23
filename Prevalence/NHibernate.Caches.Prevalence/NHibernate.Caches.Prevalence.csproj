@@ -24,4 +24,12 @@
       <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.Util.dll</HintPath>
     </Reference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../readme.md">
+      <PackagePath>./NHibernate.Caches.readme.md</PackagePath>
+    </Content>
+    <Content Include="../../LICENSE.txt">
+      <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
+    </Content>
+  </ItemGroup>
 </Project>
