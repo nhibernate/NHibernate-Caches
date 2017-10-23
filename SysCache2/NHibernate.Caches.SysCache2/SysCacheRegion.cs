@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
 using NHibernate.Cache;
-using Environment=NHibernate.Cfg.Environment;
+using NHibernate.Util;
+using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Caches.SysCache2
 {
@@ -16,12 +17,13 @@ namespace NHibernate.Caches.SysCache2
 	/// </summary>
 	public class SysCacheRegion : ICache
 	{
-		/// <summary>The name of the cache prefix to differntaite the nhibernate cache elements from
+		/// <summary>The name of the cache prefix to differentiate the nhibernate cache elements from
 		/// other items in the cache</summary>
 		private const string CacheKeyPrefix = "NHibernate-Cache:";
 
 		/// <summary>The default expiration to use if one is not specified</summary>
 		private static readonly TimeSpan defaultRelativeExpiration = TimeSpan.FromSeconds(300);
+		private const bool DefaultUseSlidingExpiration = false;
 
 		/// <summary>logger for the type</summary>
 		private static readonly IInternalLogger log = LoggerProvider.LoggerFor((typeof(SysCacheRegion)));
@@ -48,6 +50,7 @@ namespace NHibernate.Caches.SysCache2
 
 		/// <summary>relative expiration for the cache items</summary>
 		private TimeSpan? _relativeExpiration;
+		private bool _useSlidingExpiration;
 
 		/// <summary>time of day expiration for the cache items</summary>
 		private TimeSpan? _timeOfDayExpiration;
@@ -76,7 +79,7 @@ namespace NHibernate.Caches.SysCache2
 		public SysCacheRegion(string name, CacheRegionElement settings, IDictionary<string, string> additionalProperties)
 		{
 			//validate the params
-			if (String.IsNullOrEmpty(name))
+			if (string.IsNullOrEmpty(name))
 			{
 				log.Info("No region name specified for cache region. Using default name of 'nhibernate'");
 				name = "nhibernate";
@@ -132,10 +135,7 @@ namespace NHibernate.Caches.SysCache2
 			//get the full key to use to locate the item in the cache
 			string cacheKey = GetCacheKey(key);
 
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("Fetching object '{0}' from the cache.", cacheKey);
-			}
+			log.DebugFormat("Fetching object '{0}' from the cache.", cacheKey);
 
 			object cachedObject = _webCache.Get(cacheKey);
 			if (cachedObject == null)
@@ -184,12 +184,12 @@ namespace NHibernate.Caches.SysCache2
 			//validate the params
 			if (key == null)
 			{
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 			}
 
 			if (value == null)
 			{
-				throw new ArgumentNullException("value");
+				throw new ArgumentNullException(nameof(value));
 			}
 
 			//If the root cache item is not cached then we should reestablish it now
@@ -205,31 +205,31 @@ namespace NHibernate.Caches.SysCache2
 
 			if (_webCache[cacheKey] != null)
 			{
-				if (log.IsDebugEnabled)
-				{
-					log.DebugFormat("updating value of key '{0}' to '{1}'.", cacheKey, value.ToString());
-				}
+				log.DebugFormat("updating value of key '{0}' to '{1}'.", cacheKey, value.ToString());
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
-				{
-					log.DebugFormat("adding new data: key={0} & value={1}", cacheKey, value.ToString());
-				}
+				log.DebugFormat("adding new data: key={0} & value={1}", cacheKey, value.ToString());
 			}
+
 			//get the expiration time for the cache item
-			DateTime expiration = GetCacheItemExpiration();
+			var expiration = GetCacheItemExpiration();
+			var slidingExpiration = _useSlidingExpiration ? _relativeExpiration : null;
 
-			if (log.IsDebugEnabled)
+			if (expiration.HasValue)
 			{
-				if (expiration.Equals(System.Web.Caching.Cache.NoAbsoluteExpiration) == false)
-				{
-					log.DebugFormat("item will expire at: {0}", expiration);
-				}
+				log.DebugFormat("item will expire at: {0}", expiration);
+			}
+			else if (slidingExpiration.HasValue)
+			{
+				log.DebugFormat("item will expire in: {0} (sliding)", slidingExpiration);
 			}
 
-			_webCache.Insert(cacheKey, new DictionaryEntry(key, value), new CacheDependency(null, new[] {_rootCacheKey}),
-			                 expiration, System.Web.Caching.Cache.NoSlidingExpiration, _priority, null);
+			_webCache.Insert(
+				cacheKey, new DictionaryEntry(key, value), new CacheDependency(null, new[] {_rootCacheKey}),
+				expiration ?? System.Web.Caching.Cache.NoAbsoluteExpiration,
+				slidingExpiration ?? System.Web.Caching.Cache.NoSlidingExpiration,
+				_priority, null);
 		}
 
 		/// <summary>
@@ -250,16 +250,13 @@ namespace NHibernate.Caches.SysCache2
 		{
 			if (key == null)
 			{
-				throw new ArgumentNullException("key");
+				throw new ArgumentNullException(nameof(key));
 			}
 
 			//get the full cache key
 			string cacheKey = GetCacheKey(key);
 
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("removing item with key:", cacheKey);
-			}
+			log.DebugFormat("removing item with key: {0}", cacheKey);
 
 			_webCache.Remove(cacheKey);
 		}
@@ -270,8 +267,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <value></value>
 		public int Timeout
 		{
-			get { return Timestamper.OneMs * 60000; // 60 seconds
-			}
+			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
 		/// <summary>
@@ -363,6 +359,7 @@ namespace NHibernate.Caches.SysCache2
 			string connectionName = null;
 			string connectionString = null;
 			var defaultExpiration = defaultRelativeExpiration;
+			_useSlidingExpiration = DefaultUseSlidingExpiration;
 
 			if (additionalProperties != null)
 			{
@@ -379,7 +376,7 @@ namespace NHibernate.Caches.SysCache2
 
 				if (!additionalProperties.TryGetValue("expiration", out var expirationString))
 				{
-					additionalProperties.TryGetValue(Cfg.Environment.CacheDefaultExpiration, out expirationString);
+					additionalProperties.TryGetValue(Environment.CacheDefaultExpiration, out expirationString);
 				}
 
 				if (expirationString != null)
@@ -388,14 +385,17 @@ namespace NHibernate.Caches.SysCache2
 					{
 						var seconds = Convert.ToInt32(expirationString);
 						defaultExpiration = TimeSpan.FromSeconds(seconds);
-						log.DebugFormat("default expiration value: {0}",  seconds);
+						log.DebugFormat("default expiration value: {0}", seconds);
 					}
 					catch (Exception ex)
 					{
-						log.Error("error parsing expiration value");
-						throw new ArgumentException("could not parse 'expiration' as a number of seconds", ex);
+						log.ErrorFormat("error parsing expiration value '{0}'", expirationString);
+						throw new ArgumentException($"could not parse expiration '{expirationString}' as a number of seconds", ex);
 					}
 				}
+
+				_useSlidingExpiration = PropertiesHelper.GetBoolean("cache.use_sliding_expiration", additionalProperties, DefaultUseSlidingExpiration);
+				log.DebugFormat("default sliding expiration value: {0}", _useSlidingExpiration);
 			}
 
 			if (settings != null)
@@ -403,6 +403,7 @@ namespace NHibernate.Caches.SysCache2
 				_priority = settings.Priority;
 				_timeOfDayExpiration = settings.TimeOfDayExpiration;
 				_relativeExpiration = settings.RelativeExpiration;
+				_useSlidingExpiration = settings.UseSlidingExpiration ?? _useSlidingExpiration;
 
 				if (log.IsDebugEnabled)
 				{
@@ -410,7 +411,7 @@ namespace NHibernate.Caches.SysCache2
 
 					if (_relativeExpiration.HasValue)
 					{
-						log.DebugFormat("using relative expiration: {0}", _relativeExpiration);
+						log.DebugFormat("using relative expiration: {0}{1}", _relativeExpiration, _useSlidingExpiration ? " (sliding)" : string.Empty);
 					}
 
 					if (_timeOfDayExpiration.HasValue)
@@ -425,10 +426,7 @@ namespace NHibernate.Caches.SysCache2
 			{
 				_priority = CacheItemPriority.Default;
 
-				if (log.IsDebugEnabled)
-				{
-					log.DebugFormat("no priority specified, using default: {0:g}", _priority);
-				}
+				log.DebugFormat("no priority specified, using default: {0:g}", _priority);
 			}
 
 			//use the default expiration as no expiration was set
@@ -436,10 +434,7 @@ namespace NHibernate.Caches.SysCache2
 			{
 				_relativeExpiration = defaultExpiration;
 
-				if (log.IsDebugEnabled)
-				{
-					log.DebugFormat("no expiration specified, using default: {0}", _relativeExpiration);
-				}
+				log.DebugFormat("no expiration specified, using default: {0}", _relativeExpiration);
 			}
 		}
 
@@ -464,11 +459,8 @@ namespace NHibernate.Caches.SysCache2
 			{
 				foreach (TableCacheDependencyElement tableConfig in dependencyConfig.TableDependencies)
 				{
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("configuring sql table dependency, '{0}' using table, '{1}', and database entry. '{2}'",
-						                 tableConfig.Name, tableConfig.TableName, tableConfig.DatabaseEntryName);
-					}
+					log.DebugFormat("configuring sql table dependency, '{0}' using table, '{1}', and database entry. '{2}'",
+					                 tableConfig.Name, tableConfig.TableName, tableConfig.DatabaseEntryName);
 
 					var tableEnlister = new SqlTableCacheDependencyEnlister(tableConfig.TableName, tableConfig.DatabaseEntryName);
 
@@ -484,23 +476,15 @@ namespace NHibernate.Caches.SysCache2
 					//construct the correct connection string provider, we will do are best fallback to a connection string provider
 					//that will help us find a connection string even if one isnt specified
 
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("configuring sql command dependency, '{0}', using command, '{1}'", commandConfig.Name,
-						                 commandConfig.Command);
-						log.DebugFormat("command configured as stored procedure: {0}", commandConfig.IsStoredProcedure);
-					}
+					log.DebugFormat("configuring sql command dependency, '{0}', using command, '{1}'", commandConfig.Name, commandConfig.Command);
+					log.DebugFormat("command configured as stored procedure: {0}", commandConfig.IsStoredProcedure);
 
 					IConnectionStringProvider connectionStringProvider;
 					string connectionName = null;
 
 					if (commandConfig.ConnectionStringProviderType != null)
 					{
-						if (log.IsDebugEnabled)
-						{
-							log.DebugFormat("Activating configured connection string provider, '{0}'",
-							                 commandConfig.ConnectionStringProviderType.ToString());
-						}
+						log.DebugFormat("Activating configured connection string provider, '{0}'", commandConfig.ConnectionStringProviderType.ToString());
 
 						connectionStringProvider =
 							Activator.CreateInstance(commandConfig.ConnectionStringProviderType) as IConnectionStringProvider;
@@ -513,7 +497,7 @@ namespace NHibernate.Caches.SysCache2
 						//then just use the default connection string
 						if (String.IsNullOrEmpty(defaultConnectionName) && String.IsNullOrEmpty(commandConfig.ConnectionName))
 						{
-							log.DebugFormat("no connection string provider specified using nhibernate configured connection string");
+							log.Debug("no connection string provider specified using nhibernate configured connection string");
 
 							connectionStringProvider = new StaticConnectionStringProvider(defaultConnectionString);
 						}
@@ -532,10 +516,7 @@ namespace NHibernate.Caches.SysCache2
 								connectionName = defaultConnectionName;
 							}
 
-							if (log.IsDebugEnabled)
-							{
-								log.DebugFormat("no connection string provider specified, using connection with name : {0}", connectionName);
-							}
+							log.DebugFormat("no connection string provider specified, using connection with name : {0}", connectionName);
 						}
 					}
 
@@ -576,10 +557,7 @@ namespace NHibernate.Caches.SysCache2
 		/// </remarks>
 		private void CacheRootItem()
 		{
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("Creating root cache entry for cache region: {0}", _name);
-			}
+			log.DebugFormat("Creating root cache entry for cache region: {0}", _name);
 
 			//register ant cache dependencies for change notifications
 			//and build an aggragate dependency if multiple dependencies exist
@@ -630,11 +608,8 @@ namespace NHibernate.Caches.SysCache2
 		///	</remarks>
 		private void RootCacheItemRemovedCallback(string key, object value, CacheItemRemovedReason reason)
 		{
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("Cache items for region '{0}' have been removed from the cache for the following reason : {1}",
-				                 _name, reason.ToString("g"));
-			}
+			log.DebugFormat("Cache items for region '{0}' have been removed from the cache for the following reason : {1}",
+			                 _name, reason.ToString("g"));
 
 			//lets us know that we need to reestablish the root cache item for this region
 			_isRootItemCached = false;
@@ -644,39 +619,38 @@ namespace NHibernate.Caches.SysCache2
 		/// Gets the expiration time for a new item added to the cache
 		/// </summary>
 		/// <returns></returns>
-		private DateTime GetCacheItemExpiration()
+		private DateTime? GetCacheItemExpiration()
 		{
-			DateTime expiration = System.Web.Caching.Cache.NoAbsoluteExpiration;
-
 			//use the relative expiration if one is specified, otherwise use the 
 			//time of day expiration if that is specified
 			if (_relativeExpiration.HasValue)
 			{
-				expiration = DateTime.UtcNow.Add(_relativeExpiration.Value);
+				if (_useSlidingExpiration)
+					return null;
+				return DateTime.UtcNow.Add(_relativeExpiration.Value);
 			}
-			else if (_timeOfDayExpiration.HasValue)
+
+			if (!_timeOfDayExpiration.HasValue)
+				return null;
+
+			// Done in local time. Recommendation for supplying expiration is UTC, but that would
+			// shift the _timeOfDayExpiration hour.
+
+			//calculate the expiration by starting at 12 am of today
+			DateTime timeExpiration = DateTime.Today;
+
+			//add a day to the expiration time if the time of day has already passed,
+			//this will cause the item to expire tommorrow
+			if (DateTime.Now.TimeOfDay > _timeOfDayExpiration.Value)
 			{
-				// Done in local time. Recommendation for supplying expiration is UTC, but that would
-				// shift the _timeOfDayExpiration hour.
-
-				//calculate the expiration by starting at 12 am of today
-				DateTime timeExpiration = DateTime.Today;
-
-				//add a day to the expiration time if the time of day has already passed,
-				//this will cause the item to expire tommorrow
-				if (DateTime.Now.TimeOfDay > _timeOfDayExpiration.Value)
-				{
-					timeExpiration = timeExpiration.AddDays(1);
-				}
-
-				//adding the specified time of day expiration to the adjusted base date
-				//will provide us with the time of day expiration specified
-				timeExpiration = timeExpiration.Add(_timeOfDayExpiration.Value);
-
-				expiration = timeExpiration;
+				timeExpiration = timeExpiration.AddDays(1);
 			}
 
-			return expiration;
+			//adding the specified time of day expiration to the adjusted base date
+			//will provide us with the time of day expiration specified
+			timeExpiration = timeExpiration.Add(_timeOfDayExpiration.Value);
+
+			return timeExpiration;
 		}
 	}
 }

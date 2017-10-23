@@ -9,6 +9,7 @@ namespace NHibernate.Caches.Common.Tests
 	[TestFixture]
 	public abstract partial class CacheFixture : Fixture
 	{
+		protected virtual bool SupportsSlidingExpiration => false;
 		protected virtual bool SupportsDistinguishingKeysWithSameStringRepresentationAndHashcode => true;
 
 		[Test]
@@ -202,10 +203,12 @@ namespace NHibernate.Caches.Common.Tests
 
 			Assert.That(cache.Get(key), Is.Null, "Unexpected entry for key");
 			cache.Put(key, obj);
+			// Wait up to 1 sec before expiration
+			Thread.Sleep(TimeSpan.FromSeconds(expirySeconds - 1));
 			Assert.That(cache.Get(key), Is.Not.Null, "Missing entry for key");
 
-			// Wait
-			Thread.Sleep(TimeSpan.FromSeconds(expirySeconds + 2));
+			// Wait expiration
+			Thread.Sleep(TimeSpan.FromSeconds(2));
 
 			// Check it expired
 			Assert.That(cache.Get(key), Is.Null, "Unexpected entry for key after expiration");
@@ -233,6 +236,36 @@ namespace NHibernate.Caches.Common.Tests
 
 			// Wait
 			Thread.Sleep(TimeSpan.FromSeconds(expirySeconds + 2));
+
+			// Check it expired
+			Assert.That(cache.Get(key), Is.Null, "Unexpected entry for key after expiration");
+		}
+
+		[Test]
+		public void TestSlidingExpiration()
+		{
+			if (!SupportsSlidingExpiration)
+				Assert.Ignore("Provider does not support sliding expiration settings");
+
+			const int expirySeconds = 3;
+			const string key = "keyTestSlidingExpiration";
+			var obj = new SomeObject { Id = 2 };
+
+			var props = GetPropertiesForExpiration(Cfg.Environment.CacheDefaultExpiration, expirySeconds.ToString());
+			props["cache.use_sliding_expiration"] = "true";
+			var cache = DefaultProvider.BuildCache("TestObjectExpiration", props);
+
+			cache.Put(key, obj);
+			// Wait up to 1 sec before expiration
+			Thread.Sleep(TimeSpan.FromSeconds(expirySeconds - 1));
+			Assert.That(cache.Get(key), Is.Not.Null, "Missing entry for key");
+
+			// Wait up to 1 sec before expiration again
+			Thread.Sleep(TimeSpan.FromSeconds(expirySeconds - 1));
+			Assert.That(cache.Get(key), Is.Not.Null, "Missing entry for key after get and wait less than expiration");
+
+			// Wait expiration
+			Thread.Sleep(TimeSpan.FromSeconds(expirySeconds + 1));
 
 			// Check it expired
 			Assert.That(cache.Get(key), Is.Null, "Unexpected entry for key after expiration");

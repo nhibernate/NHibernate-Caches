@@ -36,6 +36,8 @@ namespace NHibernate.Caches.SysCache.Tests
 	[TestFixture]
 	public partial class SysCacheFixture : CacheFixture
 	{
+		protected override bool SupportsSlidingExpiration => true;
+
 		protected override void Configure(Dictionary<string, string> defaultProperties)
 		{
 			XmlConfigurator.Configure();
