@@ -41,7 +41,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		{
 			XmlConfigurator.Configure();
 			base.Configure(defaultProperties);
-			defaultProperties.Add("priority", 1.ToString());
 		}
 
 		protected override Func<ICacheProvider> ProviderBuilder =>
@@ -57,15 +56,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		public void TestNoPropertiesConstructor()
 		{
 			Assert.That(() => new RtMemoryCache("TestNoPropertiesConstructor"), Throws.Nothing);
-		}
-
-		[Test]
-		public void TestPriorityOutOfRange()
-		{
-			var props = GetDefaultProperties();
-			props["priority"] = 7.ToString();
-			Assert.That(() => DefaultProvider.BuildCache("TestPriorityOutOfRange", props),
-				Throws.TypeOf<IndexOutOfRangeException>());
 		}
 
 		[Test]
