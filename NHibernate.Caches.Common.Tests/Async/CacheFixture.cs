@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading;
+using Iesi.Collections.Generic;
 using NHibernate.Cache;
 using NUnit.Framework;
 
@@ -199,6 +200,39 @@ namespace NHibernate.Caches.Common.Tests
 
 			// Check it expired
 			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.Null, "Unexpected entry for key after expiration");
+		}
+
+		// NHCH-43
+		[Test]
+		public async Task TestUnicodeAsync()
+		{
+			var keyValues = new Dictionary<string, string>
+			{
+				{"길동", "valuePut1"},
+				{"최고", "valuePut2"},
+				{"新闻", "valuePut3"},
+				{"地图", "valuePut4"},
+				{"ます", "valuePut5"},
+				{"プル", "valuePut6"}
+			};
+			var cache = GetDefaultCache();
+
+			// Troubles may specifically arise with long keys, where a hashing algorithm may be used.
+			var longKeyPrefix = new string('_', 1000);
+			var longKeyValueSuffix = "Long";
+			foreach (var kv in keyValues)
+			{
+				await (cache.PutAsync(kv.Key, kv.Value, CancellationToken.None));
+				await (cache.PutAsync(longKeyPrefix + kv.Key, kv.Value + longKeyValueSuffix, CancellationToken.None));
+			}
+
+			foreach (var kv in keyValues)
+			{
+				var item = await (cache.GetAsync(kv.Key, CancellationToken.None));
+				Assert.That(item, Is.EqualTo(kv.Value), $"Didn't return the item we added for key {kv.Key}");
+				item = await (cache.GetAsync(longKeyPrefix + kv.Key, CancellationToken.None));
+				Assert.That(item, Is.EqualTo(kv.Value + longKeyValueSuffix), $"Didn't return the item we added for long key {kv.Key}");
+			}
 		}
 	}
 }
