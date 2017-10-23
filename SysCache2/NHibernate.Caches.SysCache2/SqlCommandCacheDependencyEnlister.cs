@@ -1,6 +1,7 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.Transactions;
 using System.Web.Caching;
 
 namespace NHibernate.Caches.SysCache2
@@ -13,8 +14,8 @@ namespace NHibernate.Caches.SysCache2
 		/// <summary>sql command to use for creating notifications</summary>
 		private readonly string command;
 
-        /// <summary>SQL command timeout. If null, the default is used.</summary>
-        private readonly int? commandTimeout;
+		/// <summary>SQL command timeout. If null, the default is used.</summary>
+		private readonly int? commandTimeout;
 
 		/// <summary>The name of the connection string</summary>
 		private readonly string connectionName;
@@ -25,7 +26,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <summary>indicates if the command is a stored procedure or not</summary>
 		private readonly bool isStoredProcedure;
 
-	    /// <summary>
+		/// <summary>
 		/// Initializes a new instance of the <see cref="SqlCommandCacheDependencyEnlister"/> class.
 		/// </summary>
 		/// <param name="command">The command.</param>
@@ -43,14 +44,15 @@ namespace NHibernate.Caches.SysCache2
 		/// </summary>
 		/// <param name="command">The command.</param>
 		/// <param name="isStoredProcedure">if set to <c>true</c> [is stored procedure].</param>
-        /// <param name="commandTimeout">The command timeout in seconds. If null, the default is used.</param>
+		/// <param name="commandTimeout">The command timeout in seconds. If null, the default is used.</param>
 		/// <param name="connectionName">Name of the connection.</param>
 		/// <param name="connectionStringProvider">The <see cref="IConnectionStringProvider"/> to use 
 		///		to retrieve the connection string to connect to the underlying data store and enlist in query notifications</param>
 		/// <exception cref="ArgumentNullException">Thrown if <paramref name="command"/> or 
 		///		<paramref name="connectionStringProvider"/> is null or empty.</exception>
-        public SqlCommandCacheDependencyEnlister(string command, bool isStoredProcedure, 
-            int? commandTimeout, string connectionName, IConnectionStringProvider connectionStringProvider)
+		public SqlCommandCacheDependencyEnlister(
+			string command, bool isStoredProcedure, int? commandTimeout, string connectionName,
+			IConnectionStringProvider connectionStringProvider)
 		{
 			//validate the parameters
 			if (String.IsNullOrEmpty(command))
@@ -65,8 +67,8 @@ namespace NHibernate.Caches.SysCache2
 
 			this.command = command;
 			this.isStoredProcedure = isStoredProcedure;
-            this.commandTimeout = commandTimeout;
-		    this.connectionName = connectionName;
+			this.commandTimeout = commandTimeout;
+			this.connectionName = connectionName;
 
 			connectionString = String.IsNullOrEmpty(this.connectionName) ? connectionStringProvider.GetConnectionString() : connectionStringProvider.GetConnectionString(this.connectionName);
 		}
@@ -74,7 +76,7 @@ namespace NHibernate.Caches.SysCache2
 		#region ICacheDependencyEnlister Members
 
 		/// <summary>
-		/// Enlists a cache dependency to recieve change notifciations with an underlying resource
+		/// Enlists a cache dependency to receive change notifciations with an underlying resource
 		/// </summary>
 		/// <returns>
 		/// The cache dependency linked to the notification subscription
@@ -84,7 +86,9 @@ namespace NHibernate.Caches.SysCache2
 			SqlCacheDependency dependency;
 
 			//setup and execute the command that will register the cache dependency for
-			//change notifications
+			//change notifications. Ensure the dependency command is executed outside any
+			//ambient transaction that may be present.
+			using (var transaction = new TransactionScope(TransactionScopeOption.Suppress))
 			using (var connection = new SqlConnection(connectionString))
 			{
 				using (var exeCommand = new System.Data.SqlClient.SqlCommand(command, connection))
@@ -95,10 +99,10 @@ namespace NHibernate.Caches.SysCache2
 						exeCommand.CommandType = CommandType.StoredProcedure;
 					}
 
-                    if (commandTimeout.HasValue)
-				        exeCommand.CommandTimeout = this.commandTimeout.Value;
+					if (commandTimeout.HasValue)
+						exeCommand.CommandTimeout = commandTimeout.Value;
 
-					//hook the deondency up to the command
+					//hook the dependency up to the command
 					dependency = new SqlCacheDependency(exeCommand);
 
 					connection.Open();
@@ -106,6 +110,8 @@ namespace NHibernate.Caches.SysCache2
 					//we dont need any results
 					exeCommand.ExecuteNonQuery();
 				}
+
+				transaction.Complete();
 			}
 
 			return dependency;
