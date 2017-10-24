@@ -20,6 +20,14 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.2.0 for NHibernate 5.0.0
+* Bug
+    * #19 - Partially configured regions do not fallback on defaults
+
+* Improvement
+    * #20 - Modernize locking in SysCache2
+    * #24 - Generates ICache async counter-parts instead of hand coding them
+
 #### Build 5.1.0 for NHibernate 5.0.0
 * Bug
     * [NHCH-25] - TransactionScope promotes SysCache2 command dependency to a distributed transaction
