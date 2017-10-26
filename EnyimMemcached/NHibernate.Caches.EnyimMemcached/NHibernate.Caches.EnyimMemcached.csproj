@@ -7,9 +7,7 @@
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
-    <PackageReleaseNotes>* Bug
-    * [NHCH-43] - QueryCache CJK language not supported
-    * [NHCH-51] - EnyimMemcached cannot be used by many session factories</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />

@@ -7,15 +7,7 @@
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
-    <PackageReleaseNotes>* Bug
-    * [NHCH-25] - TransactionScope promotes SysCache2 command dependency to a distributed transaction
-
-* New Feature
-    * [NHCH-38] - add useSlidingExpiration property to choose between absolute or sliding expiration
-
-* Improvement
-    * [NHCH-50] - Non-compliant absolut expiration
-    * [NHCH-52] - Add default expiration support to SysCache2</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
