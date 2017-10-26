@@ -7,11 +7,7 @@
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
-    <PackageReleaseNotes>* New Feature
-    * [NHCH-38] - add useSlidingExpiration property to choose between absolute or sliding expiration
-
-* Improvement
-    * [NHCH-50] - Non-compliant absolut expiration</PackageReleaseNotes>
+    <PackageReleaseNotes></PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
