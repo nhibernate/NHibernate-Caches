@@ -1,3 +1,4 @@
 nuget.exe
 NUnit.*
 CSharpAsyncGenerator.CommandLine.*
+!nant/bin

@@ -7,11 +7,7 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
-    <PackageReference Include="Memcached.ClientLibrary" Version="1.0" />
     <PackageReference Include="log4net" Version="1.2.10" />
-    <PackageReference Include="NHibernate" Version="5.0.0" />
-    <PackageReference Include="NUnit" Version="3.8.1" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj" />
