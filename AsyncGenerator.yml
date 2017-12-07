@@ -1,4 +1,228 @@
 ﻿projects:
+- filePath: EnyimMemcached\NHibernate.Caches.EnyimMemcached\NHibernate.Caches.EnyimMemcached.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
+- filePath: MemCache\NHibernate.Caches.MemCache\NHibernate.Caches.MemCache.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
+- filePath: Prevalence\NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
+- filePath: RtMemoryCache\NHibernate.Caches.RtMemoryCache\NHibernate.Caches.RtMemoryCache.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
+- filePath: SharedCache\NHibernate.Caches.SharedCache\NHibernate.Caches.SharedCache.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
+- filePath: SysCache\NHibernate.Caches.SysCache\NHibernate.Caches.SysCache.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
+- filePath: SysCache2\NHibernate.Caches.SysCache2\NHibernate.Caches.SysCache2.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
+- filePath: Velocity\NHibernate.Caches.Velocity\NHibernate.Caches.Velocity.csproj
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
 - filePath: NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj
   concurrentRun: true
   applyChanges: true

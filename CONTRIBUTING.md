@@ -20,7 +20,7 @@ The main GitHub repository is at [https://github.com/nhibernate/NHibernate-Cache
 
 **Nant** builds are defined in the root of the repository.
 
-1.  Run **nant generate-async** to generate async counterparts of any test you have added or changed.
+1.  Run **nant generate-async** to generate async counterparts of any method you have added or changed (including tests).
 2.  Run **nant test** to run the tests. Cache provider tests depending on a cache server does not fail the task by default, check the nant output for unexpected failures.
 3.  **GaRelease.bat** will create the release package.
 
