@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using NHibernate.Cache;
 
@@ -9,16 +11,13 @@ namespace NHibernate.Caches.SysCache2
 	public class SysCacheProvider : ICacheProvider
 	{
 		/// <summary>pre configured cache region settings</summary>
-		private static readonly Dictionary<string, SysCacheRegion> CacheRegions;
+		private static readonly ConcurrentDictionary<string, Lazy<ICache>> CacheRegions = new ConcurrentDictionary<string, Lazy<ICache>>();
 
 		/// <summary>list of pre configured already built cache regions</summary>
-		private static readonly CacheRegionCollection CacheRegionSettingsList;
+		private static readonly Dictionary<string, CacheRegionElement> CacheRegionSettings;
 
 		/// <summary>log4net logger</summary>
 		private static readonly IInternalLogger Log;
-
-		/// <summary>synchronizing object for the cache regions dictionary</summary>
-		private static readonly object RegionsSyncRoot = new object();
 
 		/// <summary>
 		/// Initializes the <see cref="SysCacheProvider"/> class.
@@ -35,12 +34,15 @@ namespace NHibernate.Caches.SysCache2
 
 			if (configSection != null && configSection.CacheRegions.Count > 0)
 			{
-				CacheRegionSettingsList = configSection.CacheRegions;
-				CacheRegions = new Dictionary<string, SysCacheRegion>(CacheRegionSettingsList.Count);
+				CacheRegionSettings = new Dictionary<string, CacheRegionElement>(configSection.CacheRegions.Count);
+				foreach (var cacheRegion in configSection.CacheRegions)
+				{
+					if (cacheRegion is CacheRegionElement element)
+						CacheRegionSettings.Add(element.Name, element);
+				}
 			}
 			else
 			{
-				CacheRegions = new Dictionary<string, SysCacheRegion>(0);
 				Log.Info(
 					"No cache regions specified. Cache regions can be specified in sysCache configuration section with custom settings.");
 			}
@@ -56,49 +58,36 @@ namespace NHibernate.Caches.SysCache2
 			// since query caches are not configured at session factory startup. This may also happen
 			// if many session factories are built.
 			// This cache avoids to duplicate the configured SQL dependencies registration in above cases.
-			if (!string.IsNullOrEmpty(regionName) && CacheRegions.TryGetValue(regionName, out var cache))
+			if (!string.IsNullOrEmpty(regionName)
+				// We do not cache non-configured caches, so must first look-up settings for knowing if it
+				// is a configured one.
+				&& CacheRegionSettings.TryGetValue(regionName, out var regionSettings))
 			{
-				return cache;
+				// The Lazy<T> is required for ensuring the cache is built only once. ConcurrentDictionary
+				// may run concurrently the value factory for the same key, but it will yield only one
+				// of the resulting Lazy<T>. The lazy will then actually build the cache when accessing its
+				// value after having obtained it, and it will not do that concurrently.
+				// https://stackoverflow.com/a/31637510/1178314
+				var cache = CacheRegions.GetOrAdd(regionName,
+					r => new Lazy<ICache>(() => BuildCache(r, properties, regionSettings)));
+				return cache.Value;
 			}
 
-			// Build the cache from preconfigured values if the region has configuration values
-			if (CacheRegionSettingsList != null)
-			{
-				var regionSettings = regionName == null ? null : CacheRegionSettingsList[regionName];
+			// We will end up creating cache regions here for cache regions that NHibernate
+			// uses internally and cache regions that weren't specified in the application config file
+			return BuildCache(regionName, properties, null);
+		}
 
-				if (regionSettings != null)
-				{
-					SysCacheRegion cacheRegion;
-
-					lock (RegionsSyncRoot)
-					{
-						// Note that the only reason we have to do this double check is because the query cache
-						// can try to create caches at unpredictable times.
-						if (CacheRegions.TryGetValue(regionName, out cacheRegion) == false)
-						{
-							if (Log.IsDebugEnabled)
-							{
-								Log.DebugFormat("building cache region, '{0}', from configuration", regionName);
-							}
-
-							//build the cache region with settings and put it into the list so that this proces will not occur again
-							cacheRegion = new SysCacheRegion(regionName, regionSettings, properties);
-							CacheRegions[regionName] = cacheRegion;
-						}
-					}
-
-					return cacheRegion;
-				}
-			}
-
+		private ICache BuildCache(string regionName, IDictionary<string, string> properties, CacheRegionElement settings)
+		{
 			if (Log.IsDebugEnabled)
 			{
-				Log.DebugFormat("building non-configured cache region : {0}", regionName);
+				Log.DebugFormat(
+					settings != null
+						? "building cache region, '{0}', from configuration"
+						: "building non-configured cache region : {0}", regionName);
 			}
-
-			//we will end up creating cache regions here for cache regions that nhibernate
-			//uses internally and cache regions that weren't specified in the application config file
-			return new SysCacheRegion(regionName, properties);
+			return new SysCacheRegion(regionName, settings, properties);
 		}
 
 		/// <inheritdoc />
