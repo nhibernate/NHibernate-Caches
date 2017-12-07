@@ -22,8 +22,6 @@
 
 #endregion
 
-using System.Collections.Generic;
-using System.Runtime.Caching;
 using System.Xml;
 using NUnit.Framework;
 
@@ -37,16 +35,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 			var doc = new XmlDocument();
 			doc.LoadXml(xml);
 			return doc.DocumentElement;
-		}
-
-		public RtMemoryCache[] CreateCache(CacheConfig[] configuration)
-		{
-			var result = new List<RtMemoryCache>(configuration.Length);
-			foreach (var config in configuration)
-			{
-				result.Add(new RtMemoryCache(config.Region, config.Properties));
-			}
-			return result.ToArray();
 		}
 
 		[Test]

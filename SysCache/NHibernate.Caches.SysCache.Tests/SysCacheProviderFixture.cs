@@ -50,5 +50,28 @@ namespace NHibernate.Caches.SysCache.Tests
 			var cache = DefaultProvider.BuildCache("foo", null);
 			Assert.That(cache, Is.Not.Null, "pre-configured cache not found");
 		}
+
+		[Test]
+		public void TestExpiration()
+		{
+			var cache = DefaultProvider.BuildCache("foo", null) as SysCache;
+			Assert.That(cache, Is.Not.Null, "pre-configured foo cache not found");
+			Assert.That(cache.Expiration, Is.EqualTo(TimeSpan.FromSeconds(500)), "Unexpected expiration value for foo region");
+
+			cache = DefaultProvider.BuildCache("noExplicitExpiration", null) as SysCache;
+			Assert.That(cache.Expiration, Is.EqualTo(TimeSpan.FromSeconds(300)),
+				"Unexpected expiration value for noExplicitExpiration region");
+			Assert.That(cache.UseSlidingExpiration, Is.True, "Unexpected sliding value for noExplicitExpiration region");
+
+			cache = DefaultProvider
+				.BuildCache("noExplicitExpiration", new Dictionary<string, string> { { "expiration", "100" } }) as SysCache;
+			Assert.That(cache.Expiration, Is.EqualTo(TimeSpan.FromSeconds(100)),
+				"Unexpected expiration value for noExplicitExpiration region with default expiration");
+
+			cache = DefaultProvider
+				.BuildCache("noExplicitExpiration", new Dictionary<string, string> { { Cfg.Environment.CacheDefaultExpiration, "50" } }) as SysCache;
+			Assert.That(cache.Expiration, Is.EqualTo(TimeSpan.FromSeconds(50)),
+				"Unexpected expiration value for noExplicitExpiration region with cache.default_expiration");
+		}
 	}
 }

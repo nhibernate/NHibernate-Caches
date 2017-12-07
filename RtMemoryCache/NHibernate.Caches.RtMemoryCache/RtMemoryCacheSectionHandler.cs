@@ -9,6 +9,8 @@ namespace NHibernate.Caches.RtMemoryCache
 	/// </summary>
 	public class RtMemoryCacheSectionHandler : IConfigurationSectionHandler
 	{
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(RtMemoryCacheSectionHandler));
+
 		#region IConfigurationSectionHandler Members
 
 		/// <summary>
@@ -42,9 +44,14 @@ namespace NHibernate.Caches.RtMemoryCache
 				{
 					sliding = s.Value;
 				}
-				if (region != null && expiration != null)
+				if (region != null)
 				{
 					caches.Add(new CacheConfig(region, expiration, sliding));
+				}
+				else
+				{
+					Log.WarnFormat("Found a cache node lacking a region name: ignored. Node: {0}",
+						node.OuterXml);
 				}
 			}
 			return caches.ToArray();

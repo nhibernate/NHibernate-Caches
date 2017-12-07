@@ -74,7 +74,7 @@ namespace NHibernate.Caches.MemCache.Tests
 
 			// add the item
 			await (cache.PutAsync(key, value, CancellationToken.None));
-			Thread.Sleep(1000);
+			await (Task.Delay(1000));
 
 			// make sure it's there
 			var item = await (cache.GetAsync(key, CancellationToken.None));
