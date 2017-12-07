@@ -32,32 +32,25 @@ namespace NHibernate.Caches.RtMemoryCache
 	/// </summary>
 	public class RtMemoryCacheProvider : ICacheProvider
 	{
-		private static readonly Dictionary<string, ICache> caches;
-		private static readonly IInternalLogger log;
+		private static readonly Dictionary<string, IDictionary<string, string>> ConfiguredCachesProperties;
+		private static readonly IInternalLogger Log;
 
-        static RtMemoryCacheProvider()
+		static RtMemoryCacheProvider()
 		{
-            log = LoggerProvider.LoggerFor(typeof(RtMemoryCacheProvider));
-			caches = new Dictionary<string, ICache>();
+			Log = LoggerProvider.LoggerFor(typeof(RtMemoryCacheProvider));
+			ConfiguredCachesProperties = new Dictionary<string, IDictionary<string, string>>();
 
-			var list = ConfigurationManager.GetSection("rtmemorycache") as CacheConfig[];
-			if (list != null)
+			if (!(ConfigurationManager.GetSection("rtmemorycache") is CacheConfig[] list))
+				return;
+			foreach (var cache in list)
 			{
-				foreach (CacheConfig cache in list)
-				{
-                    caches.Add(cache.Region, new RtMemoryCache(cache.Region, cache.Properties));
-				}
+				ConfiguredCachesProperties.Add(cache.Region, cache.Properties);
 			}
 		}
 
 		#region ICacheProvider Members
 
-		/// <summary>
-		/// build a new RtMemoryCache
-		/// </summary>
-		/// <param name="regionName"></param>
-		/// <param name="properties"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			if (regionName == null)
@@ -65,10 +58,21 @@ namespace NHibernate.Caches.RtMemoryCache
 				regionName = string.Empty;
 			}
 
-			ICache result;
-			if(caches.TryGetValue(regionName, out result))
+			if (ConfiguredCachesProperties.TryGetValue(regionName, out var configuredProperties) && configuredProperties.Count > 0)
 			{
-				return result;
+				if (properties != null)
+				{
+					// Duplicate it for not altering the global configuration
+					properties = new Dictionary<string, string>(properties);
+					foreach (var prop in configuredProperties)
+					{
+						properties[prop.Key] = prop.Value;
+					}
+				}
+				else
+				{
+					properties = configuredProperties;
+				}
 			}
 
 			// create cache
@@ -76,13 +80,12 @@ namespace NHibernate.Caches.RtMemoryCache
 			{
 				properties = new Dictionary<string, string>(1);
 			}
-				
-			if (log.IsDebugEnabled)
+
+			if (Log.IsDebugEnabled)
 			{
 				var sb = new StringBuilder();
-				sb.Append("building cache with region: ").Append(regionName).Append(", properties: ");
 
-				foreach (KeyValuePair<string, string> de in properties)
+				foreach (var de in properties)
 				{
 					sb.Append("name=");
 					sb.Append(de.Key);
@@ -90,19 +93,27 @@ namespace NHibernate.Caches.RtMemoryCache
 					sb.Append(de.Value);
 					sb.Append(";");
 				}
-				log.Debug(sb.ToString());
+
+				Log.DebugFormat("building cache with region: {0}, properties: {1}" , regionName, sb.ToString());
 			}
-            return new RtMemoryCache(regionName, properties);
+			return new RtMemoryCache(regionName, properties);
 		}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		public void Start(IDictionary<string, string> properties) {}
+		/// <inheritdoc />
+		public void Start(IDictionary<string, string> properties)
+		{
+		}
 
-		public void Stop() {}
+		/// <inheritdoc />
+		public void Stop()
+		{
+		}
 
 		#endregion
 	}

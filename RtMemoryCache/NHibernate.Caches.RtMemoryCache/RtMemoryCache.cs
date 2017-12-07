@@ -36,19 +36,17 @@ namespace NHibernate.Caches.RtMemoryCache
 	/// </summary>
 	public class RtMemoryCache : ICache
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor(typeof(RtMemoryCache));
-		private readonly string region;
-		private string regionPrefix;
-		private readonly ObjectCache cache;
-		private TimeSpan expiration;
-		private bool _useSlidingExpiration;
+		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(RtMemoryCache));
+		private string _regionPrefix;
+		private readonly ObjectCache _cache;
+
 		// The name of the cache key used to clear the cache. All cached items depend on this key.
-		private readonly string rootCacheKey;
-		private bool rootCacheKeyStored;
+		private readonly string _rootCacheKey;
+		private bool _rootCacheKeyStored;
 		private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
-		private const bool DefaultUseSlidingExpiration = false;
+		private const bool _defaultUseSlidingExpiration = false;
 		private static readonly string DefaultRegionPrefix = string.Empty;
-		private const string CacheKeyPrefix = "NHibernate-Cache:";
+		private const string _cacheKeyPrefix = "NHibernate-Cache:";
 
 		/// <summary>
 		/// default constructor
@@ -84,71 +82,62 @@ namespace NHibernate.Caches.RtMemoryCache
 		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
 		public RtMemoryCache(string region, IDictionary<string, string> properties)
 		{
-			this.region = region;
-			cache = MemoryCache.Default;
+			Region = region;
+			_cache = MemoryCache.Default;
 			Configure(properties);
 
-			rootCacheKey = GenerateRootCacheKey();
+			_rootCacheKey = GenerateRootCacheKey();
 			StoreRootCacheKey();
 		}
 
-		public string Region
-		{
-			get { return region; }
-		}
+		public string Region { get; }
 
-		public TimeSpan Expiration
-		{
-			get { return expiration; }
-		}
+		public TimeSpan Expiration { get; private set; }
+
+		public bool UseSlidingExpiration { get; private set; }
 
 		// Since v5.1
 		[Obsolete("There are not many levels of priority for RtMemoryCache, only Default and NotRemovable. Now yields always Default.")]
-		public CacheItemPriority Priority
-		{
-			get { return CacheItemPriority.Default; }
-		}
+		public CacheItemPriority Priority => CacheItemPriority.Default;
 
 		private void Configure(IDictionary<string, string> props)
 		{
 			if (props == null)
 			{
-				if (log.IsWarnEnabled)
+				if (Log.IsWarnEnabled)
 				{
-					log.Warn("configuring cache with default values");
+					Log.Warn("configuring cache with default values");
 				}
-				expiration = DefaultExpiration;
-				_useSlidingExpiration = DefaultUseSlidingExpiration;
-				regionPrefix = DefaultRegionPrefix;
+				Expiration = DefaultExpiration;
+				UseSlidingExpiration = _defaultUseSlidingExpiration;
+				_regionPrefix = DefaultRegionPrefix;
 			}
 			else
 			{
-				expiration= GetExpiration(props);
-				_useSlidingExpiration = GetUseSlidingExpiration(props);
-				regionPrefix= GetRegionPrefix(props);
+				Expiration= GetExpiration(props);
+				UseSlidingExpiration = GetUseSlidingExpiration(props);
+				_regionPrefix= GetRegionPrefix(props);
 			}
 		}
 
 		private static string GetRegionPrefix(IDictionary<string, string> props)
 		{
-			string result;
-			if (props.TryGetValue("regionPrefix", out result))
+			if (props.TryGetValue("regionPrefix", out var result))
 			{
-				log.DebugFormat("new regionPrefix: {0}", result);
+				Log.DebugFormat("new regionPrefix: {0}", result);
 			}
 			else
 			{
 				result = DefaultRegionPrefix;
-				log.Debug("no regionPrefix value given, using defaults");
+				Log.Debug("no regionPrefix value given, using defaults");
 			}
 			return result;
 		}
 
 		private static TimeSpan GetExpiration(IDictionary<string, string> props)
 		{
-			TimeSpan result = DefaultExpiration;
-			string expirationString;
-			if (!props.TryGetValue("expiration", out expirationString))
+			var result = DefaultExpiration;
+			if (!props.TryGetValue("expiration", out var expirationString))
 			{
 				props.TryGetValue(Cfg.Environment.CacheDefaultExpiration, out expirationString);
 			}
@@ -157,21 +146,21 @@ namespace NHibernate.Caches.RtMemoryCache
 			{
 				try
 				{
-					int seconds = Convert.ToInt32(expirationString);
+					var seconds = Convert.ToInt32(expirationString);
 					result = TimeSpan.FromSeconds(seconds);
-					log.DebugFormat("new expiration value: {0}", seconds);
+					Log.DebugFormat("new expiration value: {0}", seconds);
 				}
 				catch (Exception ex)
 				{
-					log.ErrorFormat("error parsing expiration value '{0}'", expirationString);
+					Log.ErrorFormat("error parsing expiration value '{0}'", expirationString);
 					throw new ArgumentException($"could not parse expiration '{expirationString}' as a number of seconds", ex);
 				}
 			}
 			else
 			{
-				if (log.IsDebugEnabled)
+				if (Log.IsDebugEnabled)
 				{
-					log.Debug("no expiration value given, using defaults");
+					Log.Debug("no expiration value given, using defaults");
 				}
 			}
 			return result;
@@ -179,14 +168,14 @@ namespace NHibernate.Caches.RtMemoryCache
 
 		private static bool GetUseSlidingExpiration(IDictionary<string, string> props)
 		{
-			var sliding = PropertiesHelper.GetBoolean("cache.use_sliding_expiration", props, DefaultUseSlidingExpiration);
-			log.DebugFormat("Use sliding expiration value: {0}", sliding);
+			var sliding = PropertiesHelper.GetBoolean("cache.use_sliding_expiration", props, _defaultUseSlidingExpiration);
+			Log.DebugFormat("Use sliding expiration value: {0}", sliding);
 			return sliding;
 		}
 
 		private string GetCacheKey(object key)
 		{
-			return String.Concat(CacheKeyPrefix, regionPrefix, region, ":", key.ToString(), "@", key.GetHashCode());
+			return string.Concat(_cacheKeyPrefix, _regionPrefix, Region, ":", key.ToString(), "@", key.GetHashCode());
 		}
 
 		public object Get(object key)
@@ -195,24 +184,17 @@ namespace NHibernate.Caches.RtMemoryCache
 			{
 				return null;
 			}
-			string cacheKey = GetCacheKey(key);
-			log.DebugFormat("Fetching object '{0}' from the cache.", cacheKey);
+			var cacheKey = GetCacheKey(key);
+			Log.DebugFormat("Fetching object '{0}' from the cache.", cacheKey);
 
-			object obj = cache.Get(cacheKey);
+			var obj = _cache.Get(cacheKey);
 			if (obj == null)
 			{
 				return null;
 			}
 
 			var de = (DictionaryEntry) obj;
-			if (key.Equals(de.Key))
-			{
-				return de.Value;
-			}
-			else
-			{
-				return null;
-			}
+			return key.Equals(de.Key) ? de.Value : null;
 		}
 
 		public void Put(object key, object value)
@@ -225,30 +207,30 @@ namespace NHibernate.Caches.RtMemoryCache
 			{
 				throw new ArgumentNullException(nameof(value), "null value not allowed");
 			}
-			string cacheKey = GetCacheKey(key);
-			if (cache[cacheKey] != null)
+			var cacheKey = GetCacheKey(key);
+			if (_cache[cacheKey] != null)
 			{
-				log.DebugFormat("updating value of key '{0}' to '{1}'.", cacheKey, value);
+				Log.DebugFormat("updating value of key '{0}' to '{1}'.", cacheKey, value);
 
 				// Remove the key to re-add it again below
-				cache.Remove(cacheKey);
+				_cache.Remove(cacheKey);
 			}
 			else
 			{
-				log.DebugFormat("adding new data: key={0}&value={1}", cacheKey, value);
+				Log.DebugFormat("adding new data: key={0}&value={1}", cacheKey, value);
 			}
 
-			if (!rootCacheKeyStored)
+			if (!_rootCacheKeyStored)
 			{
 				StoreRootCacheKey();
 			}
 
-			cache.Add(cacheKey, new DictionaryEntry(key, value),
+			_cache.Add(cacheKey, new DictionaryEntry(key, value),
 			          new CacheItemPolicy
 			          {
-			              AbsoluteExpiration = _useSlidingExpiration ? ObjectCache.InfiniteAbsoluteExpiration : DateTimeOffset.UtcNow.Add(expiration),
-			              SlidingExpiration = _useSlidingExpiration ? expiration : ObjectCache.NoSlidingExpiration,
-			              ChangeMonitors = {cache.CreateCacheEntryChangeMonitor(new[] {rootCacheKey})}
+			              AbsoluteExpiration = UseSlidingExpiration ? ObjectCache.InfiniteAbsoluteExpiration : DateTimeOffset.UtcNow.Add(Expiration),
+			              SlidingExpiration = UseSlidingExpiration ? Expiration : ObjectCache.NoSlidingExpiration,
+			              ChangeMonitors = {_cache.CreateCacheEntryChangeMonitor(new[] {_rootCacheKey})}
 			          });
 		}
 
@@ -258,9 +240,9 @@ namespace NHibernate.Caches.RtMemoryCache
 			{
 				throw new ArgumentNullException(nameof(key));
 			}
-			string cacheKey = GetCacheKey(key);
-			log.DebugFormat("removing item with key: {0}", cacheKey);
-			cache.Remove(cacheKey);
+			var cacheKey = GetCacheKey(key);
+			Log.DebugFormat("removing item with key: {0}", cacheKey);
+			_cache.Remove(cacheKey);
 		}
 
 		public void Clear()
@@ -279,15 +261,15 @@ namespace NHibernate.Caches.RtMemoryCache
 
 		private void RootCacheItemRemoved(CacheEntryRemovedArguments arguments)
 		{
-			rootCacheKeyStored = false;
+			_rootCacheKeyStored = false;
 		}
 
 		private void StoreRootCacheKey()
 		{
-			rootCacheKeyStored = true;
-			cache.Add(
-				rootCacheKey,
-				rootCacheKey,
+			_rootCacheKeyStored = true;
+			_cache.Add(
+				_rootCacheKey,
+				_rootCacheKey,
 				new CacheItemPolicy
 				{
 					AbsoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration,
@@ -299,7 +281,7 @@ namespace NHibernate.Caches.RtMemoryCache
 
 		private void RemoveRootCacheKey()
 		{
-			cache.Remove(rootCacheKey);
+			_cache.Remove(_rootCacheKey);
 		}
 
 		public void Destroy()
@@ -322,15 +304,9 @@ namespace NHibernate.Caches.RtMemoryCache
 			return Timestamper.Next();
 		}
 
-		public int Timeout
-		{
-			get { return Timestamper.OneMs * 60000; } // 60 seconds
-		}
+		public int Timeout => Timestamper.OneMs * 60000;
 
-		public string RegionName
-		{
-			get { return region; }
-		}
+		public string RegionName => Region;
 
 		#region ICache async methods delegated to sync implementation
 

@@ -16,7 +16,7 @@ namespace NHibernate.Caches.Common.Tests
 		public void TestBuildCacheNoRegionWithProperties()
 		{
 			// Using same "region" than another test, need to get another provider for avoiding it
-			// to yield a previously built cache.
+			// to yield a previously built cache if the underlying provider does some instance caching.
 			var cache = GetNewProvider().BuildCache(null, GetDefaultProperties());
 			Assert.That(cache, Is.Not.Null, "no cache returned");
 		}
