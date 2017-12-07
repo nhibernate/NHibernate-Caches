@@ -36,7 +36,7 @@ using NHibernate.Cache;
 
 namespace NHibernate.Caches.MemCache
 {
-	public class MemCacheClient : ICache
+	public partial class MemCacheClient : ICache
 	{
 		internal const string PoolName = "nhibernate";
 		private static readonly IInternalLogger log;
@@ -48,21 +48,25 @@ namespace NHibernate.Caches.MemCache
 
 		private readonly string region;
 		private readonly string regionPrefix = "";
-	    private readonly bool noLingeringDelete = false;
+		private readonly bool noLingeringDelete = false;
 
 		static MemCacheClient()
 		{
 			log = LoggerProvider.LoggerFor((typeof(MemCacheClient)));
 		}
 
-		public MemCacheClient() : this("nhibernate", null) {}
+		public MemCacheClient() : this("nhibernate", null)
+		{
+		}
 
-		public MemCacheClient(string regionName) : this(regionName, null) {}
+		public MemCacheClient(string regionName) : this(regionName, null)
+		{
+		}
 
 		public MemCacheClient(string regionName, IDictionary<string, string> properties)
 		{
 			region = regionName;
-			client = new MemcachedClient {PoolName = PoolName};
+			client = new MemcachedClient { PoolName = PoolName };
 			expiry = 300;
 
 			if (properties != null)
@@ -103,14 +107,14 @@ namespace NHibernate.Caches.MemCache
 					}
 				}
 
-                if (properties.ContainsKey("lingering_delete_disabled"))
-                {
-                    noLingeringDelete = Convert.ToBoolean(properties["lingering_delete_disabled"]);
-                    if (log.IsDebugEnabled)
-                    {
-                        log.DebugFormat("lingering_delete_disabled set to {0}", noLingeringDelete);
-                    }
-                }
+				if (properties.ContainsKey("lingering_delete_disabled"))
+				{
+					noLingeringDelete = Convert.ToBoolean(properties["lingering_delete_disabled"]);
+					if (log.IsDebugEnabled)
+					{
+						log.DebugFormat("lingering_delete_disabled set to {0}", noLingeringDelete);
+					}
+				}
 			}
 		}
 
@@ -196,7 +200,7 @@ namespace NHibernate.Caches.MemCache
 				log.DebugFormat("setting value for item {0}", key);
 			}
 			bool returnOk = client.Set(KeyAsString(key), new DictionaryEntry(GetAlternateKeyHash(key), value),
-			                            DateTime.Now.AddSeconds(expiry));
+				DateTime.Now.AddSeconds(expiry));
 			if (!returnOk)
 			{
 				if (log.IsWarnEnabled)
@@ -217,10 +221,10 @@ namespace NHibernate.Caches.MemCache
 				log.DebugFormat("removing item {0}", key);
 			}
 
-            if (noLingeringDelete)
-                client.Delete(KeyAsString(key)); // Memcached 1.4+ does not support lingering deletes anymore
+			if (noLingeringDelete)
+				client.Delete(KeyAsString(key)); // Memcached 1.4+ does not support lingering deletes anymore
 			else
-                client.Delete(KeyAsString(key), DateTime.Now.AddSeconds(expiry));
+				client.Delete(KeyAsString(key), DateTime.Now.AddSeconds(expiry));
 		}
 
 		public void Clear()
@@ -256,69 +260,6 @@ namespace NHibernate.Caches.MemCache
 		public string RegionName
 		{
 			get { return region; }
-		}
-
-		#endregion
-
-		#region ICache async methods delegated to sync implementation
-
-		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return Task.FromResult(Get(key));
-		}
-
-		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Put(key, value);
-			return Task.CompletedTask;
-		}
-
-		public Task RemoveAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Remove(key);
-			return Task.CompletedTask;
-		}
-
-		public Task ClearAsync(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Clear();
-			return Task.CompletedTask;
-		}
-
-		public Task LockAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Lock(key);
-			return Task.CompletedTask;
-		}
-
-		public Task UnlockAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Unlock(key);
-			return Task.CompletedTask;
 		}
 
 		#endregion

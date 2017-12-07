@@ -34,7 +34,7 @@ namespace NHibernate.Caches.RtMemoryCache
 	/// <summary>
 	/// Pluggable cache implementation using the System.Runtime.Caching classes
 	/// </summary>
-	public class RtMemoryCache : ICache
+	public partial class RtMemoryCache : ICache
 	{
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(RtMemoryCache));
 		private string _regionPrefix;
@@ -307,68 +307,5 @@ namespace NHibernate.Caches.RtMemoryCache
 		public int Timeout => Timestamper.OneMs * 60000;
 
 		public string RegionName => Region;
-
-		#region ICache async methods delegated to sync implementation
-
-		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return Task.FromResult(Get(key));
-		}
-
-		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Put(key, value);
-			return Task.CompletedTask;
-		}
-
-		public Task RemoveAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Remove(key);
-			return Task.CompletedTask;
-		}
-
-		public Task ClearAsync(CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Clear();
-			return Task.CompletedTask;
-		}
-
-		public Task LockAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Lock(key);
-			return Task.CompletedTask;
-		}
-
-		public Task UnlockAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled(cancellationToken);
-			}
-			Unlock(key);
-			return Task.CompletedTask;
-		}
-
-		#endregion
 	}
 }
