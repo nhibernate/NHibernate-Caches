@@ -13,12 +13,12 @@ using System.Collections;
 using System.Runtime.Caching;
 using NHibernate.Cache;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.RtMemoryCache
 {
+	using System.Threading.Tasks;
+	using System.Threading;
 	public partial class RtMemoryCache : ICache
 	{
 

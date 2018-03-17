@@ -14,12 +14,12 @@ using System.Web;
 using System.Web.Caching;
 using NHibernate.Cache;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.SysCache
 {
+	using System.Threading.Tasks;
+	using System.Threading;
 	public partial class SysCache : ICache
 	{
 
