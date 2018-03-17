@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Product>NHibernate.Caches.RtMemoryCache</Product>
     <Title>NHibernate.Caches.RtMemoryCache</Title>
-    <Description>Cache provider for NHibernate using MemoryCache.</Description>
+    <Description>Cache provider for NHibernate using MemoryCache (System.Runtime.Caching).</Description>
     <TargetFramework>net461</TargetFramework>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>

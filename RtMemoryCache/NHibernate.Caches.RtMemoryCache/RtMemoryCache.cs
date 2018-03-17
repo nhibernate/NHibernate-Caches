@@ -25,8 +25,6 @@ using System.Collections;
 using System.Runtime.Caching;
 using NHibernate.Cache;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.RtMemoryCache
@@ -71,14 +69,14 @@ namespace NHibernate.Caches.RtMemoryCache
 		/// <param name="region"></param>
 		/// <param name="properties">cache configuration properties</param>
 		/// <remarks>
-		/// There are two (2) configurable parameters:
+		/// There are three (3) configurable parameters:
 		/// <ul>
-		///		<li>expiration = number of seconds to wait before expiring each item</li>
-		///		<li>priority = a numeric cost of expiring each item, where 1 is a low cost, 5 is the highest, and 3 is normal. Only values 1 through 5 are valid.</li>
+		///		<li>expiration (or cache.default_expiration) = number of seconds to wait before expiring each item.</li>
+		///		<li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
+		///		<li>regionPrefix = a string for prefixing the region name.</li>
 		/// </ul>
-		/// All parameters are optional. The defaults are an expiration of 300 seconds and the default priority of 3.
+		/// All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration, no region prefix.
 		/// </remarks>
-		/// <exception cref="IndexOutOfRangeException">The "priority" property is not between 1 and 5</exception>
 		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
 		public RtMemoryCache(string region, IDictionary<string, string> properties)
 		{
