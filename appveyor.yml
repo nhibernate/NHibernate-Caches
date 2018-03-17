@@ -1,5 +1,14 @@
 version: 5.2.0.{build}
 image: Visual Studio 2017
+configuration:
+- Debug
+environment:
+  global:
+    netTargetFx: net461
+    coreTargetFx: netcoreapp2.0
+  matrix:
+    - tests: net
+    - tests: core
 install:
 # memcache server
 - curl -L -O -S -s http://downloads.northscale.com/memcached-1.4.5-amd64.zip
@@ -11,13 +20,32 @@ before_build:
 build:
   project: NHibernate.Caches.Everything.sln
   verbosity: minimal
-test:
-  assemblies:
-    only:
-    - NHibernate.Caches.EnyimMemcached.Tests.dll
-    - NHibernate.Caches.Prevalence.Tests.dll
-    - NHibernate.Caches.RtMemoryCache.Tests.dll
-    - NHibernate.Caches.SysCache.Tests.dll
-    - NHibernate.Caches.SysCache2.Tests.dll
+test_script:
+- ps: >-
+    Invoke-Command -ScriptBlock {
+        #netFx tests
+        If ($env:TESTS -eq 'net') {
+            @('EnyimMemcached', 'Prevalence', 'RtMemoryCache', 'SysCache', 'SysCache2', 'CoreMemoryCache') | ForEach-Object {
+                nunit3-console (Join-Path $env:APPVEYOR_BUILD_FOLDER "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$env:NETTARGETFX\NHibernate.Caches.$_.Tests.dll") "--result=$_-NetTestResult.xml;format=AppVeyor"
+            }
+        }
+
+        #core tests
+        If ($env:TESTS -eq 'core') {
+            @('CoreMemoryCache') | ForEach-Object {
+              dotnet (Join-Path $env:APPVEYOR_BUILD_FOLDER "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$env:CORETARGETFX\NHibernate.Caches.$_.Tests.dll") --labels=before --nocolor "--result=$_-CoreTestResult.xml"
+            }
+        }
+    }
+after_test:
+- ps: >-
+    Invoke-Command -ScriptBlock {
+        $wc = New-Object 'System.Net.WebClient'
+
+        #core tests (others are real-time reported)
+        Get-Item '*-CoreTestResult.xml' | ForEach-Object {
+            $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", $_)
+        }
+    }
 on_finish:
 - ps: Stop-Process -Id $MemCached.Id

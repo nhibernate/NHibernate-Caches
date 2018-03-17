@@ -52,6 +52,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.RtMemoryC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Common.Tests", "NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj", "{D3B6FF9C-4254-48F3-A6A6-64DB03C8A2AC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreMemoryCache", "CoreMemoryCache\NHibernate.Caches.CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.csproj", "{FD759770-E662-4822-A627-85FAA2B3177C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreMemoryCache.Tests", "CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.Tests\NHibernate.Caches.CoreMemoryCache.Tests.csproj", "{4EE5D89B-A1B5-4CF8-95B8-44C2FAFD0119}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -126,6 +130,14 @@ Global
 		{D3B6FF9C-4254-48F3-A6A6-64DB03C8A2AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D3B6FF9C-4254-48F3-A6A6-64DB03C8A2AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D3B6FF9C-4254-48F3-A6A6-64DB03C8A2AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FD759770-E662-4822-A627-85FAA2B3177C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FD759770-E662-4822-A627-85FAA2B3177C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FD759770-E662-4822-A627-85FAA2B3177C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FD759770-E662-4822-A627-85FAA2B3177C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4EE5D89B-A1B5-4CF8-95B8-44C2FAFD0119}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4EE5D89B-A1B5-4CF8-95B8-44C2FAFD0119}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4EE5D89B-A1B5-4CF8-95B8-44C2FAFD0119}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4EE5D89B-A1B5-4CF8-95B8-44C2FAFD0119}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -148,5 +160,7 @@ Global
 		{C0295AB5-00FB-4B45-82F6-2060080D01F9} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
 		{0B67ADE8-929E-46D2-A4E6-C0D621378EAE} = {55271617-8CB8-4225-B338-069033160497}
 		{D3B6FF9C-4254-48F3-A6A6-64DB03C8A2AC} = {55271617-8CB8-4225-B338-069033160497}
+		{FD759770-E662-4822-A627-85FAA2B3177C} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
+		{4EE5D89B-A1B5-4CF8-95B8-44C2FAFD0119} = {55271617-8CB8-4225-B338-069033160497}
 	EndGlobalSection
 EndGlobal

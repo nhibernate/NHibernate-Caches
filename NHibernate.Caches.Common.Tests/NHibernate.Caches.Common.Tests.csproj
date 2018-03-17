@@ -3,12 +3,21 @@
   <PropertyGroup>
     <Product>NHibernate.Caches.Common.Tests</Product>
     <Description>Unit tests base for cache providers.</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="NUnit" Version="3.9.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
     <PackageReference Include="Iesi.Collections" Version="4.0.2" />
     <PackageReference Include="NHibernate" Version="5.0.0" />
-    <PackageReference Include="NUnit" Version="3.8.1" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
+    <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>
 </Project>

@@ -7,9 +7,6 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.3" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj" />
     <ProjectReference Include="..\NHibernate.Caches.SharedCache\NHibernate.Caches.SharedCache.csproj" />
   </ItemGroup>
@@ -17,5 +14,8 @@
     <Reference Include="MergeSystem.Indexus.WinServiceCommon">
       <HintPath>..\..\Lib\net\4.0\MergeSystem.Indexus.WinServiceCommon.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>
 </Project>

@@ -1,0 +1,35 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../NHibernate.Caches.props" />
+  <PropertyGroup>
+    <Product>NHibernate.Caches.CoreMemoryCache</Product>
+    <Title>NHibernate.Caches.CoreMemoryCache</Title>
+    <Description>Cache provider for NHibernate using .Net Core MemoryCache (Microsoft.Extensions.Caching.Memory).</Description>
+
+    <!-- Targeting net461 explicitly in order to avoid https://github.com/dotnet/standard/issues/506 for net461 consumers-->
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
+    <PackageReleaseNotes>* New feature
+    * #25 - Add a .Net Core MemoryCache</PackageReleaseNotes>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+    <None Include="..\default.build" Link="default.build" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
+    <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
+    <PackageReference Include="NHibernate" Version="5.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../readme.md">
+      <PackagePath>./NHibernate.Caches.readme.md</PackagePath>
+    </Content>
+    <Content Include="../../LICENSE.txt">
+      <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
+    </Content>
+  </ItemGroup>
+</Project>

@@ -1,4 +1,33 @@
 ﻿projects:
+- filePath: CoreMemoryCache\NHibernate.Caches.CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.csproj
+  targetFramework: net461
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
 - filePath: EnyimMemcached\NHibernate.Caches.EnyimMemcached\NHibernate.Caches.EnyimMemcached.csproj
   concurrentRun: true
   applyChanges: true
@@ -224,6 +253,48 @@
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
 - filePath: NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj
+  targetFramework: net461
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Ignore
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Ignore
+      hasAttributeName: SetUpAttribute
+    - conversion: Ignore
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: Partial
+      hasAttributeName: TestFixtureAttribute
+    - conversion: Partial
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.Tests\NHibernate.Caches.CoreMemoryCache.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -264,6 +335,7 @@
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
 - filePath: EnyimMemcached\NHibernate.Caches.EnyimMemcached.Tests\NHibernate.Caches.EnyimMemcached.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -304,6 +376,7 @@
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
 - filePath: MemCache\NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -344,6 +417,7 @@
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
 - filePath: Prevalence\NHibernate.Caches.Prevalence.Tests\NHibernate.Caches.Prevalence.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -384,6 +458,7 @@
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
 - filePath: RtMemoryCache\NHibernate.Caches.RtMemoryCache.Tests\NHibernate.Caches.RtMemoryCache.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -424,6 +499,7 @@
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
 - filePath: SharedCache\NHibernate.Caches.SharedCache.Tests\NHibernate.Caches.SharedCache.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -464,6 +540,7 @@
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
 - filePath: SysCache\NHibernate.Caches.SysCache.Tests\NHibernate.Caches.SysCache.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -504,6 +581,7 @@
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
 - filePath: SysCache2\NHibernate.Caches.SysCache2.Tests\NHibernate.Caches.SysCache2.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:
@@ -544,6 +622,7 @@
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
 - filePath: Velocity\NHibernate.Caches.Velocity.Tests\NHibernate.Caches.Velocity.Tests.csproj
+  targetFramework: net461
   concurrentRun: true
   applyChanges: true
   analyzation:

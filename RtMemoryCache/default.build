@@ -8,29 +8,22 @@
   <property name="root.dir" value=".." />
   <include buildfile="${root.dir}/buildcommon.xml" />
 
-  <target name="copy-reference" depends="init">
-  </target>
-
-  <target name="prepare-bin-pack-specific" depends="init copy-reference">
+  <target name="prepare-bin-pack-specific" depends="init">
     <property name="bin-pack.project.name" value="RtMemoryCache" />
   </target>
 
   <target name="bin-pack" depends="init prepare-bin-pack-specific bin-pack-common">
   </target>
 
-  <target name="copy-test-config" depends="init">
-    <copy file="NHibernate.Caches.RtMemoryCache.Tests/App.config"
-          tofile="${folders.build}/NHibernate.Caches.RtMemoryCache.Tests.dll.config"
-          if="${file::exists('NHibernate.Caches.RtMemoryCache.Tests/App.config')}" />
-  </target>
-
-  <target name="test" depends="copy-test-config">
+  <target name="test" depends="init">
+    <property name="test.project" value="RtMemoryCache" />
     <property name="test.file" value="NHibernate.Caches.RtMemoryCache.Tests" />
     <call target="common.run-tests" />
   </target>
 
   <target name="clean">
-    <delete dir="${folders.build}" failonerror="false" />
+    <property name="clean.project" value="RtMemoryCache" />
+    <call target="common.clean" />
   </target>
 
   <target name="nuget-packages" depends="init">

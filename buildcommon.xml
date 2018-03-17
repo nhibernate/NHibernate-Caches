@@ -7,20 +7,14 @@
   <property name="folders.lib" value="../Lib/${framework.family}/${framework.version}" />
   <property name="key.file" value="../NHibernate.Caches.snk" />
 
+  <property name="net.target-fx" value="net461" />
+  <property name="net.core-fx" value="netcoreapp2.0" />
+
   <property name="nant-version.current" value="${assemblyname::get-version(assembly::get-name(nant::get-assembly()))}" />
   <property name="nant-version.required" value="0.85.2478.0" />
   <!-- Nant 0.85 release version -->
   <property name="nant-version.beta1_086" value="0.86.2898.0" />
   <!-- Nant 0.86 Beta 1 -->
-  <!--
-      Path to the folder that contain the external assemblies.  For net-2.0 the values will
-      be lib, lib/net, and lib/net/2.0 respectively.
-  -->
-  <property name="lib.dir" value="lib" dynamic="true" />
-  <property name="lib.family.dir" value="${path::combine(lib.dir, framework::get-family(framework::get-target-framework()))}" dynamic="true" />
-  <if test="${nant-version.current != nant-version.beta1_086 or framework::get-target-framework() != 'net-4.0'}">
-    <property name="lib.framework.dir" value="${path::combine(lib.family.dir, version::to-string(framework::get-version(framework::get-target-framework())))}" dynamic="true" />
-  </if>
 
   <!-- This is used only for build folder -->
   <!-- TODO: Either remove or refactor to use NHibernate.props -->
@@ -31,12 +25,14 @@
     <property name="build.release" value="false" />
     <property name="build.debug" value="true" />
     <property name="build.name" value="NHibernate-Caches-${project.version}-${project.config}" />
+    <property name="build.config" value="Debug" />
   </target>
 
   <target name="set-release-project-configuration" description="Perform a 'release' build">
     <property name="build.release" value="true" />
     <property name="build.debug" value="pdbonly" />
     <property name="build.name" value="NHibernate-Caches-${project.version}" />
+    <property name="build.config" value="Release" />
   </target>
 
   <target name="set-project-configuration">
@@ -49,33 +45,36 @@
 
     <property name="build.root.dir" value="${root.dir}/build/${build.name}" />
     <property name="build.dir" value="${build.root.dir}" />
-    <property name="bin.dir" value="${build.dir}/bin/${nant.settings.currentframework}" />
+    <property name="bin.dir" value="${build.dir}/bin" />
   </target>
 
   <target name="init" depends="set-project-configuration">
-    <property name="folders.build" value="${bin.dir}" />
     <property name="tools.dir" value="${root.dir}/Tools" />
-    <property name="testresults.dir" value="${folders.build}/test-results" />
+    <property name="testresults.dir" value="${build.dir}/bin/test-results" />
     <property name="nuget.nupackages.dir" value="${path::get-full-path(path::combine(build.dir, 'nuget_gallery'))}" />
-    <mkdir dir="${folders.build}"/>
+    <mkdir dir="${bin.dir}"/>
     <mkdir dir="${testresults.dir}"/>
   </target>
   
   <target name="bin-pack-common">
     <property name="bin-pack.tmpdir" value="${build.dir}/tmp-bin" />
     <property name="bin-pack.project.deploy" value="${bin-pack.tmpdir}/${bin-pack.project.name}" />
+    <property name="bin-pack.full-project.name" value="NHibernate.Caches.${bin-pack.project.name}" />
     <mkdir dir="${bin-pack.project.deploy}"/>
     <copy file="${root.dir}/NHibernate.Caches.snk" todir="${bin-pack.project.deploy}"/>
-    <copy file="${folders.build}/NHibernate.Caches.${bin-pack.project.name}.dll" todir="${bin-pack.project.deploy}"/>
+    <copy file="${root.dir}/${bin-pack.project.name}/${bin-pack.full-project.name}/bin/${build.config}/${net.target-fx}/${bin-pack.full-project.name}.dll" todir="${bin-pack.project.deploy}"/>
+    <copy todir="${bin.dir}/${bin-pack.project.name}">
+      <fileset basedir="${bin-pack.project.deploy}">
+        <include name="**/*" />
+      </fileset>
+    </copy>
   </target>
 
   <target name="common.compile-all" depends="init common.solution-restore">
     <exec program="${path::combine(tools.dir, 'dotnet.cmd')}" verbose="true">
       <arg value="${root.dir}/NHibernate.Caches.Everything.sln" />
-      <arg value="/p:OutputPath=&quot;${path::get-full-path(folders.build)}&quot;" />
       <arg value="/p:Platform=&quot;Any CPU&quot;" />
-      <arg value="/p:Configuration=&quot;Debug&quot;" if="${build.debug == 'true'}" />
-      <arg value="/p:Configuration=&quot;Release&quot;" if="${build.release == 'true'}" />
+      <arg value="/p:Configuration=&quot;${build.config}&quot;"/>
       <arg value="/t:Restore" />
       <arg value="/t:Rebuild" />
       <arg value="/v:q" />
@@ -125,9 +124,16 @@
     <property name="common.run-tests.x86" value="--x86" unless="${property::exists('nunit-x64')}" />
     <property name="common.run-tests.x86" value="" if="${property::exists('nunit-x64')}" />
     <exec program="${nunit-console}" failonerror="${common.run-tests.failonerror}">
-      <arg line="${folders.build}/${test.file}.dll --result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2 --framework=${framework::get-target-framework()} ${common.run-tests.x86}" />
+      <arg line="${root.dir}/${test.project}/${test.file}/bin/${build.config}/${net.target-fx}/${test.file}.dll --result=${testresults.dir}/${test.file}.dll-results.xml;format=nunit2 --framework=${framework::get-target-framework()} ${common.run-tests.x86}" />
     </exec>
+  </target>
 
+  <target name="common.run-core-tests"
+          description="Run Core tests">
+    <property name="common.run-tests.failonerror" value="${not property::exists(test.file + '.IgnoreFail')}"/>
+    <exec program="dotnet" failonerror="${common.run-tests.failonerror}">
+      <arg line="${root.dir}/${test.project}/${test.file}/bin/${build.config}/${net.core-fx}/${test.file}.dll --labels=before --nocolor --result=${testresults.dir}/${test.file}.dll-core-results.xml" />
+    </exec>
   </target>
 
   <target name="common.find-async-generator-console">
@@ -165,6 +171,13 @@
         <echo message="nuget push -source https://www.nuget.org/api/v2/package ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
       </do>
     </foreach>
+  </target>
+
+  <target name="common.clean">
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}/bin" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}/obj" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.Tests/bin" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.Tests/obj" failonerror="false" />
   </target>
 
 </project>

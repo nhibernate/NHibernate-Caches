@@ -16,13 +16,7 @@
     <include name="${folders.lib}/FabricCommon.dll"/>
   </fileset>
 
-  <target name="copy-reference" depends="init">
-    <copy todir="${folders.build}" flatten="true">
-      <fileset refid="Velocity-required-assemblies" />
-    </copy>
-  </target>
-  
-  <target name="prepare-bin-pack-specific" depends="init copy-reference">
+  <target name="prepare-bin-pack-specific" depends="init">
     <property name="bin-pack.project.name" value="Velocity" />
   </target>
 
@@ -32,13 +26,8 @@
     </copy>
   </target>
 
-  <target name="copy-test-config" depends="init">
-    <copy file="NHibernate.Caches.Velocity.Tests/App.config"
-          tofile="${folders.build}/NHibernate.Caches.Velocity.Tests.dll.config"
-          if="${file::exists('NHibernate.Caches.Velocity.Tests/App.config')}" />
-  </target>
-
-  <target name="test" depends="copy-test-config">
+  <target name="test" depends="init">
+    <property name="test.project" value="Velocity" />
     <property name="test.file" value="NHibernate.Caches.Velocity.Tests" />
     <!-- Requires a Velocity instance -->
     <property name="NHibernate.Caches.Velocity.Tests.IgnoreFail" value="true" />
@@ -46,7 +35,8 @@
   </target>
 
   <target name="clean">
-    <delete dir="${folders.build}" failonerror="false"/>
+    <property name="clean.project" value="Velocity" />
+    <call target="common.clean" />
   </target>
 
   <target name="nuget-packages">
