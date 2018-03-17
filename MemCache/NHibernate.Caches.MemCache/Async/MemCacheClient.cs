@@ -119,7 +119,6 @@ namespace NHibernate.Caches.MemCache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// do nothing
 		}
 
 		public Task UnlockAsync(object key, CancellationToken cancellationToken)
@@ -137,7 +136,6 @@ namespace NHibernate.Caches.MemCache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// do nothing
 		}
 
 		#endregion

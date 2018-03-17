@@ -116,7 +116,6 @@ namespace NHibernate.Caches.RtMemoryCache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// Do nothing
 		}
 
 		public Task UnlockAsync(object key, CancellationToken cancellationToken)
@@ -134,7 +133,6 @@ namespace NHibernate.Caches.RtMemoryCache
 			{
 				return Task.FromException<object>(ex);
 			}
-			// Do nothing
 		}
 	}
 }

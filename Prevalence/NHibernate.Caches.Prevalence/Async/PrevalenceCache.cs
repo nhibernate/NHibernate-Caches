@@ -119,7 +119,6 @@ namespace NHibernate.Caches.Prevalence
 			{
 				return Task.FromException<object>(ex);
 			}
-			// Do nothing
 		}
 
 		/// <summary></summary>
@@ -140,7 +139,6 @@ namespace NHibernate.Caches.Prevalence
 			{
 				return Task.FromException<object>(ex);
 			}
-			// Do nothing
 		}
 
 		#endregion

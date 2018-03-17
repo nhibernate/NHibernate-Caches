@@ -8,29 +8,22 @@
   <property name="root.dir" value=".." />
   <include buildfile="${root.dir}/buildcommon.xml" />
 
-  <target name="copy-reference" depends="init">
-  </target>
-  
-  <target name="prepare-bin-pack-specific" depends="init copy-reference">
+  <target name="prepare-bin-pack-specific" depends="init">
     <property name="bin-pack.project.name" value="SysCache2" />
   </target>
 
   <target name="bin-pack" depends="init prepare-bin-pack-specific bin-pack-common">
   </target>
 
-  <target name="copy-test-config" depends="init">
-    <copy file="NHibernate.Caches.SysCache2.Tests/App.config"
-          tofile="${folders.build}/NHibernate.Caches.SysCache2.Tests.dll.config"
-          if="${file::exists('NHibernate.Caches.SysCache2.Tests/App.config')}" />
-  </target>
-
-  <target name="test" depends="copy-test-config">
+  <target name="test" depends="init">
+    <property name="test.project" value="SysCache2" />
     <property name="test.file" value="NHibernate.Caches.SysCache2.Tests" />
     <call target="common.run-tests" />
   </target>
 
   <target name="clean">
-    <delete dir="${folders.build}" failonerror="false"/>
+    <property name="clean.project" value="SysCache2" />
+    <call target="common.clean" />
   </target>
 
   <target name="nuget-packages" depends="init">

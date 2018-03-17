@@ -15,6 +15,7 @@
     <include name="Prevalence/default.build" />
     <include name="EnyimMemcached/default.build" />
     <include name="RtMemoryCache/default.build" />
+    <include name="CoreMemoryCache/default.build" />
   </fileset>
 
   <target name="build" depends="common.compile-all"
@@ -30,6 +31,11 @@
 
   <target name="clean" depends="set-project-configuration">
     <delete dir="${build.root.dir}" failonerror="false"/>
+    <nant target="clean">
+      <buildfiles refid="buildfiles.all" />
+    </nant>
+    <delete dir="${root.dir}/NHibernate.Caches.Common.Tests/bin" failonerror="false"/>
+    <delete dir="${root.dir}/NHibernate.Caches.Common.Tests/obj" failonerror="false"/>
   </target>
 
   <target name="bin-pack" depends="init build">
@@ -48,6 +54,7 @@
         <include name="**/*" />
       </fileset>
     </zip>
+    <delete dir="${bin-pack.tmpdir}" failonerror="false"/>
   </target>
 
   <target name="clean-nuget-packages" depends="init">

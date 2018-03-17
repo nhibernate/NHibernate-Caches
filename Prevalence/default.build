@@ -12,13 +12,7 @@
     <include name="${folders.lib}/Bamboo.Prevalence.*"/>
   </fileset>
 
-  <target name="copy-reference" depends="init">
-    <copy todir="${folders.build}" flatten="true">
-      <fileset refid="Prevalence-required-assemblies" />
-    </copy>
-  </target>
-
-  <target name="prepare-bin-pack-specific" depends="init copy-reference">
+  <target name="prepare-bin-pack-specific" depends="init">
     <property name="bin-pack.project.name" value="Prevalence" />
   </target>
 
@@ -28,19 +22,15 @@
     </copy>
   </target>
 
-  <target name="copy-test-config" depends="init">
-    <copy file="NHibernate.Caches.Prevalence.Tests/App.config"
-          tofile="${folders.build}/NHibernate.Caches.Prevalence.Tests.dll.config"
-          if="${file::exists('NHibernate.Caches.Prevalence.Tests/App.config')}" />
-  </target>
-
-  <target name="test" depends="copy-test-config">
+  <target name="test" depends="init">
+    <property name="test.project" value="Prevalence" />
     <property name="test.file" value="NHibernate.Caches.Prevalence.Tests" />
     <call target="common.run-tests" />
   </target>
 
   <target name="clean">
-    <delete dir="${folders.build}" failonerror="false"/>
+    <property name="clean.project" value="Prevalence" />
+    <call target="common.clean" />
   </target>
 
   <target name="nuget-packages">

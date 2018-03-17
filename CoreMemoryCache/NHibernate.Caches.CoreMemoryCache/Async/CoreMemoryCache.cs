@@ -9,20 +9,20 @@
 
 
 using System;
-using System.Collections;
-using System.Web;
-using System.Web.Caching;
 using NHibernate.Cache;
 using System.Collections.Generic;
+using System.Threading;
+using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Primitives;
 using NHibernate.Util;
 
-namespace NHibernate.Caches.SysCache
+namespace NHibernate.Caches.CoreMemoryCache
 {
 	using System.Threading.Tasks;
-	using System.Threading;
-	public partial class SysCache : ICache
+	public partial class CoreMemoryCache : ICache
 	{
 
+		/// <inheritdoc />
 		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -39,12 +39,14 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (key == null)
 			{
 				throw new ArgumentNullException(nameof(key), "null key not allowed");
 			}
+
 			if (value == null)
 			{
 				throw new ArgumentNullException(nameof(value), "null value not allowed");
@@ -64,6 +66,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -85,6 +88,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -102,6 +106,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -119,6 +124,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

@@ -78,7 +78,6 @@ namespace NHibernate.Caches.SysCache2
 			{
 				return Task.FromException<object>(ex);
 			}
-			//nothing to do here
 		}
 
 		/// <inheritdoc />
@@ -148,7 +147,6 @@ namespace NHibernate.Caches.SysCache2
 			{
 				return Task.FromException<object>(ex);
 			}
-			//nothing to do since we arent locking
 		}
 
 		#endregion

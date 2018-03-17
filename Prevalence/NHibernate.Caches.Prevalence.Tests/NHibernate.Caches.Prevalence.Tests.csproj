@@ -7,9 +7,6 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.3" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\..\NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj" />
     <ProjectReference Include="..\NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.csproj" />
   </ItemGroup>
@@ -20,5 +17,8 @@
     <Reference Include="Bamboo.Prevalence.Util">
       <HintPath>..\..\Lib\net\4.0\Bamboo.Prevalence.Util.dll</HintPath>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
   </ItemGroup>
 </Project>
