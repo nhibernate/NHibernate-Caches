@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<project
+    name="NHibernate.Caches.CoreDistributedCache"
+    default="common.compile-all"
+    description="Cache provider for NHibernate using .Net Core IDistributedCache (Microsoft.Extensions.Caching.Abstractions)"
+    xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+  <property name="root.dir" value=".." />
+  <include buildfile="${root.dir}/buildcommon.xml" />
+
+  <target name="prepare-bin-pack-specific" />
+
+  <!-- .Net Core projects are released only through NuGet -->
+  <target name="bin-pack" />
+
+  <target name="test" depends="init">
+    <property name="test.project" value="CoreDistributedCache" />
+    <property name="test.file" value="NHibernate.Caches.CoreDistributedCache.Tests" />
+    <call target="common.run-tests" />
+    <call target="common.run-core-tests" />
+  </target>
+
+  <target name="clean">
+    <property name="clean.project" value="CoreDistributedCache" />
+    <call target="common.clean" />
+  </target>
+
+  <target name="nuget-packages" depends="init">
+    <property name="nuget.package.project" value="NHibernate.Caches.CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.csproj" />
+    <call target="common.nuget-package" />
+  </target>
+</project>

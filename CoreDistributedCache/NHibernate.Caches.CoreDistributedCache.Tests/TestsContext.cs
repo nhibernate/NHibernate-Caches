@@ -3,7 +3,7 @@ using log4net.Repository.Hierarchy;
 using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
 
-namespace NHibernate.Caches.CoreMemoryCache.Tests
+namespace NHibernate.Caches.CoreDistributedCache.Tests
 {
 	[SetUpFixture]
 	public class TestsContext
@@ -11,7 +11,7 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
-			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, "corememorycache");
+			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, "coredistributedcache");
 			//When .NET Core App 2.0 tests run from VS/VSTest the entry assembly is "testhost.dll"
 			//so we need to explicitly load the configuration
 			if (TestsContextHelper.ExecutingWithVsTest)
