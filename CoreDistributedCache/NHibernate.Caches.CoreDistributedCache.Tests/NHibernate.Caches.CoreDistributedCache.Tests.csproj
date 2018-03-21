@@ -15,6 +15,9 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj" />
+    <ProjectReference Include="..\NHibernate.Caches.CoreDistributedCache.Memory\NHibernate.Caches.CoreDistributedCache.Memory.csproj" />
+    <ProjectReference Include="..\NHibernate.Caches.CoreDistributedCache.Redis\NHibernate.Caches.CoreDistributedCache.Redis.csproj" />
+    <ProjectReference Include="..\NHibernate.Caches.CoreDistributedCache.SqlServer\NHibernate.Caches.CoreDistributedCache.SqlServer.csproj" />
     <ProjectReference Include="..\NHibernate.Caches.CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.csproj" />
   </ItemGroup>
   <ItemGroup>

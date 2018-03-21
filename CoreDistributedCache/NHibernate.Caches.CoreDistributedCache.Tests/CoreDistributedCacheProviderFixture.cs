@@ -27,6 +27,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using NHibernate.Cache;
 using NHibernate.Caches.Common.Tests;
+using NHibernate.Caches.CoreDistributedCache.Memory;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.CoreDistributedCache.Tests
@@ -48,7 +49,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 		{
 			var factory = CoreDistributedCacheProvider.CacheFactory;
 			Assert.That(factory, Is.Not.Null, "Factory not found");
-			Assert.That(factory, Is.InstanceOf<MemoryDistributedCacheFactory>(), "Unexpected factory");
+			Assert.That(factory, Is.InstanceOf<MemoryFactory>(), "Unexpected factory");
 			var cache1 = factory.BuildCache();
 			Assert.That(cache1, Is.Not.Null, "Factory has yielded null");
 			Assert.That(cache1, Is.InstanceOf<MemoryDistributedCache>(), "Unexpected cache");

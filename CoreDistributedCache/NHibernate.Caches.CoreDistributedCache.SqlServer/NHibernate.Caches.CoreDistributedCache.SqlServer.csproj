@@ -1,29 +1,25 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../NHibernate.Caches.props" />
   <PropertyGroup>
-    <Product>NHibernate.Caches.CoreDistributedCache</Product>
-    <Title>NHibernate.Caches.CoreDistributedCache</Title>
-    <Description>Cache provider for NHibernate using .Net Core IDistributedCache (Microsoft.Extensions.Caching.Abstractions).
-This provider is not bound to a specific implementation and require a cache factory yielding IDistributedCache implementations.</Description>
+    <Product>NHibernate.Caches.CoreDistributedCache.SqlServer</Product>
+    <Title>NHibernate.Caches.CoreDistributedCache.SqlServer</Title>
+    <Description>SQL Server cache provider for NHibernate using .Net Core IDistributedCache (Microsoft.Extensions.Caching.SqlServer).</Description>
     <!-- Targeting net461 explicitly in order to avoid https://github.com/dotnet/standard/issues/506 for net461 consumers-->
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <NoWarn>$(NoWarn);3001;3002</NoWarn>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <PackageReleaseNotes>* New feature
-    * #28 - Add a .Net Core DistributedCache</PackageReleaseNotes>
+      * #28 - Add a .Net Core DistributedCache</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
-    <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
-    <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.0.0" />
-    <PackageReference Include="NHibernate" Version="5.1.0" />
+    <ProjectReference Include="..\NHibernate.Caches.CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="../../readme.md">
@@ -32,5 +28,8 @@ This provider is not bound to a specific implementation and require a cache fact
     <Content Include="../../LICENSE.txt">
       <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Caching.SqlServer" Version="2.0.0" />
   </ItemGroup>
 </Project>

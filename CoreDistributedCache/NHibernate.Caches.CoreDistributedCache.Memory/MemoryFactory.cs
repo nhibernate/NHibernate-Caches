@@ -4,15 +4,15 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
-namespace NHibernate.Caches.CoreDistributedCache
+namespace NHibernate.Caches.CoreDistributedCache.Memory
 {
 	/// <summary>
 	/// A memory "distributed" cache factory. Use for testing purpose. Otherwise consider using <c>CoreMemoryCache</c>
 	/// instead.
 	/// </summary>
-	public class MemoryDistributedCacheFactory : IDistributedCacheFactory
+	public class MemoryFactory : IDistributedCacheFactory
 	{
-		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(MemoryDistributedCacheFactory));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(MemoryFactory));
 		private const string _expirationScanFrequency = "expiration-scan-frequency";
 		private const string _sizeLimit = "size-limit";
 
@@ -21,7 +21,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public MemoryDistributedCacheFactory() : this(null)
+		public MemoryFactory() : this(null)
 		{
 		}
 
@@ -30,7 +30,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// </summary>
 		/// <param name="expirationScanFrequency">See <see cref="MemoryDistributedCacheOptions.ExpirationScanFrequency" />.</param>
 		/// <param name="sizeLimit">See <see cref="MemoryDistributedCacheOptions.SizeLimit" />.</param>
-		public MemoryDistributedCacheFactory(TimeSpan? expirationScanFrequency, long? sizeLimit)
+		public MemoryFactory(TimeSpan? expirationScanFrequency, long? sizeLimit)
 		{
 			var options = new Options();
 			if (expirationScanFrequency.HasValue)
@@ -54,7 +54,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// </para>
 		/// <para><c>size-limit</c> has to be an integer, expressing the size limit in bytes.</para>
 		/// </remarks>
-		public MemoryDistributedCacheFactory(IDictionary<string, string> properties)
+		public MemoryFactory(IDictionary<string, string> properties)
 		{
 			var options = new Options();
 
@@ -68,9 +68,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 							options.ExpirationScanFrequency = TimeSpan.FromMinutes(minutes);
 						else if (TimeSpan.TryParse(esf, out var expirationScanFrequency))
 							options.ExpirationScanFrequency = expirationScanFrequency;
-						Log.Warn(
-							"Invalid value '{0}' for {1} setting: it is neither an int nor a TimeSpan. Ignoring.",
-							esf, _expirationScanFrequency);
+						else
+							Log.Warn(
+								"Invalid value '{0}' for {1} setting: it is neither an int nor a TimeSpan. Ignoring.",
+								esf, _expirationScanFrequency);
 					}
 					else
 					{
@@ -84,9 +85,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 					{
 						if (long.TryParse(sl, out var bytes))
 							options.SizeLimit = bytes;
-						Log.Warn(
-							"Invalid value '{0}' for {1} setting: it is not an integer. Ignoring.",
-							sl, _sizeLimit);
+						else
+							Log.Warn(
+								"Invalid value '{0}' for {1} setting: it is not an integer. Ignoring.",
+								sl, _sizeLimit);
 					}
 					else
 					{
@@ -104,6 +106,8 @@ namespace NHibernate.Caches.CoreDistributedCache
 			// Always yields the same instance: its underlying implementation is a MemoryCache which regularly spawn
 			// a background task for expiring items. This avoids creating many instances, thus avoiding potentially
 			// spawning many such background tasks at once.
+			// This also allows to share the cache between all session factories of a process, thus emulating a
+			// distributed aspect.
 			return _cache;
 		}
 
