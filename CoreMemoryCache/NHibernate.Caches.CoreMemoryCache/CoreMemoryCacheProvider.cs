@@ -36,6 +36,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 	{
 		private static readonly Dictionary<string, IDictionary<string, string>> ConfiguredCachesProperties;
 		private static readonly INHibernateLogger Log;
+
 		/// <summary>
 		/// The frequency at which scans for cleaning expired cached item have to be done. By default, its value is
 		/// initialized from <c>expiration-scan-frequency</c> attribute of the <c>corememorycache</c> configuration
@@ -49,7 +50,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		/// For this property to be taken into account, it must be set before any cache is built.
 		/// </para>
 		/// <para>
-		/// If <c>cache.expiration_scan_frequency</c> is provided as an integer, this integer will be used as a number
+		/// If <c>expiration-scan-frequency</c> is provided as an integer, this integer will be used as a number
 		/// of minutes. Otherwise the setting will be parsed as a <see cref="TimeSpan" />.
 		/// </para>
 		/// </remarks>
@@ -60,26 +61,23 @@ namespace NHibernate.Caches.CoreMemoryCache
 			Log = NHibernateLogger.For(typeof(CoreMemoryCacheProvider));
 			ConfiguredCachesProperties = new Dictionary<string, IDictionary<string, string>>();
 
-			if (!(ConfigurationManager.GetSection("corememorycache") is CacheConfig[] list))
+			if (!(ConfigurationManager.GetSection("corememorycache") is CacheConfig config))
 				return;
-			foreach (var cache in list)
-			{
-				if (cache.Global)
-				{
-					if (cache.ExpirationScanFrequency != null)
-					{
-						if (int.TryParse(cache.ExpirationScanFrequency, out var minutes))
-							ExpirationScanFrequency = TimeSpan.FromMinutes(minutes);
-						else if (TimeSpan.TryParse(cache.ExpirationScanFrequency, out var expirationScanFrequency))
-							ExpirationScanFrequency = expirationScanFrequency;
-						if (!ExpirationScanFrequency.HasValue)
-							Log.Warn(
-								"Invalid value '{0}' for cache.expiration_scan_frequency setting: it is neither an int nor a TimeSpan. Ignoring.",
-								cache.ExpirationScanFrequency);
-					}
-					continue;
-				}
 
+			if (config.ExpirationScanFrequency != null)
+			{
+				if (int.TryParse(config.ExpirationScanFrequency, out var minutes))
+					ExpirationScanFrequency = TimeSpan.FromMinutes(minutes);
+				else if (TimeSpan.TryParse(config.ExpirationScanFrequency, out var expirationScanFrequency))
+					ExpirationScanFrequency = expirationScanFrequency;
+				if (!ExpirationScanFrequency.HasValue)
+					Log.Warn(
+						"Invalid value '{0}' for expiration-scan-frequency setting: it is neither an int nor a TimeSpan. Ignoring.",
+						config.ExpirationScanFrequency);
+			}
+
+			foreach (var cache in config.Regions)
+			{
 				ConfiguredCachesProperties.Add(cache.Region, cache.Properties);
 			}
 		}
@@ -94,7 +92,8 @@ namespace NHibernate.Caches.CoreMemoryCache
 				regionName = string.Empty;
 			}
 
-			if (ConfiguredCachesProperties.TryGetValue(regionName, out var configuredProperties) && configuredProperties.Count > 0)
+			if (ConfiguredCachesProperties.TryGetValue(regionName, out var configuredProperties) &&
+				configuredProperties.Count > 0)
 			{
 				if (properties != null)
 				{
@@ -130,8 +129,9 @@ namespace NHibernate.Caches.CoreMemoryCache
 					sb.Append(";");
 				}
 
-				Log.Debug("building cache with region: {0}, properties: {1}" , regionName, sb.ToString());
+				Log.Debug("building cache with region: {0}, properties: {1}", regionName, sb.ToString());
 			}
+
 			return new CoreMemoryCache(regionName, properties);
 		}
 

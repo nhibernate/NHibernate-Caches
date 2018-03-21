@@ -19,49 +19,30 @@ namespace NHibernate.Caches.CoreMemoryCache
 		/// <param name="parent"></param>
 		/// <param name="configContext"></param>
 		/// <param name="section"></param>
-		/// <returns>An array of CacheConfig objects.</returns>
+		/// <returns>A <see cref="CacheConfig" /> object.</returns>
 		public object Create(object parent, object configContext, XmlNode section)
 		{
-			var caches = new List<CacheConfig>();
+			var caches = new List<RegionConfig>();
 
-			var esf = section.Attributes?["expiration-scan-frequency"];
-			if (esf != null)
-			{
-				caches.Add(new CacheConfig(esf.Value));
-			}
-			
 			var nodes = section.SelectNodes("cache");
 			foreach (XmlNode node in nodes)
 			{
-				string region = null;
-				string expiration = null;
-				string sliding = null;
-				var r = node.Attributes["region"];
-				var e = node.Attributes["expiration"];
-				var s = node.Attributes["sliding"];
-				if (r != null)
-				{
-					region = r.Value;
-				}
-				if (e != null)
-				{
-					expiration = e.Value;
-				}
-				if (s != null)
-				{
-					sliding = s.Value;
-				}
+				var region = node.Attributes["region"]?.Value;
+				var expiration = node.Attributes["expiration"]?.Value;
+				var sliding = node.Attributes["sliding"]?.Value;
 				if (region != null)
 				{
-					caches.Add(new CacheConfig(region, expiration, sliding));
+					caches.Add(new RegionConfig(region, expiration, sliding));
 				}
 				else
 				{
-					Log.Warn("Found a cache node lacking a region name: ignored. Node: {0}",
+					Log.Warn("Found a cache region node lacking a region name: ignored. Node: {0}",
 						node.OuterXml);
 				}
 			}
-			return caches.ToArray();
+
+			var esf = section.Attributes?["expiration-scan-frequency"]?.Value;
+			return new CacheConfig(esf, caches.ToArray());
 		}
 
 		#endregion

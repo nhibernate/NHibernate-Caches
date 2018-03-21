@@ -41,25 +41,35 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 			var handler = new CoreMemoryCacheSectionHandler();
 			var section = new XmlDocument();
 			var result = handler.Create(null, null, section);
-			Assert.That(result, Is.Not.Null);
-			Assert.IsTrue(result is CacheConfig[]);
-			var caches = result as CacheConfig[];
-			Assert.That(caches.Length, Is.EqualTo(0));
+			Assert.That(result, Is.Not.Null, "result");
+			Assert.That(result, Is.InstanceOf<CacheConfig>());
+			var config = (CacheConfig) result;
+			Assert.That(config.ExpirationScanFrequency, Is.Null, "ExpirationScanFrequency");
+			Assert.That(config.Regions, Is.Not.Null, "Regions");
+			Assert.That(config.Regions.Length, Is.EqualTo(0));
 		}
 
 		[Test]
 		public void TestGetConfigFromFile()
 		{
-			const string xmlSimple = "<corememorycache><cache region=\"foo\" expiration=\"500\" sliding=\"true\" /></corememorycache>";
+			const string xmlSimple =
+				"<corememorycache expiration-scan-frequency=\"5\"><cache region=\"foo\" expiration=\"500\" sliding=\"true\" /></corememorycache>";
 
 			var handler = new CoreMemoryCacheSectionHandler();
 			var section = GetConfigurationSection(xmlSimple);
 			var result = handler.Create(null, null, section);
 			Assert.That(result, Is.Not.Null);
-			Assert.IsTrue(result is CacheConfig[]);
-			var caches = result as CacheConfig[];
-			Assert.That(caches.Length, Is.EqualTo(1));
-			Assert.That(caches[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
+			Assert.That(result, Is.InstanceOf<CacheConfig>());
+			var config = (CacheConfig) result;
+			Assert.That(config.ExpirationScanFrequency, Is.EqualTo("5"), "ExpirationScanFrequency");
+
+			Assert.That(config.Regions, Is.Not.Null, "Regions");
+			Assert.That(config.Regions.Length, Is.EqualTo(1), "Regions count");
+			Assert.That(config.Regions[0].Region, Is.EqualTo("foo"));
+			Assert.That(config.Regions[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
+			Assert.That(config.Regions[0].Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
+			Assert.That(config.Regions[0].Properties, Does.ContainKey("expiration"));
+			Assert.That(config.Regions[0].Properties["expiration"], Is.EqualTo("500"));
 		}
 	}
 }
