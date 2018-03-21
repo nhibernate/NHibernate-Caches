@@ -37,6 +37,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 	{
 		private static readonly Dictionary<string, IDictionary<string, string>> ConfiguredCachesProperties;
 		private static readonly INHibernateLogger Log;
+		private static readonly System.Type[] CacheFactoryCtorWithPropertiesSignature = { typeof(IDictionary<string, string>) };
 
 		/// <summary>
 		/// The <see cref="IDistributedCacheFactory"/> factory to use for getting <see cref="IDistributedCache"/>
@@ -53,31 +54,32 @@ namespace NHibernate.Caches.CoreDistributedCache
 			Log = NHibernateLogger.For(typeof(CoreDistributedCacheProvider));
 			ConfiguredCachesProperties = new Dictionary<string, IDictionary<string, string>>();
 
-			if (!(ConfigurationManager.GetSection("coredistributedcache") is CacheConfig[] list))
+			if (!(ConfigurationManager.GetSection("coredistributedcache") is CacheConfig config))
 				return;
 
-			foreach (var cache in list)
+			if (!string.IsNullOrEmpty(config.FactoryClass))
 			{
-				if (cache.Global)
+				try
 				{
-					if (!string.IsNullOrEmpty(cache.FactoryClass))
-					{
-						try
-						{
-							CacheFactory =
-								(IDistributedCacheFactory) Cfg.Environment.BytecodeProvider.ObjectsFactory
-									.CreateInstance(ReflectHelper.ClassForName(cache.FactoryClass));
-						}
-						catch (Exception e)
-						{
-							throw new HibernateException(
-								$"Could not create the {nameof(IDistributedCacheFactory)} factory from '{cache.FactoryClass}'.",
-								e);
-						}
-					}
-					continue;
-				}
+					var factoryClass = ReflectHelper.ClassForName(config.FactoryClass);
+					var ctorWithProperties = factoryClass.GetConstructor(CacheFactoryCtorWithPropertiesSignature);
 
+					CacheFactory = (IDistributedCacheFactory) (ctorWithProperties != null ?
+						ctorWithProperties.Invoke(new object[] { config.Properties }):
+						Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(factoryClass));
+				}
+				catch (Exception e)
+				{
+					throw new HibernateException(
+						$"Could not create the {nameof(IDistributedCacheFactory)} factory from '{config.FactoryClass}'. " +
+						$"(It must implement {nameof(IDistributedCacheFactory)} and have a constructor accepting a " +
+						$"{nameof(IDictionary<string, string>)} or have a parameterless constructor.)",
+						e);
+				}
+			}
+
+			foreach (var cache in config.Regions)
+			{
 				ConfiguredCachesProperties.Add(cache.Region, cache.Properties);
 			}
 		}
