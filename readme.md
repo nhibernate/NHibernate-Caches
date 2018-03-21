@@ -1,7 +1,7 @@
 ## NHibernate.Caches [![Build status](https://ci.appveyor.com/api/projects/status/42rw3tks2mg6vxvk/branch/master?svg=true)](https://ci.appveyor.com/project/nhibernate/nhibernate-caches/branch/master)
 
-Documentation and examples are available at http://nhibernate.info/
-Any feedback or issue can be sent to NHibernate user group([http://groups.google.com/group/nhusers][userGroup]) and will be greatly appreciated. 
+[Documentation](http://nhibernate.info/doc/nhibernate-reference/caches.html) and examples are available at http://nhibernate.info/. 
+Any feedback or issue can be sent to NHibernate user group ([http://groups.google.com/group/nhusers][userGroup]) and will be greatly appreciated. 
 
 Up-to-date source code available at [**GitHub Website**][nhGithub]
 
@@ -44,7 +44,7 @@ It's recommended to research for a while before deciding which one is better for
 
 #### Build 5.0.0 for NHibernate 5.0.0
 * Breaking changes
-    * All cache provider works with .NET 4.6.1
+    * All cache providers work with .NET 4.6.1
 
 #### Build 4.0.1GA for NHibernate 4.0.1GA
 
@@ -58,7 +58,7 @@ It's recommended to research for a while before deciding which one is better for
 
 #### Build 3.0.0.Alpha2 (rev1318 of contrib) for NHibernate 3.0.0Alpha2
 * Breaking changes
-    * All cache provider works with .NET3.5
+    * All cache providers work with .NET3.5
 
 ** Improvement
     * [NHCH-24] - Strong naming and signing assemblies
