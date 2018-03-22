@@ -12,5 +12,11 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// </summary>
 		/// <returns>A <see cref="IDistributedCache"/> instance.</returns>
 		IDistributedCache BuildCache();
+
+		/// <summary>
+		/// If the underlying <see cref="IDistributedCache"/> implementation has a limit on key size,
+		/// its maximal size. <see langword="null" /> otherwise.
+		/// </summary>
+		int? MaxKeySize { get; }
 	}
 }

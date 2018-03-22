@@ -1,6 +1,7 @@
-﻿#if !NETFX
-using log4net.Repository.Hierarchy;
+﻿using log4net.Repository.Hierarchy;
+#if !NETFX
 using NHibernate.Caches.Common.Tests;
+#endif
 using NUnit.Framework;
 
 namespace NHibernate.Caches.CoreMemoryCache.Tests
@@ -11,20 +12,19 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 		[OneTimeSetUp]
 		public void RunBeforeAnyTests()
 		{
+#if !NETFX
 			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, "corememorycache");
-			//When .NET Core App 2.0 tests run from VS/VSTest the entry assembly is "testhost.dll"
-			//so we need to explicitly load the configuration
-			if (TestsContextHelper.ExecutingWithVsTest)
-			{
-				ConfigureLog4Net();
-			}
+#endif
+			ConfigureLog4Net();
 		}
 
+#if !NETFX
 		[OneTimeTearDown]
 		public void RunAfterAnyTests()
 		{
 			TestsContextHelper.RunAfterAnyTests();
 		}
+#endif
 
 		private static void ConfigureLog4Net()
 		{
@@ -40,4 +40,3 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 		}
 	}
 }
-#endif

@@ -63,6 +63,9 @@ namespace NHibernate.Caches.CoreDistributedCache.Redis
 		}
 
 		/// <inheritdoc />
+		public int? MaxKeySize => null;
+
+		/// <inheritdoc />
 		public IDistributedCache BuildCache()
 		{
 			// According to https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed#the-idistributedcache-interface

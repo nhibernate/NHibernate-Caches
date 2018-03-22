@@ -111,6 +111,9 @@ namespace NHibernate.Caches.CoreDistributedCache.Memory
 			return _cache;
 		}
 
+		/// <inheritdoc />
+		public int? MaxKeySize => null;
+
 		private class Options : MemoryDistributedCacheOptions, IOptions<MemoryDistributedCacheOptions>
 		{
 			MemoryDistributedCacheOptions IOptions<MemoryDistributedCacheOptions>.Value => this;
