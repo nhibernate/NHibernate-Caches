@@ -23,10 +23,14 @@ build:
 test_script:
 - ps: >-
     Invoke-Command -ScriptBlock {
+        $TestsFailed = $FALSE
         #netFx tests
         If ($env:TESTS -eq 'net') {
             @('EnyimMemcached', 'Prevalence', 'RtMemoryCache', 'SysCache', 'SysCache2', 'CoreMemoryCache') | ForEach-Object {
                 nunit3-console (Join-Path $env:APPVEYOR_BUILD_FOLDER "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$env:NETTARGETFX\NHibernate.Caches.$_.Tests.dll") "--result=$_-NetTestResult.xml;format=AppVeyor"
+                If ($LASTEXITCODE -ne 0) {
+                    $TestsFailed = $TRUE
+                }
             }
         }
 
@@ -34,17 +38,22 @@ test_script:
         If ($env:TESTS -eq 'core') {
             @('CoreMemoryCache') | ForEach-Object {
               dotnet (Join-Path $env:APPVEYOR_BUILD_FOLDER "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$env:CORETARGETFX\NHibernate.Caches.$_.Tests.dll") --labels=before --nocolor "--result=$_-CoreTestResult.xml"
+                If ($LASTEXITCODE -ne 0) {
+                    $TestsFailed = $TRUE
+                }
             }
         }
-    }
-after_test:
-- ps: >-
-    Invoke-Command -ScriptBlock {
+
         $wc = New-Object 'System.Net.WebClient'
 
         #core tests (others are real-time reported)
         Get-Item '*-CoreTestResult.xml' | ForEach-Object {
             $wc.UploadFile("https://ci.appveyor.com/api/testresults/nunit3/$($env:APPVEYOR_JOB_ID)", $_)
+        }
+
+        If ($TestsFailed) {
+            Write-Host 'Tests have failed' -foregroundcolor 'white' -backgroundcolor 'red'
+            exit 1
         }
     }
 on_finish:
