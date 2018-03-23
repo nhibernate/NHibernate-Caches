@@ -138,7 +138,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 				Log.Debug("building cache with region: {0}, properties: {1}, factory: {2}" , regionName, sb.ToString(), CacheFactory.GetType().FullName);
 			}
-			return new CoreDistributedCache(CacheFactory.BuildCache(), CacheFactory.MaxKeySize, regionName, properties);
+			return new CoreDistributedCache(CacheFactory.BuildCache(), CacheFactory.Constraints, regionName, properties);
 		}
 
 		/// <inheritdoc />

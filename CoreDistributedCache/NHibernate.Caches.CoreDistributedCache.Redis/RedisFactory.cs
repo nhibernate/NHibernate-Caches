@@ -63,7 +63,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Redis
 		}
 
 		/// <inheritdoc />
-		public int? MaxKeySize => null;
+		public CacheConstraints Constraints => null;
 
 		/// <inheritdoc />
 		public IDistributedCache BuildCache()

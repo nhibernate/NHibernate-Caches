@@ -47,6 +47,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 		private readonly IDistributedCache _cache;
 		private readonly int? _maxKeySize;
+		private readonly Func<string, string> _keySanitizer;
 
 		private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
 		private const bool _defaultUseSlidingExpiration = false;
@@ -60,11 +61,11 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// Default constructor.
 		/// </summary>
 		/// <param name="cache">The <see cref="IDistributedCache"/> instance to use.</param>
-		/// <param name="maxKeySize">If key size is limited, the maximal key size.</param>
+		/// <param name="constraints">Optional constraints of <paramref name="cache"/>.</param>
 		/// <param name="region">The region of the cache.</param>
 		/// <param name="properties">Cache configuration properties.</param>
 		/// <remarks>
-		/// There are three (3) configurable parameters:
+		/// There are three (3) configurable parameters taken in <paramref name="properties"/>:
 		/// <ul>
 		///		<li>expiration (or cache.default_expiration) = number of seconds to wait before expiring each item.</li>
 		///		<li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
@@ -74,12 +75,14 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// </remarks>
 		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
 		public CoreDistributedCache(
-			IDistributedCache cache, int? maxKeySize, string region, IDictionary<string, string> properties)
+			IDistributedCache cache, CacheConstraints constraints, string region, IDictionary<string, string> properties)
 		{
-			if (maxKeySize.HasValue && maxKeySize <= 0)
-				throw new ArgumentException($"{nameof(maxKeySize)} must be null or superior to 1.", nameof(maxKeySize));
+			if (constraints?.MaxKeySize <= 0)
+				throw new ArgumentException($"{nameof(CacheConstraints.MaxKeySize)} must be null or superior to 1.",
+					nameof(constraints));
 			_cache = cache;
-			_maxKeySize = maxKeySize;
+			_maxKeySize = constraints?.MaxKeySize;
+			_keySanitizer = constraints?.KeySanitizer;
 			RegionName = region;
 			Configure(properties);
 		}
@@ -171,34 +174,37 @@ namespace NHibernate.Caches.CoreDistributedCache
 		private string GetCacheKey(object key)
 		{
 			var keyAsString = string.Concat(_cacheKeyPrefix, _fullRegion, ":", key.ToString(), "@", key.GetHashCode());
-			if (!_maxKeySize.HasValue || _maxKeySize >= keyAsString.Length)
-				return keyAsString;
 
-			Log.Info(
-				"Computing a hashed key for too long key '{0}'. This may cause collisions resulting into additional cache misses.",
-				key);
-			// Hash it for respecting max key size. Collisions will be avoided by storing the actual key along
-			// the object and comparing it on retrieval.
-			using (var hasher = new SHA256Managed())
+			if (_maxKeySize < keyAsString.Length)
 			{
-				var bytes = Encoding.UTF8.GetBytes(keyAsString);
-				var computedHash = Convert.ToBase64String(hasher.ComputeHash(bytes));
-				if (computedHash.Length <= _maxKeySize)
-					return computedHash;
-
-				if (!_hasWarnedOnHashLength)
+				Log.Info(
+					"Computing a hashed key for too long key '{0}'. This may cause collisions resulting into additional cache misses.",
+					key);
+				// Hash it for respecting max key size. Collisions will be avoided by storing the actual key along
+				// the object and comparing it on retrieval.
+				using (var hasher = new SHA256Managed())
 				{
-					// No lock for this field, some redundant logs will be less harm than locking.
-					_hasWarnedOnHashLength = true;
-					Log.Warn(
-						"Hash computed for too long keys are themselves too long. They will be truncated, further " +
-						"increasing the risk of collision resulting into additional cache misses. Consider using a " +
-						"cache supporting longer keys. Hash length: {0}; max key size: {1}",
-						computedHash.Length, _maxKeySize);
-				}
+					var bytes = Encoding.UTF8.GetBytes(keyAsString);
+					var computedHash = Convert.ToBase64String(hasher.ComputeHash(bytes));
+					if (computedHash.Length <= _maxKeySize)
+						return computedHash;
 
-				return computedHash.Substring(0, _maxKeySize.Value);
+					if (!_hasWarnedOnHashLength)
+					{
+						// No lock for this field, some redundant logs will be less harm than locking.
+						_hasWarnedOnHashLength = true;
+						Log.Warn(
+							"Hash computed for too long keys are themselves too long. They will be truncated, further " +
+							"increasing the risk of collision resulting into additional cache misses. Consider using a " +
+							"cache supporting longer keys. Hash length: {0}; max key size: {1}",
+							computedHash.Length, _maxKeySize);
+					}
+
+					keyAsString = computedHash.Substring(0, _maxKeySize.Value);
+				}
 			}
+
+			return _keySanitizer != null ? _keySanitizer(keyAsString) : keyAsString;
 		}
 
 		/// <inheritdoc />

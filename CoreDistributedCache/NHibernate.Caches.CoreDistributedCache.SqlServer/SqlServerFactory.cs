@@ -99,7 +99,7 @@ namespace NHibernate.Caches.CoreDistributedCache.SqlServer
 		}
 
 		/// <inheritdoc />
-		public int? MaxKeySize => 449;
+		public CacheConstraints Constraints { get; } = new CacheConstraints { MaxKeySize = 449 };
 
 		/// <inheritdoc />
 		public IDistributedCache BuildCache()

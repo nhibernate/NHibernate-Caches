@@ -23,8 +23,13 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Enyim.Caching;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Caching.Redis;
 using Microsoft.Extensions.Caching.SqlServer;
+using NHibernate.Caches.CoreDistributedCache.Memcached;
+using NHibernate.Caches.CoreDistributedCache.Memory;
 using NHibernate.Caches.CoreDistributedCache.Redis;
 using NHibernate.Caches.CoreDistributedCache.SqlServer;
 using NUnit.Framework;
@@ -34,10 +39,80 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 	[TestFixture]
 	public class DistributedCacheFactoryFixture
 	{
+		[Test]
+		public void MemcachedCacheFactory()
+		{
+			var factory =
+				new MemcachedFactory(new Dictionary<string, string>
+				{
+					{
+						"configuration", @"{
+  ""Servers"": [
+    {
+      ""Address"": ""memcached"",
+      ""Port"": 11211
+    }
+  ],
+  ""Authentication"": {
+    ""Type"": ""Enyim.Caching.Memcached.PlainTextAuthenticator"",
+    ""Parameters"": {
+      ""zone"": """",
+      ""userName"": ""username"",
+      ""password"": ""password""
+    }
+  }
+}"
+					}
+				});
+			var cache1 = factory.BuildCache();
+			Assert.That(cache1, Is.Not.Null, "Factory has yielded null");
+			Assert.That(cache1, Is.InstanceOf<MemcachedClient>(), "Unexpected cache");
+			var cache2 = factory.BuildCache();
+			Assert.That(cache2, Is.EqualTo(cache1),
+				"The Memcached cache factory is supposed to always yield the same instance");
+
+			var keySanitizer = factory.Constraints?.KeySanitizer;
+			Assert.That(keySanitizer, Is.Not.Null, "Factory lacks a key sanitizer");
+			Assert.That(keySanitizer("--abc \n\r\t\v\fdef--"), Is.EqualTo("--abc------def--"), "Unexpected key sanitization");
+		}
+
+		private static readonly FieldInfo MemoryCacheField =
+			typeof(MemoryDistributedCache).GetField("_memCache", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		private static readonly FieldInfo MemoryCacheOptionsField =
+			typeof(MemoryCache).GetField("_options", BindingFlags.Instance | BindingFlags.NonPublic);
+
+		[Test]
+		public void MemoryCacheFactory()
+		{
+			var factory =
+				new MemoryFactory(new Dictionary<string, string>
+				{
+					{ "expiration-scan-frequency", "00:10:00" },
+					{ "size-limit", "1048576" }
+				});
+			Assert.That(factory, Is.Not.Null, "Factory not found");
+			Assert.That(factory, Is.InstanceOf<MemoryFactory>(), "Unexpected factory");
+			var cache1 = factory.BuildCache();
+			Assert.That(cache1, Is.Not.Null, "Factory has yielded null");
+			Assert.That(cache1, Is.InstanceOf<MemoryDistributedCache>(), "Unexpected cache");
+			var cache2 = factory.BuildCache();
+			Assert.That(cache2, Is.EqualTo(cache1),
+				"The distributed cache factory is supposed to always yield the same instance");
+
+			var memCache = MemoryCacheField.GetValue(cache1);
+			Assert.That(memCache, Is.Not.Null, "Underlying memory cache not found");
+			Assert.That(memCache, Is.InstanceOf<MemoryCache>(), "Unexpected memory cache");
+			var options = MemoryCacheOptionsField.GetValue(memCache);
+			Assert.That(options, Is.Not.Null, "Memory cache options not found");
+			Assert.That(options, Is.InstanceOf<MemoryCacheOptions>(), "Unexpected options type");
+			var memOptions = (MemoryCacheOptions) options;
+			Assert.That(memOptions.ExpirationScanFrequency, Is.EqualTo(TimeSpan.FromMinutes(10)));
+			Assert.That(memOptions.SizeLimit, Is.EqualTo(1048576));
+		}
+
 		private static readonly FieldInfo RedisCacheOptionsField =
 			typeof(RedisFactory).GetField("_options", BindingFlags.Instance | BindingFlags.NonPublic);
-		private static readonly FieldInfo SqlServerCacheOptionsField =
-			typeof(SqlServerFactory).GetField("_options", BindingFlags.Instance | BindingFlags.NonPublic);
 
 		[Test]
 		public void RedisCacheFactory()
@@ -62,6 +137,9 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			Assert.That(redisOptions.Configuration, Is.EqualTo("config"));
 			Assert.That(redisOptions.InstanceName, Is.EqualTo("instance"));
 		}
+
+		private static readonly FieldInfo SqlServerCacheOptionsField =
+			typeof(SqlServerFactory).GetField("_options", BindingFlags.Instance | BindingFlags.NonPublic);
 
 		[Test]
 		public void SqlServerCacheFactory()

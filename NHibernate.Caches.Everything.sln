@@ -66,6 +66,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistributedCache.SqlServer", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.SqlServer\NHibernate.Caches.CoreDistributedCache.SqlServer.csproj", "{03A80D4B-6C72-4F31-8680-DD6119E34CDF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistributedCache.Memcached", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Memcached\NHibernate.Caches.CoreDistributedCache.Memcached.csproj", "{CB7BEB99-1964-4D83-86AD-100439E04186}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -168,6 +170,10 @@ Global
 		{03A80D4B-6C72-4F31-8680-DD6119E34CDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{03A80D4B-6C72-4F31-8680-DD6119E34CDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{03A80D4B-6C72-4F31-8680-DD6119E34CDF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CB7BEB99-1964-4D83-86AD-100439E04186}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CB7BEB99-1964-4D83-86AD-100439E04186}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CB7BEB99-1964-4D83-86AD-100439E04186}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CB7BEB99-1964-4D83-86AD-100439E04186}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -197,5 +203,6 @@ Global
 		{0A6D9315-094E-4C6D-8A87-8C642A2D25D7} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
 		{63AD02AD-1F35-4341-A4C7-7EAEA238F08C} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
 		{03A80D4B-6C72-4F31-8680-DD6119E34CDF} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
+		{CB7BEB99-1964-4D83-86AD-100439E04186} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
 	EndGlobalSection
 EndGlobal

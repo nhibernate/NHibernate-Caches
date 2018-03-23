@@ -44,9 +44,22 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 		{
 			var distribCache = Substitute.For<IDistributedCache>();
 			const int maxLength = 20;
-			var cache = new CoreDistributedCache(distribCache, maxLength, "foo", new Dictionary<string, string>());
+			var cache = new CoreDistributedCache(distribCache, new CacheConstraints { MaxKeySize = maxLength }, "foo",
+				new Dictionary<string, string>());
 			cache.Put(new string('k', maxLength * 2), "test");
 			distribCache.Received().Set(Arg.Is<string>(k => k.Length <= maxLength), Arg.Any<byte[]>(),
+				Arg.Any<DistributedCacheEntryOptions>());
+		}
+
+		[Test]
+		public void KeySanitizer()
+		{
+			var distribCache = Substitute.For<IDistributedCache>();
+			Func<string, string> keySanitizer = s => s.Replace('a', 'b');
+			var cache = new CoreDistributedCache(distribCache, new CacheConstraints { KeySanitizer = keySanitizer }, "foo",
+				new Dictionary<string, string>());
+			cache.Put("-abc-", "test");
+			distribCache.Received().Set(Arg.Is<string>(k => k.Contains(keySanitizer("-abc-"))), Arg.Any<byte[]>(),
 				Arg.Any<DistributedCacheEntryOptions>());
 		}
 	}

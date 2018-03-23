@@ -112,7 +112,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Memory
 		}
 
 		/// <inheritdoc />
-		public int? MaxKeySize => null;
+		public CacheConstraints Constraints => null;
 
 		private class Options : MemoryDistributedCacheOptions, IOptions<MemoryDistributedCacheOptions>
 		{
