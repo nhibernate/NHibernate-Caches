@@ -102,6 +102,7 @@ namespace NHibernate.Caches.CoreDistributedCache.SqlServer
 		public CacheConstraints Constraints { get; } = new CacheConstraints { MaxKeySize = 449 };
 
 		/// <inheritdoc />
+		[CLSCompliant(false)]
 		public IDistributedCache BuildCache()
 		{
 			// According to https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed#the-idistributedcache-interface

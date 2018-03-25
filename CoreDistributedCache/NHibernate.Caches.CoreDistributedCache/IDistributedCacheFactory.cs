@@ -1,10 +1,12 @@
-﻿using Microsoft.Extensions.Caching.Distributed;
+﻿using System;
+using Microsoft.Extensions.Caching.Distributed;
 
 namespace NHibernate.Caches.CoreDistributedCache
 {
 	/// <summary>
 	/// Interface for factories building <see cref="IDistributedCache"/> instances.
 	/// </summary>
+	[CLSCompliant(false)]
 	public interface IDistributedCacheFactory
 	{
 		/// <summary>

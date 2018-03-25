@@ -13,12 +13,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 		#region IConfigurationSectionHandler Members
 
-		/// <summary>
-		/// Parse the config section.
-		/// </summary>
-		/// <param name="parent"></param>
-		/// <param name="configContext"></param>
-		/// <param name="section"></param>
+		/// <inheritdoc />
 		/// <returns>A <see cref="CacheConfig" /> object.</returns>
 		public object Create(object parent, object configContext, XmlNode section)
 		{

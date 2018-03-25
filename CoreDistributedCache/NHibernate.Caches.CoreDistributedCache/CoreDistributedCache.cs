@@ -33,14 +33,8 @@ using NHibernate.Util;
 namespace NHibernate.Caches.CoreDistributedCache
 {
 	/// <summary>
-	/// Pluggable cache implementation using the Microsoft.Extensions.Caching.Memory classes.
+	/// Pluggable cache implementation using <see cref="IDistributedCache"/> implementations.
 	/// </summary>
-	/// <remarks>
-	/// Priority is not configurable because it is un-usable: the compaction on memory pressure feature has been
-	/// removed from MemoryCache, only explicit compaction or size limit compaction may use priorities. But
-	/// <see cref="ICache" /> API does not have a suitable method for triggering compaction, and size of each
-	/// cached entry has to be user provided, which <see cref="ICache" /> API does not support.
-	/// </remarks>
 	public partial class CoreDistributedCache : ICache
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CoreDistributedCache));
@@ -74,6 +68,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration and no prefix.
 		/// </remarks>
 		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
+		[CLSCompliant(false)]
 		public CoreDistributedCache(
 			IDistributedCache cache, CacheConstraints constraints, string region, IDictionary<string, string> properties)
 		{

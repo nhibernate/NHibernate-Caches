@@ -28,8 +28,8 @@ namespace NHibernate.Caches.CoreDistributedCache.Memory
 		/// <summary>
 		/// Constructor with explicit configuration properties.
 		/// </summary>
-		/// <param name="expirationScanFrequency">See <see cref="MemoryDistributedCacheOptions.ExpirationScanFrequency" />.</param>
-		/// <param name="sizeLimit">See <see cref="MemoryDistributedCacheOptions.SizeLimit" />.</param>
+		/// <param name="expirationScanFrequency">See <see cref="MemoryCacheOptions.ExpirationScanFrequency" />.</param>
+		/// <param name="sizeLimit">See <see cref="MemoryCacheOptions.SizeLimit" />.</param>
 		public MemoryFactory(TimeSpan? expirationScanFrequency, long? sizeLimit)
 		{
 			var options = new Options();
@@ -43,8 +43,8 @@ namespace NHibernate.Caches.CoreDistributedCache.Memory
 
 		/// <summary>
 		/// Constructor with configuration properties. It supports <c>expiration-scan-frequency</c> and
-		/// <c>size-limit</c> properties. See <see cref="MemoryDistributedCacheOptions.ExpirationScanFrequency" /> and
-		/// <see cref="MemoryDistributedCacheOptions.SizeLimit" />.
+		/// <c>size-limit</c> properties. See <see cref="MemoryCacheOptions.ExpirationScanFrequency" /> and
+		/// <see cref="MemoryCacheOptions.SizeLimit" />.
 		/// </summary>
 		/// <param name="properties">The configurations properties.</param>
 		/// <remarks>
@@ -101,6 +101,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Memory
 		}
 
 		/// <inheritdoc />
+		[CLSCompliant(false)]
 		public IDistributedCache BuildCache()
 		{
 			// Always yields the same instance: its underlying implementation is a MemoryCache which regularly spawn

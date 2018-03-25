@@ -7,9 +7,9 @@
 Meant for testing purpose, consider NHibernate.Caches.CoreMemoryCache for other usages.</Description>
     <!-- Targeting net461 explicitly in order to avoid https://github.com/dotnet/standard/issues/506 for net461 consumers-->
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <NoWarn>$(NoWarn);3001;3002</NoWarn>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* New feature
       * #28 - Add a .Net Core DistributedCache</PackageReleaseNotes>
   </PropertyGroup>

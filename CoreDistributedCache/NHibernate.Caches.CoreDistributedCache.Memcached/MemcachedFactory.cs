@@ -68,6 +68,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Memcached
 		public CacheConstraints Constraints { get; }
 
 		/// <inheritdoc />
+		[CLSCompliant(false)]
 		public IDistributedCache BuildCache()
 		{
 			return _cache;

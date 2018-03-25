@@ -6,8 +6,8 @@
     <Description>Memcached cache provider for NHibernate using .Net Core IDistributedCache (EnyimMemcachedCore).</Description>
     <!-- Targeting net461 explicitly in order to avoid https://github.com/dotnet/standard/issues/506 for net461 consumers-->
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
-    <NoWarn>$(NoWarn);3001;3002</NoWarn>
     <SignAssembly>False</SignAssembly>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* New feature
       * #28 - Add a .Net Core DistributedCache</PackageReleaseNotes>
   </PropertyGroup>

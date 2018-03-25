@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Redis;
 
@@ -66,6 +67,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Redis
 		public CacheConstraints Constraints => null;
 
 		/// <inheritdoc />
+		[CLSCompliant(false)]
 		public IDistributedCache BuildCache()
 		{
 			// According to https://docs.microsoft.com/en-us/aspnet/core/performance/caching/distributed#the-idistributedcache-interface

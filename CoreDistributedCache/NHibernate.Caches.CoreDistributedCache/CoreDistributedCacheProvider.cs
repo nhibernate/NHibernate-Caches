@@ -31,7 +31,7 @@ using NHibernate.Util;
 namespace NHibernate.Caches.CoreDistributedCache
 {
 	/// <summary>
-	/// Cache provider using the System.Runtime.Caching classes
+	/// Cache provider using <see cref="IDistributedCache"/> implementations.
 	/// </summary>
 	public class CoreDistributedCacheProvider : ICacheProvider
 	{
@@ -47,6 +47,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <remarks>
 		/// Changes to this property affect only caches built after the change.
 		/// </remarks>
+		[CLSCompliant(false)]
 		public static IDistributedCacheFactory CacheFactory { get; set; }
 
 		static CoreDistributedCacheProvider()
