@@ -4,11 +4,11 @@ using System.Configuration;
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// Configures a sql command notification cache dependency for am NHibernate cache region 
+	/// Configures a sql command notification cache dependency for am NHibernate cache region.
 	/// </summary>
 	public class CommandCacheDependencyElement : ConfigurationElement
 	{
-		/// <summary>Holds the configuration property definitions</summary>
+		/// <summary>Holds the configuration property definitions.</summary>
 		private static readonly ConfigurationPropertyCollection properties;
 
 		/// <summary>
@@ -30,10 +30,10 @@ namespace NHibernate.Caches.SysCache2
 
 			properties.Add(commandProperty);
 
-            var commandTimeoutProperty = new ConfigurationProperty("commandTimeout", typeof(int?), null,
-                                                            ConfigurationPropertyOptions.None);
-
-            properties.Add(commandTimeoutProperty);
+			var commandTimeoutProperty = new ConfigurationProperty("commandTimeout", typeof(int?), null,
+			                                                       ConfigurationPropertyOptions.None);
+	
+			properties.Add(commandTimeoutProperty);
 
 			var connectionNameProperty = new ConfigurationProperty("connectionName", typeof (string), String.Empty,
 			                                                       ConfigurationPropertyOptions.None);
@@ -54,7 +54,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// The unique name of the dependency 
+		/// The unique name of the dependency.
 		/// </summary>
 		public string Name
 		{
@@ -62,7 +62,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets the sql command statement that will be used to monitor for data changes
+		/// Gets the sql command statement that will be used to monitor for data changes.
 		/// </summary>
 		[ConfigurationProperty("command", IsRequired = true)]
 		public string Command
@@ -71,7 +71,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets the connection string name for the database
+		/// Gets the connection string name for the database.
 		/// </summary>
 		public string ConnectionName
 		{
@@ -79,7 +79,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets whether the <see cref="Command"/> is a stored procedure or not
+		/// Gets whether the <see cref="Command"/> is a stored procedure or not.
 		/// </summary>
 		public bool IsStoredProcedure
 		{
@@ -87,26 +87,26 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets the type of <see cref="IConnectionStringProvider"/> to use when 
-		/// retreiving the connection string. 
+		/// Gets the type of <see cref="IConnectionStringProvider"/> to use when
+		/// retreiving the connection string.
 		/// </summary>
 		/// <remarks>
 		///		<para>If no value is supplied, the <see cref="ConfigurationManager"/>
-		///		will be used to retrieve the connection string</para>
+		///		will be used to retrieve the connection string.</para>
 		/// </remarks>
 		public System.Type ConnectionStringProviderType
 		{
 			get { return (System.Type) base["connectionStringProviderType"]; }
 		}
 
-        /// <summary>
-        /// How long the sql command can run for without timing out. If null,
-        /// the default is used.
-        /// </summary>
-        public int? CommandTimeout
-        {
-            get { return (int?)base["commandTimeout"]; }
-        }
+		/// <summary>
+		/// How long the sql command can run for without timing out. If null,
+		/// the default is used.
+		/// </summary>
+		public int? CommandTimeout
+		{
+			get { return (int?)base["commandTimeout"]; }
+		}
 
 		/// <summary>
 		/// Gets the collection of properties.

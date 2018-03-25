@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
 using NHibernate.Cache;
@@ -13,69 +11,69 @@ using Environment = NHibernate.Cfg.Environment;
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// Pluggable cache implementation using the System.Web.Caching classes
+	/// Pluggable cache implementation using the System.Web.Caching classes and handling SQL dependencies.
 	/// </summary>
 	public partial class SysCacheRegion : ICache
 	{
 		/// <summary>The name of the cache prefix to differentiate the nhibernate cache elements from
-		/// other items in the cache</summary>
+		/// other items in the cache.</summary>
 		private const string _cacheKeyPrefix = "NHibernate-Cache:";
 
-		/// <summary>The default expiration to use if one is not specified</summary>
+		/// <summary>The default expiration to use if one is not specified.</summary>
 		private static readonly TimeSpan DefaultRelativeExpiration = TimeSpan.FromSeconds(300);
 		private const bool _defaultUseSlidingExpiration = false;
 
-		/// <summary>logger for the type</summary>
+		/// <summary>Log4net logger for the class.</summary>
 		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor((typeof(SysCacheRegion)));
 
 		/// <summary>
-		/// List of dependencies that need to be enlisted before being hooked to a cache item
+		/// List of dependencies that need to be enlisted before being hooked to a cache item.
 		/// </summary>
 		private readonly List<ICacheDependencyEnlister> _dependencyEnlisters = new List<ICacheDependencyEnlister>();
 
-		/// <summary>the name of the cache region</summary>
+		/// <summary>The name of the cache region.</summary>
 		private readonly string _name;
 
-		/// <summary>The name of the cache key for the region</summary>
+		/// <summary>The name of the cache key for the region.</summary>
 		private readonly string _rootCacheKey;
 
-		/// <summary>The cache for the web application</summary>
+		/// <summary>The cache for the web application.</summary>
 		private readonly System.Web.Caching.Cache _webCache;
 
-		/// <summary>Indicates if the root cache item has been stored or not</summary>
+		/// <summary>Indicates if the root cache item has been stored or not.</summary>
 		private bool _isRootItemCached;
 
-		/// <summary>The priority of the cache item</summary>
+		/// <summary>The priority of the cache item.</summary>
 		private CacheItemPriority _priority;
 
-		/// <summary>relative expiration for the cache items</summary>
+		/// <summary>Relative expiration for the cache items.</summary>
 		private TimeSpan? _relativeExpiration;
 		private bool _useSlidingExpiration;
 
-		/// <summary>time of day expiration for the cache items</summary>
+		/// <summary>Time of day expiration for the cache items.</summary>
 		private TimeSpan? _timeOfDayExpiration;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SysCacheRegion"/> class with
-		/// the default region name and configuration properties
+		/// the default region name and configuration properties.
 		/// </summary>
 		public SysCacheRegion() : this(null, null, null) {}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SysCacheRegion"/> class with the default configuration
-		/// properties
+		/// properties.
 		/// </summary>
-		/// <param name="name">The name of the region</param>
-		/// <param name="additionalProperties">additional NHibernate configuration properties</param>
+		/// <param name="name">The name of the region.</param>
+		/// <param name="additionalProperties">Additional NHibernate configuration properties.</param>
 		public SysCacheRegion(string name, IDictionary<string, string> additionalProperties)
 			: this(name, null, additionalProperties) {}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SysCacheRegion"/> class.
 		/// </summary>
-		/// <param name="name">The name of the region</param>
-		/// <param name="settings">The configuration settings for the cache region</param>
-		/// <param name="additionalProperties">additional NHibernate configuration properties</param>
+		/// <param name="name">The name of the region.</param>
+		/// <param name="settings">The configuration settings for the cache region.</param>
+		/// <param name="additionalProperties">Additional NHibernate configuration properties.</param>
 		public SysCacheRegion(string name, CacheRegionElement settings, IDictionary<string, string> additionalProperties)
 		{
 			//validate the params
@@ -231,10 +229,10 @@ namespace NHibernate.Caches.SysCache2
 		#endregion
 
 		/// <summary>
-		/// Configures the cache region from configuration values
+		/// Configures the cache region from configuration values.
 		/// </summary>
-		/// <param name="settings">Configuration settings for the region</param>
-		/// <param name="additionalProperties">The additional properties supplied by NHibernate engine</param>
+		/// <param name="settings">Configuration settings for the region.</param>
+		/// <param name="additionalProperties">The additional properties supplied by NHibernate engine.</param>
 		private void Configure(CacheRegionElement settings, IDictionary<string, string> additionalProperties)
 		{
 			Log.Debug("Configuring cache region");
@@ -324,11 +322,11 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Creates the dependency enlisters for any dependecies that require notification enlistment
+		/// Creates the dependency enlisters for any dependecies that require notification enlistment.
 		/// </summary>
-		/// <param name="dependencyConfig">Settings for the dependencies</param>
-		/// <param name="defaultConnectionName">connection name to use when setting up data dependencies if no connection string provider is specified</param>
-		/// <param name="defaultConnectionString">default connection string to use for data dependencies if no connection string provider is specified </param>
+		/// <param name="dependencyConfig">The settings for the dependencies.</param>
+		/// <param name="defaultConnectionName">The connection name to use when setting up data dependencies if no connection string provider is specified.</param>
+		/// <param name="defaultConnectionString">The default connection string to use for data dependencies if no connection string provider is specified.</param>
 		private void CreateDependencyEnlisters(CacheDependenciesElement dependencyConfig, string defaultConnectionName,
 		                                       string defaultConnectionString)
 		{
@@ -412,17 +410,17 @@ namespace NHibernate.Caches.SysCache2
 		/// <summary>
 		/// Gets a valid cache key for the element in the cache with <paramref name="identifier"/>.
 		/// </summary>
-		/// <param name="identifier">The identifier of a cache element</param>
-		/// <returns>Key to use for retrieving an element from the cache</returns>
+		/// <param name="identifier">The identifier of a cache element.</param>
+		/// <returns>The key to use for retrieving an element from the cache.</returns>
 		private string GetCacheKey(object identifier)
 		{
 			return string.Concat(_cacheKeyPrefix, _name, ":", identifier.ToString(), "@", identifier.GetHashCode());
 		}
 
 		/// <summary>
-		/// Generates the root cache key for the cache region
+		/// Generates the root cache key for the cache region.
 		/// </summary>
-		/// <returns>Cache key that can be used for the root cache dependency</returns>
+		/// <returns>The cache key that can be used for the root cache dependency.</returns>
 		private string GenerateRootCacheKey()
 		{
 			return GetCacheKey(Guid.NewGuid());
@@ -430,10 +428,10 @@ namespace NHibernate.Caches.SysCache2
 
 		/// <summary>
 		/// Creates the cache item for the cache region which all other cache items in the region
-		/// will be dependent upon
+		/// will be dependent upon.
 		/// </summary>
 		/// <remarks>
-		///		<para>Specified Region dependencies will be associated to the cache item</para>
+		/// <para>Specified Region dependencies will be associated to the cache item.</para>
 		/// </remarks>
 		private void CacheRootItem()
 		{
@@ -476,16 +474,16 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Called when the root cache item has been removed from the cache
+		/// Called when the root cache item has been removed from the cache.
 		/// </summary>
-		/// <param name="key">the key of the cache item that wwas removed</param>
-		/// <param name="value">the value of the cache item that was removed</param>
-		/// <param name="reason">The <see cref="CacheItemRemovedReason"/> for the removal of the 
-		///		item from the cache</param>
-		///	<remarks>
-		///		<para>Since all cache items are dependent on the root cache item, if this method is called, 
-		///		all the cache items for this region have also been removed</para>
-		///	</remarks>
+		/// <param name="key">The key of the cache item that wwas removed.</param>
+		/// <param name="value">The value of the cache item that was removed.</param>
+		/// <param name="reason">The <see cref="CacheItemRemovedReason"/> for the removal of the
+		/// item from the cache.</param>
+		/// <remarks>
+		/// <para>Since all cache items are dependent on the root cache item, if this method is called,
+		/// all the cache items for this region have also been removed.</para>
+		/// </remarks>
 		private void RootCacheItemRemovedCallback(string key, object value, CacheItemRemovedReason reason)
 		{
 			Log.DebugFormat("Cache items for region '{0}' have been removed from the cache for the following reason : {1:g}",
@@ -496,7 +494,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets the expiration time for a new item added to the cache
+		/// Gets the expiration time for a new item added to the cache.
 		/// </summary>
 		/// <returns></returns>
 		private DateTime? GetCacheItemExpiration()

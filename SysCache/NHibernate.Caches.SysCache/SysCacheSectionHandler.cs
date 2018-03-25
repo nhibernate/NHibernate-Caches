@@ -5,19 +5,14 @@ using System.Xml;
 namespace NHibernate.Caches.SysCache
 {
 	/// <summary>
-	/// Config file provider
+	/// Config file provider.
 	/// </summary>
 	public class SysCacheSectionHandler : IConfigurationSectionHandler
 	{
 		#region IConfigurationSectionHandler Members
 
-		/// <summary>
-		/// parse the config section
-		/// </summary>
-		/// <param name="parent"></param>
-		/// <param name="configContext"></param>
-		/// <param name="section"></param>
-		/// <returns>an array of CacheConfig objects</returns>
+		/// <inheritdoc />
+		/// <returns>An array of <see cref="CacheConfig"/> objects.</returns>
 		public object Create(object parent, object configContext, XmlNode section)
 		{
 			var caches = new List<CacheConfig>();

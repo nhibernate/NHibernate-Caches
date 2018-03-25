@@ -28,10 +28,28 @@ using System;
 
 namespace NHibernate.Caches.MemCache
 {
+	/// <summary>
+	/// A Memcached server configuration.
+	/// </summary>
 	public class MemCacheConfig
 	{
+		/// <summary>
+		/// Constructor with a default cache weigth of one.
+		/// </summary>
+		/// <param name="host">The cache server host name.</param>
+		/// <param name="port">The cache server port.</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="host"/> is <see langword="null"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="port"/> is less or equal to zero.</exception>
 		public MemCacheConfig(string host, int port) : this(host, port, 1) {}
 
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="host">The cache server host name.</param>
+		/// <param name="port">The cache server port.</param>
+		/// <param name="weight">The cache server weight.</param>
+		/// <exception cref="ArgumentNullException">Thrown if <paramref name="host"/> is <see langword="null"/>.</exception>
+		/// <exception cref="ArgumentOutOfRangeException">Thrown if <paramref name="port"/> is less or equal to zero.</exception>
 		public MemCacheConfig(string host, int port, int weight)
 		{
 			if (string.IsNullOrEmpty(host))
@@ -47,10 +65,19 @@ namespace NHibernate.Caches.MemCache
 			Weight = weight;
 		}
 
+		/// <summary>
+		/// The cache server host name.
+		/// </summary>
 		public string Host { get; private set; }
 
+		/// <summary>
+		/// The cache server port.
+		/// </summary>
 		public int Port { get; private set; }
 
+		/// <summary>
+		/// The cache server weight.
+		/// </summary>
 		public int Weight { get; private set; }
 	}
 }

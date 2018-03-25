@@ -4,11 +4,11 @@ using System.Configuration;
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// Connection string provider that uses the ConfigurationManager to retrieve conenction strings
+	/// Connection string provider that uses the ConfigurationManager to retrieve conenction strings.
 	/// </summary>
 	public class ConfigConnectionStringProvider : IConnectionStringProvider
 	{
-		/// <summary>the default connection settings</summary>
+		/// <summary>the default connection settings.</summary>
 		private readonly ConnectionStringSettings _defaultConnectionSettings;
 
 		/// <summary>
@@ -30,16 +30,15 @@ namespace NHibernate.Caches.SysCache2
 		#region IConnectionStringProvider Members
 
 		/// <summary>
-		/// Gets the name of the default connection string
+		/// Gets the name of the default connection string.
 		/// </summary>
-		/// <value></value>
 		public string DefaultConnectionName
 		{
 			get { return _defaultConnectionSettings.Name; }
 		}
 
 		/// <summary>
-		/// Gets the default connection string
+		/// Gets the default connection string.
 		/// </summary>
 		public string GetConnectionString()
 		{
@@ -47,11 +46,11 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets a connnection string by name
+		/// Gets a connnection string by name.
 		/// </summary>
-		/// <param name="name">The name of the connection string to get</param>
-		/// <exception cref="ConfigurationErrorsException">thorwn if the connection specified by <paramref name="name"/>
-		///		could not be found.</exception>
+		/// <param name="name">The name of the connection string to get.</param>
+		/// <exception cref="ConfigurationErrorsException">Thrown if the connection specified by <paramref name="name"/>
+		/// could not be found.</exception>
 		public string GetConnectionString(string name)
 		{
 			ConnectionStringSettings connectionSettings = ConfigurationManager.ConnectionStrings[name];

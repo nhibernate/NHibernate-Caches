@@ -5,6 +5,7 @@
     <Title>NHibernate.Caches.SharedCache</Title>
     <Description>Cache provider for NHibernate using http://www.sharedcache.com</Description>
     <TargetFramework>net461</TargetFramework>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.2" />

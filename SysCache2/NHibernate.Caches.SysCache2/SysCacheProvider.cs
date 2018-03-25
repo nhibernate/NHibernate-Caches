@@ -10,13 +10,13 @@ namespace NHibernate.Caches.SysCache2
 	/// </summary>
 	public class SysCacheProvider : ICacheProvider
 	{
-		/// <summary>pre configured cache region settings</summary>
+		/// <summary>Pre-configured cache region settings.</summary>
 		private static readonly ConcurrentDictionary<string, Lazy<ICache>> CacheRegions = new ConcurrentDictionary<string, Lazy<ICache>>();
 
-		/// <summary>list of pre configured already built cache regions</summary>
+		/// <summary>List of pre configured already built cache regions.</summary>
 		private static readonly Dictionary<string, CacheRegionElement> CacheRegionSettings;
 
-		/// <summary>log4net logger</summary>
+		/// <summary>Log4net logger.</summary>
 		private static readonly IInternalLogger Log;
 
 		/// <summary>

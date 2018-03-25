@@ -30,7 +30,7 @@ using NHibernate.Cache;
 namespace NHibernate.Caches.CoreMemoryCache
 {
 	/// <summary>
-	/// Cache provider using the System.Runtime.Caching classes
+	/// Cache provider using the Microsoft.Extensions.Caching.Memory classes.
 	/// </summary>
 	public class CoreMemoryCacheProvider : ICacheProvider
 	{

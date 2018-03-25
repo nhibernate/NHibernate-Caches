@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// 
+	/// A collection of <see cref="CacheRegionElement"/>.
 	/// </summary>
 	[SuppressMessage("Microsoft.Design", "CA1010:CollectionsShouldImplementGenericInterface"),
 	 ConfigurationCollection(typeof (CacheRegionElement), AddItemName = "cacheRegion",

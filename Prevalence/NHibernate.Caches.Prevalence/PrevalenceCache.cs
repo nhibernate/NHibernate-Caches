@@ -1,13 +1,11 @@
 using System;
 using System.Collections;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.Prevalence
 {
 	/// <summary>
-	/// Summary description for PrevalenceCache.
+	/// Pluggable cache implementation using Bamboo Prevalence.
 	/// </summary>
 	public partial class PrevalenceCache : ICache
 	{
@@ -17,21 +15,21 @@ namespace NHibernate.Caches.Prevalence
 		private readonly CacheSystem system;
 
 		/// <summary>
-		/// default constructor
+		/// Default constructor.
 		/// </summary>
 		public PrevalenceCache() : this("nhibernate", null) {}
 
 		/// <summary>
-		/// constructor with no properties
+		/// Contructor with no properties.
 		/// </summary>
-		/// <param name="region"></param>
+		/// <param name="region">The cache region name.</param>
 		public PrevalenceCache(string region) : this(region, null) {}
 
 		/// <summary>
-		/// full constructor
+		/// Full constructor.
 		/// </summary>
-		/// <param name="region"></param>
-		/// <param name="system">the Prevalance container class</param>
+		/// <param name="region">The cache region name.</param>
+		/// <param name="system">The Prevalance container class.</param>
 		public PrevalenceCache(string region, CacheSystem system)
 		{
 			this.region = region;
@@ -40,9 +38,7 @@ namespace NHibernate.Caches.Prevalence
 
 		#region ICache Members
 
-		/// <summary></summary>
-		/// <param name="key"></param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public object Get(object key)
 		{
 			if (key == null)
@@ -73,9 +69,7 @@ namespace NHibernate.Caches.Prevalence
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
+		/// <inheritdoc />
 		public void Put(object key, object value)
 		{
 			if (key == null)
@@ -102,8 +96,7 @@ namespace NHibernate.Caches.Prevalence
 			system.Add(cacheKey, new DictionaryEntry(key, value));
 		}
 
-		/// <summary></summary>
-		/// <param name="key"></param>
+		/// <inheritdoc />
 		public void Remove(object key)
 		{
 			if (key == null)
@@ -122,7 +115,7 @@ namespace NHibernate.Caches.Prevalence
 			system.Remove(cacheKey);
 		}
 
-		/// <summary></summary>
+		/// <inheritdoc />
 		public void Clear()
 		{
 			if (log.IsInfoEnabled)
@@ -132,7 +125,7 @@ namespace NHibernate.Caches.Prevalence
 			system.Clear();
 		}
 
-		/// <summary></summary>
+		/// <inheritdoc />
 		public void Destroy()
 		{
 			if (log.IsInfoEnabled)
@@ -142,32 +135,31 @@ namespace NHibernate.Caches.Prevalence
 			Clear();
 		}
 
-		/// <summary></summary>
-		/// <param name="key"></param>
+		/// <inheritdoc />
 		public void Lock(object key)
 		{
 			// Do nothing
 		}
 
-		/// <summary></summary>
-		/// <param name="key"></param>
+		/// <inheritdoc />
 		public void Unlock(object key)
 		{
 			// Do nothing
 		}
 
-		/// <summary></summary>
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		/// <summary></summary>
+		/// <inheritdoc />
 		public int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
+		/// <inheritdoc />
 		public string RegionName
 		{
 			get { return region; }

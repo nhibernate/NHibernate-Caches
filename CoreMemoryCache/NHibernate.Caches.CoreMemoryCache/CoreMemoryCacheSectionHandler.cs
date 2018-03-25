@@ -13,13 +13,8 @@ namespace NHibernate.Caches.CoreMemoryCache
 
 		#region IConfigurationSectionHandler Members
 
-		/// <summary>
-		/// Parse the config section.
-		/// </summary>
-		/// <param name="parent"></param>
-		/// <param name="configContext"></param>
-		/// <param name="section"></param>
-		/// <returns>A <see cref="CacheConfig" /> object.</returns>
+		/// <inheritdoc />
+		/// <returns>A <see cref="T:NHibernate.Caches.CoreMemoryCache.CacheConfig" /> object.</returns>
 		public object Create(object parent, object configContext, XmlNode section)
 		{
 			var caches = new List<RegionConfig>();

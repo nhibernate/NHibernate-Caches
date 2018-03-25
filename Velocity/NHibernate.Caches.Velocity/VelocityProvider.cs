@@ -42,8 +42,8 @@ using NHibernate.Cache;
 namespace NHibernate.Caches.Velocity
 {
 	/// <summary>
-	/// Velocity - A cache provider for NHibernate using the Microsoft project code named “Velocity”
-	///  (http://code.msdn.microsoft.com/velocity/)
+	/// Velocity - A cache provider for NHibernate using the Microsoft project code named "Velocity"
+	///  (http://code.msdn.microsoft.com/velocity/).
 	/// </summary>
 	public class VelocityProvider : ICacheProvider
 	{
@@ -57,12 +57,7 @@ namespace NHibernate.Caches.Velocity
 
 		#region ICacheProvider Members
 
-		/// <summary>
-		/// Configure the cache
-		/// </summary>
-		/// <param name="regionName">the name of the cache region</param>
-		/// <param name="properties">configuration settings</param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			if (regionName == null)
@@ -89,26 +84,16 @@ namespace NHibernate.Caches.Velocity
 			return new VelocityClient(regionName, properties);
 		}
 
-		/// <summary>
-		/// generate a timestamp
-		/// </summary>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		/// <summary>
-		/// Callback to perform any necessary initialization of the underlying cache implementation
-		/// during ISessionFactory construction.
-		/// </summary>
-		/// <param name="properties">current configuration settings</param>
+		/// <inheritdoc />
 		public void Start(IDictionary<string, string> properties) {}
 
-		/// <summary>
-		/// Callback to perform any necessary cleanup of the underlying cache implementation
-		/// during <see cref="M:NHibernate.ISessionFactory.Close"/>.
-		/// </summary>
+		/// <inheritdoc />
 		public void Stop() {}
 
 		#endregion

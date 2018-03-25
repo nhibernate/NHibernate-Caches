@@ -5,11 +5,11 @@ using System.Web.Caching;
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// Represents a cacheRegion configuration element
+	/// Represents a cacheRegion configuration element.
 	/// </summary>
 	public class CacheRegionElement : ConfigurationElement
 	{
-		/// <summary>Holds the configuration property definitions</summary>
+		/// <summary>Holds the configuration property definitions.</summary>
 		private static readonly ConfigurationPropertyCollection properties;
 
 		/// <summary>
@@ -57,7 +57,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// The name of the region that the objects to cache will be stored in
+		/// The name of the region that the objects to cache will be stored in.
 		/// </summary>
 		public string Name
 		{
@@ -87,7 +87,7 @@ namespace NHibernate.Caches.SysCache2
 		/// expire from the cache.
 		/// </summary>
 		/// <remarks>
-		///		<para>Must be entered in TimeSpan format. Ex. 13:52:00 would be 1:52 pm</para>
+		///		<para>Must be entered in TimeSpan format. Ex. 13:52:00 would be 1:52 pm.</para>
 		/// </remarks>
 		public TimeSpan? TimeOfDayExpiration
 		{
@@ -95,8 +95,8 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Specifies the relative priority of items stored in the Cache region 
-		/// </summary>
+		/// Specifies the relative priority of items stored in the Cache region.
+		/// </summary>.
 		public CacheItemPriority Priority
 		{
 			get { return (CacheItemPriority) base["priority"]; }

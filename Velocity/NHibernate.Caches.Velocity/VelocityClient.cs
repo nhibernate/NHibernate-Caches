@@ -37,14 +37,15 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Caching;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 using CacheException=System.Data.Caching.CacheException;
 using CacheFactory=System.Data.Caching.CacheFactory;
 
 namespace NHibernate.Caches.Velocity
 {
+	/// <summary>
+	/// Pluggable cache implementation using the Velocity cache.
+	/// </summary>
 	public partial class VelocityClient : ICache
 	{
 		private const string CacheName = "nhibernate";
@@ -57,10 +58,22 @@ namespace NHibernate.Caches.Velocity
 			log = LoggerProvider.LoggerFor(typeof(VelocityClient));
 		}
 
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
 		public VelocityClient() : this("nhibernate", null) {}
 
+		/// <summary>
+		/// Constructor with no properties.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
 		public VelocityClient(string regionName) : this(regionName, null) {}
 
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
+		/// <param name="properties">The cache configuration properties.</param>
 		public VelocityClient(string regionName, IDictionary<string, string> properties)
 		{
 			region = regionName.GetHashCode().ToString(); //because the region name length is limited
@@ -75,6 +88,7 @@ namespace NHibernate.Caches.Velocity
 
 		#region ICache Members
 
+		/// <inheritdoc />
 		public object Get(object key)
 		{
 			if (key == null)
@@ -90,6 +104,7 @@ namespace NHibernate.Caches.Velocity
 			return cache.Get(region, key.ToString(), ref version);
 		}
 
+		/// <inheritdoc />
 		public void Put(object key, object value)
 		{
 			if (key == null)
@@ -109,6 +124,7 @@ namespace NHibernate.Caches.Velocity
 			cache.Put(region, key.ToString(), value, null, null);
 		}
 
+		/// <inheritdoc />
 		public void Remove(object key)
 		{
 			if (key == null)
@@ -126,16 +142,19 @@ namespace NHibernate.Caches.Velocity
 			}
 		}
 
+		/// <inheritdoc />
 		public void Clear()
 		{
 			cache.ClearRegion(region);
 		}
 
+		/// <inheritdoc />
 		public void Destroy()
 		{
 			Clear();
 		}
 
+		/// <inheritdoc />
 		public void Lock(object key)
 		{
 			var lockHandle = new LockHandle();
@@ -149,6 +168,7 @@ namespace NHibernate.Caches.Velocity
 			}
 		}
 
+		/// <inheritdoc />
 		public void Unlock(object key)
 		{
 			var lockHandle = new LockHandle();
@@ -162,16 +182,19 @@ namespace NHibernate.Caches.Velocity
 			}
 		}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
+		/// <inheritdoc />
 		public int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
+		/// <inheritdoc />
 		public string RegionName
 		{
 			get { return region; }

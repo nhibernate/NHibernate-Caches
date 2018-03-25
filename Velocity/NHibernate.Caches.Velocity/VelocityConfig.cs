@@ -36,5 +36,8 @@
 
 namespace NHibernate.Caches.Velocity
 {
+	/// <summary>
+	/// Dummy configuration.
+	/// </summary>
 	public class VelocityConfig {}
 }

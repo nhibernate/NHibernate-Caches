@@ -9,8 +9,8 @@ using NHibernate.Cache;
 namespace NHibernate.Caches.EnyimMemcached
 {
 	/// <summary>
-	/// Cache provider using the .NET client (http://github.com/enyim/EnyimMemcached)
-	/// for memcached, which is located at http://memcached.org/
+	/// Cache provider using the .NET client EnyimMemcached (http://github.com/enyim/EnyimMemcached)
+	/// for memcached, which is located at http://memcached.org/.
 	/// </summary>
 	public class MemCacheProvider : ICacheProvider
 	{
@@ -34,6 +34,7 @@ namespace NHibernate.Caches.EnyimMemcached
 
 		#region ICacheProvider Members
 
+		/// <inheritdoc />
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			if (regionName == null)
@@ -60,11 +61,13 @@ namespace NHibernate.Caches.EnyimMemcached
 			return new MemCacheClient(regionName, properties, clientInstance);
 		}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
+		/// <inheritdoc />
 		public void Start(IDictionary<string, string> properties)
 		{
 			// Needs to lock staticly because the pool and the internal maintenance thread
@@ -83,6 +86,7 @@ namespace NHibernate.Caches.EnyimMemcached
 			}
 		}
 
+		/// <inheritdoc />
 		public void Stop()
 		{
 			lock (syncObject)

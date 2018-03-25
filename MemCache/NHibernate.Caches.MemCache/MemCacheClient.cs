@@ -29,13 +29,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using Memcached.ClientLibrary;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.MemCache
 {
+	/// <summary>
+	/// Pluggable cache implementation using Memcached.
+	/// </summary>
 	public partial class MemCacheClient : ICache
 	{
 		internal const string PoolName = "nhibernate";
@@ -48,21 +49,33 @@ namespace NHibernate.Caches.MemCache
 
 		private readonly string region;
 		private readonly string regionPrefix = "";
-		private readonly bool noLingeringDelete = false;
+		private readonly bool noLingeringDelete;
 
 		static MemCacheClient()
 		{
-			log = LoggerProvider.LoggerFor((typeof(MemCacheClient)));
+			log = LoggerProvider.LoggerFor(typeof(MemCacheClient));
 		}
 
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
 		public MemCacheClient() : this("nhibernate", null)
 		{
 		}
 
+		/// <summary>
+		/// Contructor with no properties.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
 		public MemCacheClient(string regionName) : this(regionName, null)
 		{
 		}
 
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
+		/// <param name="properties">The configuration properties.</param>
 		public MemCacheClient(string regionName, IDictionary<string, string> properties)
 		{
 			region = regionName;
@@ -154,6 +167,7 @@ namespace NHibernate.Caches.MemCache
 
 		#region ICache Members
 
+		/// <inheritdoc />
 		public object Get(object key)
 		{
 			if (key == null)
@@ -184,6 +198,7 @@ namespace NHibernate.Caches.MemCache
 			}
 		}
 
+		/// <inheritdoc />
 		public void Put(object key, object value)
 		{
 			if (key == null)
@@ -210,6 +225,7 @@ namespace NHibernate.Caches.MemCache
 			}
 		}
 
+		/// <inheritdoc />
 		public void Remove(object key)
 		{
 			if (key == null)
@@ -227,36 +243,43 @@ namespace NHibernate.Caches.MemCache
 				client.Delete(KeyAsString(key), DateTime.Now.AddSeconds(expiry));
 		}
 
+		/// <inheritdoc />
 		public void Clear()
 		{
 			client.FlushAll();
 		}
 
+		/// <inheritdoc />
 		public void Destroy()
 		{
 			Clear();
 		}
 
+		/// <inheritdoc />
 		public void Lock(object key)
 		{
 			// do nothing
 		}
 
+		/// <inheritdoc />
 		public void Unlock(object key)
 		{
 			// do nothing
 		}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
+		/// <inheritdoc />
 		public int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; }
 		}
 
+		/// <inheritdoc />
 		public string RegionName
 		{
 			get { return region; }

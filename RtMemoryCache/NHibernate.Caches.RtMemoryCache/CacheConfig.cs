@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace NHibernate.Caches.RtMemoryCache
 {
 	/// <summary>
-	/// Config properties
+	/// Configuration properties of a cache region.
 	/// </summary>
 	public class CacheConfig
 	{
@@ -11,11 +11,11 @@ namespace NHibernate.Caches.RtMemoryCache
 		private readonly string regionName;
 
 		/// <summary>
-		/// build a configuration
+		/// Build a cache region configuration.
 		/// </summary>
-		/// <param name="region"></param>
-		/// <param name="expiration"></param>
-		/// <param name="sliding"></param>
+		/// <param name="region">The cache region name.</param>
+		/// <param name="expiration">The cached items expiration.</param>
+		/// <param name="sliding">Whether the expiration is sliding or not.</param>
 		public CacheConfig(string region, string expiration, string sliding)
 		{
 			regionName = region;
@@ -26,13 +26,13 @@ namespace NHibernate.Caches.RtMemoryCache
 				properties["cache.use_sliding_expiration"] = sliding;
 		}
 
-		/// <summary></summary>
+		/// <summary>The cache region name.</summary>
 		public string Region
 		{
 			get { return regionName; }
 		}
 
-		/// <summary></summary>
+		/// <summary>The cache configuration properties.</summary>
 		public IDictionary<string,string> Properties
 		{
 			get { return properties; }

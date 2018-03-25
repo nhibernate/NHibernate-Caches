@@ -12,8 +12,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
 using NHibernate.Cache;
@@ -22,6 +20,8 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Caches.SysCache2
 {
+	using System.Threading.Tasks;
+	using System.Threading;
 	public partial class SysCacheRegion : ICache
 	{
 
