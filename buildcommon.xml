@@ -62,7 +62,11 @@
     <property name="bin-pack.full-project.name" value="NHibernate.Caches.${bin-pack.project.name}" />
     <mkdir dir="${bin-pack.project.deploy}"/>
     <copy file="${root.dir}/NHibernate.Caches.snk" todir="${bin-pack.project.deploy}"/>
-    <copy file="${root.dir}/${bin-pack.project.name}/${bin-pack.full-project.name}/bin/${build.config}/${net.target-fx}/${bin-pack.full-project.name}.dll" todir="${bin-pack.project.deploy}"/>
+    <copy todir="${bin-pack.project.deploy}">
+      <fileset basedir="${root.dir}/${bin-pack.project.name}/${bin-pack.full-project.name}/bin/${build.config}/${net.target-fx}">
+        <include name="${bin-pack.full-project.name}.*" />
+      </fileset>
+    </copy>
     <copy todir="${bin.dir}/${bin-pack.project.name}">
       <fileset basedir="${bin-pack.project.deploy}">
         <include name="**/*" />

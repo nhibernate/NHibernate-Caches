@@ -25,13 +25,14 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using MergeSystem.Indexus.WinServiceCommon.Provider.Cache;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.SharedCache
 {
+	/// <summary>
+	/// Pluggable cache implementation using indeXus.Net Shared Cache.
+	/// </summary>
 	public partial class SharedCacheClient : ICache
 	{
 		private static readonly IInternalLogger log;
@@ -42,10 +43,22 @@ namespace NHibernate.Caches.SharedCache
 			log = LoggerProvider.LoggerFor(typeof(SharedCacheClient));
 		}
 
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
 		public SharedCacheClient() : this("nhibernate", null) {}
 
+		/// <summary>
+		/// Constructor with no properties.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
 		public SharedCacheClient(string regionName) : this(regionName, null) {}
 
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
+		/// <param name="properties">The cache configuration properties.</param>
 		public SharedCacheClient(string regionName, IDictionary<string, string> properties)
 		{
 			region = regionName;
@@ -53,6 +66,7 @@ namespace NHibernate.Caches.SharedCache
 			if (properties != null) {}
 		}
 
+		/// <inheritdoc />
 		public object Get(object key)
 		{
 			if (key == null)
@@ -67,6 +81,7 @@ namespace NHibernate.Caches.SharedCache
 			return IndexusDistributionCache.SharedCache.Get(key.ToString());
 		}
 
+		/// <inheritdoc />
 		public void Put(object key, object value)
 		{
 			if (key == null)
@@ -86,6 +101,7 @@ namespace NHibernate.Caches.SharedCache
 			IndexusDistributionCache.SharedCache.Add(key.ToString(), value);
 		}
 
+		/// <inheritdoc />
 		public void Remove(object key)
 		{
 			if (key == null)
@@ -100,30 +116,37 @@ namespace NHibernate.Caches.SharedCache
 			IndexusDistributionCache.SharedCache.Remove(key.ToString());
 		}
 
+		/// <inheritdoc />
 		public void Clear()
 		{
 			IndexusDistributionCache.SharedCache.Clear();
 		}
 
+		/// <inheritdoc />
 		public void Destroy()
 		{
 			Clear();
 		}
 
+		/// <inheritdoc />
 		public void Lock(object key) {}
 
+		/// <inheritdoc />
 		public void Unlock(object key) {}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
+		/// <inheritdoc />
 		public int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
+		/// <inheritdoc />
 		public string RegionName
 		{
 			get { return region; }

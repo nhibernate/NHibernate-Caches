@@ -10,6 +10,9 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Caches.EnyimMemcached
 {
+	/// <summary>
+	/// Pluggable cache implementation using Memcached and the EnyimMemcached client library.
+	/// </summary>
 	public partial class MemCacheClient : ICache
 	{
 		private static readonly IInternalLogger log;
@@ -27,21 +30,39 @@ namespace NHibernate.Caches.EnyimMemcached
 			log = LoggerProvider.LoggerFor(typeof (MemCacheClient));
 		}
 
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
 		public MemCacheClient()
 			: this("nhibernate", null)
 		{
 		}
 
+		/// <summary>
+		/// Contructor with no properties.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
 		public MemCacheClient(string regionName)
 			: this(regionName, null)
 		{
 		}
 
+		/// <summary>
+		/// Constructor with default Memcache client instance.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
+		/// <param name="properties">The configuration properties.</param>
 		public MemCacheClient(string regionName, IDictionary<string, string> properties)
 			: this(regionName, properties, new MemcachedClient())
 		{
 		}
 
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
+		/// <param name="properties">The configuration properties.</param>
+		/// <param name="memcachedClient">The Memcache client.</param>
 		[CLSCompliant(false)]
 		public MemCacheClient(string regionName, IDictionary<string, string> properties, MemcachedClient memcachedClient)
 		{
@@ -107,6 +128,7 @@ namespace NHibernate.Caches.EnyimMemcached
 
 		#region ICache Members
 
+		/// <inheritdoc />
 		public object Get(object key)
 		{
 			if (key == null)
@@ -134,6 +156,7 @@ namespace NHibernate.Caches.EnyimMemcached
 			return null;
 		}
 
+		/// <inheritdoc />
 		public void Put(object key, object value)
 		{
 			if (key == null)
@@ -162,6 +185,7 @@ namespace NHibernate.Caches.EnyimMemcached
 			}
 		}
 
+		/// <inheritdoc />
 		public void Remove(object key)
 		{
 			if (key == null)
@@ -175,36 +199,43 @@ namespace NHibernate.Caches.EnyimMemcached
 			client.Remove(KeyAsString(key));
 		}
 
+		/// <inheritdoc />
 		public void Clear()
 		{
 			client.FlushAll();
 		}
 
+		/// <inheritdoc />
 		public void Destroy()
 		{
 			Clear();
 		}
 
+		/// <inheritdoc />
 		public void Lock(object key)
 		{
 			// do nothing
 		}
 
+		/// <inheritdoc />
 		public void Unlock(object key)
 		{
 			// do nothing
 		}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
+		/// <inheritdoc />
 		public int Timeout
 		{
 			get { return Timestamper.OneMs*60000; }
 		}
 
+		/// <inheritdoc />
 		public string RegionName
 		{
 			get { return region; }

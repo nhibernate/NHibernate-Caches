@@ -28,7 +28,7 @@ using NHibernate.Cache;
 namespace NHibernate.Caches.SysCache
 {
 	/// <summary>
-	/// Cache provider using the System.Web.Caching classes
+	/// Cache provider using the System.Web.Caching classes.
 	/// </summary>
 	public class SysCacheProvider : ICacheProvider
 	{

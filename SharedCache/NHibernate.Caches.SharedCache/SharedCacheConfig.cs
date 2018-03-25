@@ -25,5 +25,8 @@
 
 namespace NHibernate.Caches.SharedCache
 {
+	/// <summary>
+	/// Dummy configuration.
+	/// </summary>
 	public class SharedCacheConfig {}
 }

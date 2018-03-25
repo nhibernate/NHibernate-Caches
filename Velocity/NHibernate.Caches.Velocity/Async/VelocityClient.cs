@@ -11,19 +11,20 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Caching;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 using CacheException=System.Data.Caching.CacheException;
 using CacheFactory=System.Data.Caching.CacheFactory;
 
 namespace NHibernate.Caches.Velocity
 {
+	using System.Threading.Tasks;
+	using System.Threading;
 	public partial class VelocityClient : ICache
 	{
 
 		#region ICache Members
 
+		/// <inheritdoc />
 		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -40,6 +41,7 @@ namespace NHibernate.Caches.Velocity
 			}
 		}
 
+		/// <inheritdoc />
 		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -65,6 +67,7 @@ namespace NHibernate.Caches.Velocity
 			}
 		}
 
+		/// <inheritdoc />
 		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -90,6 +93,7 @@ namespace NHibernate.Caches.Velocity
 			}
 		}
 
+		/// <inheritdoc />
 		public Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -107,6 +111,7 @@ namespace NHibernate.Caches.Velocity
 			}
 		}
 
+		/// <inheritdoc />
 		public async Task LockAsync(object key, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
@@ -121,6 +126,7 @@ namespace NHibernate.Caches.Velocity
 			}
 		}
 
+		/// <inheritdoc />
 		public async Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

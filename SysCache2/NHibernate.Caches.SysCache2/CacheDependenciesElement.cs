@@ -3,11 +3,11 @@ using System.Configuration;
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// Defines the cache dependencies for an NHibernate cache region
+	/// Defines the cache dependencies for an NHibernate cache region.
 	/// </summary>
 	public class CacheDependenciesElement : ConfigurationElement
 	{
-		/// <summary>Holds the configuration property definitions</summary>
+		/// <summary>Holds the configuration property definitions.</summary>
 		private static readonly ConfigurationPropertyCollection properties;
 
 		/// <summary>

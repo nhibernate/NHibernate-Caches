@@ -20,5 +20,8 @@
     <PackageTags>nhibernate; cache</PackageTags>
     <RepositoryUrl>https://github.com/nhibernate/NHibernate-Caches.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
+
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatSpecificWarningsAsErrors />
   </PropertyGroup>
 </Project>

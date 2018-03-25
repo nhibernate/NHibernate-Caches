@@ -10,21 +10,18 @@
 
 using System;
 using System.Collections;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.Prevalence
 {
+	using System.Threading.Tasks;
+	using System.Threading;
 	public partial class PrevalenceCache : ICache
 	{
 
 		#region ICache Members
 
-		/// <summary></summary>
-		/// <param name="key"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -41,10 +38,7 @@ namespace NHibernate.Caches.Prevalence
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="key"></param>
-		/// <param name="value"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <inheritdoc />
 		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -62,9 +56,7 @@ namespace NHibernate.Caches.Prevalence
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="key"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <inheritdoc />
 		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -82,8 +74,7 @@ namespace NHibernate.Caches.Prevalence
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <inheritdoc />
 		public Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -101,9 +92,7 @@ namespace NHibernate.Caches.Prevalence
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="key"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <inheritdoc />
 		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -121,9 +110,7 @@ namespace NHibernate.Caches.Prevalence
 			}
 		}
 
-		/// <summary></summary>
-		/// <param name="key"></param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <inheritdoc />
 		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

@@ -4,7 +4,7 @@ using System.Configuration;
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// Timespan validator that can accept a null value as valid input
+	/// Timespan validator that can accept a null value as valid input.
 	/// </summary>
 	public class NullableTimeSpanValidator : TimeSpanValidator
 	{

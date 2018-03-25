@@ -4,17 +4,17 @@ using System.Diagnostics.CodeAnalysis;
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// Provides Configuration system support for the SysCache configuration section
+	/// Provides Configuration system support for the SysCache configuration section.
 	/// </summary>
 	/// <remarks>
-	///		<para>Section name must be 'sysCache'</para>
+	/// <para>Section name must be <c>syscache2</c>.</para>
 	/// </remarks>
 	public class SysCacheSection : ConfigurationSection
 	{
-		/// <summary>Confiuration section name</summary>
+		/// <summary>Confiuration section name.</summary>
 		private const string SectionName = "syscache2";
 
-		/// <summary>Holds the configuration property definitions</summary>
+		/// <summary>Holds the configuration property definitions.</summary>
 		private static readonly ConfigurationPropertyCollection properties;
 
 		/// <summary>
@@ -33,7 +33,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets the cache region elements
+		/// Gets the cache region elements.
 		/// </summary>
 		public CacheRegionCollection CacheRegions
 		{
@@ -50,9 +50,9 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets the <see cref="SysCacheSection"/> from the configuration
+		/// Gets the <see cref="SysCacheSection"/> from the configuration.
 		/// </summary>
-		/// <returns>The configured <see cref="SysCacheSection"/></returns>
+		/// <returns>The configured <see cref="SysCacheSection"/>.</returns>
 		[SuppressMessage("Microsoft.Design", "CA1024:UsePropertiesWhereAppropriate")]
 		public static SysCacheSection GetSection()
 		{

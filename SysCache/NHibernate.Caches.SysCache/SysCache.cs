@@ -31,7 +31,7 @@ using NHibernate.Util;
 namespace NHibernate.Caches.SysCache
 {
 	/// <summary>
-	/// Pluggable cache implementation using the System.Web.Caching classes
+	/// Pluggable cache implementation using the System.Web.Caching classes.
 	/// </summary>
 	public partial class SysCache : ICache
 	{
@@ -49,7 +49,7 @@ namespace NHibernate.Caches.SysCache
 		private const string _cacheKeyPrefix = "NHibernate-Cache:";
 
 		/// <summary>
-		/// default constructor
+		/// Default constructor.
 		/// </summary>
 		public SysCache()
 			: this("nhibernate", null)
@@ -57,30 +57,33 @@ namespace NHibernate.Caches.SysCache
 		}
 
 		/// <summary>
-		/// constructor with no properties
+		/// Constructor with no properties.
 		/// </summary>
-		/// <param name="region"></param>
+		/// <param name="region">The cache region name.</param>
 		public SysCache(string region)
 			: this(region, null)
 		{
 		}
 
 		/// <summary>
-		/// full constructor
+		/// Full constructor.
 		/// </summary>
-		/// <param name="region"></param>
-		/// <param name="properties">cache configuration properties</param>
+		/// <param name="region">The cache region name.</param>
+		/// <param name="properties">The cache configuration properties.</param>
 		/// <remarks>
-		/// There are two (2) configurable parameters:
+		/// There are four (4) configurable parameters:
 		/// <ul>
-		///		<li>expiration = number of seconds to wait before expiring each item</li>
-		///		<li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
-		///		<li>regionPrefix = a string for prefixing the region name.</li>
-		///		<li>priority = a numeric cost of expiring each item, where 1 is a low cost, 5 is the highest, and 3 is normal. Only values 1 through 5 are valid.</li>
+		///   <li>expiration (or cache.default_expiration) = number of seconds to wait before expiring each item</li>
+		///   <li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
+		///   <li>regionPrefix = a string for prefixing the region name.</li>
+		///   <li>priority = a numeric cost of expiring each item, where 1 is a low cost, 6 is the highest, and 3 is
+		///         normal. Only values 1 through 6 are valid. 6 should be avoided, this value is the
+		///         <see cref="CacheItemPriority.NotRemovable" /> priority.</li>
 		/// </ul>
-		/// All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration, no region prefix and the default priority of 3.
+		/// All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration, no region
+		/// prefix and the default priority of 3.
 		/// </remarks>
-		/// <exception cref="IndexOutOfRangeException">The "priority" property is not between 1 and 5</exception>
+		/// <exception cref="IndexOutOfRangeException">The "priority" property is not between 1 and 6</exception>
 		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
 		public SysCache(string region, IDictionary<string, string> properties)
 		{
@@ -92,12 +95,24 @@ namespace NHibernate.Caches.SysCache
 			StoreRootCacheKey();
 		}
 
+		/// <summary>
+		/// The cache region.
+		/// </summary>
 		public string Region { get; }
 
+		/// <summary>
+		/// The cached items expiration.
+		/// </summary>
 		public TimeSpan Expiration { get; private set; }
 
+		/// <summary>
+		/// The cached items <see cref="CacheItemPriority"/>.
+		/// </summary>
 		public CacheItemPriority Priority { get; private set; }
 
+		/// <summary>
+		/// Whether the cached items expiration is sliding (reset at each hit) or not.
+		/// </summary>
 		public bool UseSlidingExpiration { get; private set; }
 
 		private void Configure(IDictionary<string, string> props)
@@ -232,6 +247,7 @@ namespace NHibernate.Caches.SysCache
 			return string.Concat(_cacheKeyPrefix, _regionPrefix, Region, ":", key.ToString(), "@", key.GetHashCode());
 		}
 
+		/// <inheritdoc />
 		public object Get(object key)
 		{
 			if (key == null)
@@ -251,6 +267,7 @@ namespace NHibernate.Caches.SysCache
 			return key.Equals(de.Key) ? de.Value : null;
 		}
 
+		/// <inheritdoc />
 		public void Put(object key, object value)
 		{
 			if (key == null)
@@ -289,6 +306,7 @@ namespace NHibernate.Caches.SysCache
 				null);
 		}
 
+		/// <inheritdoc />
 		public void Remove(object key)
 		{
 			if (key == null)
@@ -300,6 +318,7 @@ namespace NHibernate.Caches.SysCache
 			_cache.Remove(cacheKey);
 		}
 
+		/// <inheritdoc />
 		public void Clear()
 		{
 			RemoveRootCacheKey();
@@ -337,28 +356,34 @@ namespace NHibernate.Caches.SysCache
 			_cache.Remove(_rootCacheKey);
 		}
 
+		/// <inheritdoc />
 		public void Destroy()
 		{
 			Clear();
 		}
 
+		/// <inheritdoc />
 		public void Lock(object key)
 		{
 			// Do nothing
 		}
 
+		/// <inheritdoc />
 		public void Unlock(object key)
 		{
 			// Do nothing
 		}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
+		/// <inheritdoc />
 		public int Timeout => Timestamper.OneMs * 60000;
 
+		/// <inheritdoc />
 		public string RegionName => Region;
 	}
 }

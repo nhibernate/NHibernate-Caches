@@ -23,6 +23,7 @@ namespace NHibernate.Caches.SysCache
 	public partial class SysCache : ICache
 	{
 
+		/// <inheritdoc />
 		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -39,6 +40,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -64,6 +66,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -85,6 +88,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -102,6 +106,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -119,6 +124,7 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

@@ -38,8 +38,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <summary>
 		/// Gets the type of the <see cref="T:System.Configuration.ConfigurationElementCollection"></see>.
 		/// </summary>
-		/// <value></value>
-		/// <returns>The <see cref="T:System.Configuration.ConfigurationElementCollectionType"></see> of this collection.</returns>
+		/// <value>The <see cref="T:System.Configuration.ConfigurationElementCollectionType"></see> of this collection.</value>
 		public override ConfigurationElementCollectionType CollectionType
 		{
 			get { return ConfigurationElementCollectionType.AddRemoveClearMap; }

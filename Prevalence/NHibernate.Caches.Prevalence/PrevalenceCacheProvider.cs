@@ -22,16 +22,11 @@ namespace NHibernate.Caches.Prevalence
 
 		#region ICacheProvider Members
 
-		/// <summary>
-		/// build and return a new cache implementation
-		/// </summary>
-		/// <param name="regionName"></param>
-		/// <param name="properties">cache configuration properties</param>
+		/// <inheritdoc />
 		/// <remarks>There is only one configurable parameter: prevalenceBase. This is
 		/// the directory on the file system where the Prevalence engine will save data.
 		/// It can be relative to the current directory or a full path. If the directory
 		/// doesn't exist, it will be created.</remarks>
-		/// <returns></returns>
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			if (regionName == null)
@@ -64,15 +59,13 @@ namespace NHibernate.Caches.Prevalence
 			return new PrevalenceCache(regionName, system);
 		}
 
-		/// <summary></summary>
-		/// <returns></returns>
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
-		/// <summary></summary>
-		/// <param name="properties"></param>
+		/// <inheritdoc />
 		public void Start(IDictionary<string, string> properties)
 		{
 			if (string.IsNullOrEmpty(dataDir))
@@ -85,7 +78,7 @@ namespace NHibernate.Caches.Prevalence
 			}
 		}
 
-		/// <summary></summary>
+		/// <inheritdoc />
 		public void Stop()
 		{
 			try

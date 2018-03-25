@@ -30,7 +30,7 @@ using NHibernate.Util;
 namespace NHibernate.Caches.RtMemoryCache
 {
 	/// <summary>
-	/// Pluggable cache implementation using the System.Runtime.Caching classes
+	/// Pluggable cache implementation using the System.Runtime.Caching classes.
 	/// </summary>
 	public partial class RtMemoryCache : ICache
 	{
@@ -47,7 +47,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		private const string _cacheKeyPrefix = "NHibernate-Cache:";
 
 		/// <summary>
-		/// default constructor
+		/// Default constructor.
 		/// </summary>
 		public RtMemoryCache()
 			: this("nhibernate", null)
@@ -55,19 +55,19 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <summary>
-		/// constructor with no properties
+		/// Constructor with no properties.
 		/// </summary>
-		/// <param name="region"></param>
+		/// <param name="region">The cache region name.</param>
 		public RtMemoryCache(string region)
 			: this(region, null)
 		{
 		}
 
 		/// <summary>
-		/// full constructor
+		/// Full constructor.
 		/// </summary>
-		/// <param name="region"></param>
-		/// <param name="properties">cache configuration properties</param>
+		/// <param name="region">The cache region name.</param>
+		/// <param name="properties">The cache configuration properties.</param>
 		/// <remarks>
 		/// There are three (3) configurable parameters:
 		/// <ul>
@@ -88,13 +88,25 @@ namespace NHibernate.Caches.RtMemoryCache
 			StoreRootCacheKey();
 		}
 
+		/// <summary>
+		/// The cache region name.
+		/// </summary>
 		public string Region { get; }
 
+		/// <summary>
+		/// The cached items expiration.
+		/// </summary>
 		public TimeSpan Expiration { get; private set; }
 
+		/// <summary>
+		/// Whether the cached items expiration is sliding (reset at each hit) or not.
+		/// </summary>
 		public bool UseSlidingExpiration { get; private set; }
 
 		// Since v5.1
+		/// <summary>
+		/// The cached items <see cref="CacheItemPriority"/>. Always <see cref="CacheItemPriority.Default"/>.
+		/// </summary>
 		[Obsolete("There are not many levels of priority for RtMemoryCache, only Default and NotRemovable. Now yields always Default.")]
 		public CacheItemPriority Priority => CacheItemPriority.Default;
 
@@ -176,6 +188,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			return string.Concat(_cacheKeyPrefix, _regionPrefix, Region, ":", key.ToString(), "@", key.GetHashCode());
 		}
 
+		/// <inheritdoc />
 		public object Get(object key)
 		{
 			if (key == null)
@@ -195,6 +208,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			return key.Equals(de.Key) ? de.Value : null;
 		}
 
+		/// <inheritdoc />
 		public void Put(object key, object value)
 		{
 			if (key == null)
@@ -232,6 +246,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			          });
 		}
 
+		/// <inheritdoc />
 		public void Remove(object key)
 		{
 			if (key == null)
@@ -243,6 +258,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			_cache.Remove(cacheKey);
 		}
 
+		/// <inheritdoc />
 		public void Clear()
 		{
 			RemoveRootCacheKey();
@@ -282,28 +298,34 @@ namespace NHibernate.Caches.RtMemoryCache
 			_cache.Remove(_rootCacheKey);
 		}
 
+		/// <inheritdoc />
 		public void Destroy()
 		{
 			Clear();
 		}
 
+		/// <inheritdoc />
 		public void Lock(object key)
 		{
 			// Do nothing
 		}
 
+		/// <inheritdoc />
 		public void Unlock(object key)
 		{
 			// Do nothing
 		}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
+		/// <inheritdoc />
 		public int Timeout => Timestamper.OneMs * 60000;
 
+		/// <inheritdoc />
 		public string RegionName => Region;
 	}
 }

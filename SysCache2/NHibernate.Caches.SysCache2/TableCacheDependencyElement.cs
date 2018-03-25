@@ -8,7 +8,7 @@ namespace NHibernate.Caches.SysCache2
 	/// </summary>
 	public class TableCacheDependencyElement : ConfigurationElement
 	{
-		/// <summary>Holds the configuration property definitions</summary>
+		/// <summary>Holds the configuration property definitions.</summary>
 		private static readonly ConfigurationPropertyCollection properties;
 
 		/// <summary>
@@ -37,7 +37,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// The unique name of the dependency 
+		/// The unique name of the dependency.
 		/// </summary>
 		public string Name
 		{
@@ -46,7 +46,7 @@ namespace NHibernate.Caches.SysCache2
 
 		/// <summary>
 		/// The name of the <see cref="System.Web.Configuration.SqlCacheDependencyDatabase"/> that
-		/// contains the connection information for the table monitor
+		/// contains the connection information for the table monitor.
 		/// </summary>
 		public string DatabaseEntryName
 		{
@@ -54,7 +54,7 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// The table in the database to monitor
+		/// The table in the database to monitor.
 		/// </summary>
 		public string TableName
 		{
@@ -64,7 +64,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <summary>
 		/// Gets the collection of properties.
 		/// </summary>
-		/// <returns>The <see cref="T:System.Configuration.ConfigurationPropertyCollection"></see> collection of properties for the element.</returns>
+		/// <value>The <see cref="T:System.Configuration.ConfigurationPropertyCollection"></see> collection of properties for the element.</value>
 		protected override ConfigurationPropertyCollection Properties
 		{
 			get { return properties; }

@@ -1,17 +1,17 @@
 namespace NHibernate.Caches.SysCache2
 {
 	/// <summary>
-	/// Connection string provider that returns a specified connection string
+	/// Connection string provider that returns a specified connection string.
 	/// </summary>
 	public class StaticConnectionStringProvider : IConnectionStringProvider
 	{
-		/// <summary>specified connection string</summary>
+		/// <summary>Specified connection string.</summary>
 		private readonly string connectionString;
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="StaticConnectionStringProvider"/> class.
 		/// </summary>
-		/// <param name="connectionString">The connection string that the provider will return</param>
+		/// <param name="connectionString">The connection string that the provider will return.</param>
 		public StaticConnectionStringProvider(string connectionString)
 		{
 			this.connectionString = connectionString;
@@ -20,7 +20,7 @@ namespace NHibernate.Caches.SysCache2
 		#region IConnectionStringProvider Members
 
 		/// <summary>
-		/// Gets the name of the default connection string
+		/// Gets the name of the default connection string.
 		/// </summary>
 		public string DefaultConnectionName
 		{
@@ -28,20 +28,20 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <summary>
-		/// Gets the default connection string
+		/// Gets the default connection string.
 		/// </summary>
-		/// <returns>Connection string</returns>
+		/// <returns>A connection string.</returns>
 		public string GetConnectionString()
 		{
 			return connectionString;
 		}
 
 		/// <summary>
-		/// Gets a connnection string by name
+		/// Gets a connnection string by name.
 		/// </summary>
-		/// <param name="name">The name of the connection string to get</param>
+		/// <param name="name">The name of the connection string to get.</param>
 		/// <remarks>
-		///		<para>The same connection string will be returned whether a name is specified or not.</para>
+		/// <para>The same connection string will be returned whether a name is specified or not.</para>
 		/// </remarks>
 		public string GetConnectionString(string name)
 		{

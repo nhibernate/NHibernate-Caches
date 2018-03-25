@@ -74,6 +74,7 @@ namespace NHibernate.Caches.MemCache
 
 		#region ICacheProvider Members
 
+		/// <inheritdoc />
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
 			if (regionName == null)
@@ -100,11 +101,13 @@ namespace NHibernate.Caches.MemCache
 			return new MemCacheClient(regionName, properties);
 		}
 
+		/// <inheritdoc />
 		public long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
+		/// <inheritdoc />
 		public void Start(IDictionary<string, string> properties)
 		{
 			// Needs to lock staticly because the pool and the internal maintenance thread
@@ -212,6 +215,7 @@ namespace NHibernate.Caches.MemCache
 			}
 		}
 
+		/// <inheritdoc />
 		public void Stop()
 		{
 			// Needs to lock staticly because the pool and the internal maintenance thread

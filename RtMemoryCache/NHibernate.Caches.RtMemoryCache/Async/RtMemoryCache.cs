@@ -22,6 +22,7 @@ namespace NHibernate.Caches.RtMemoryCache
 	public partial class RtMemoryCache : ICache
 	{
 
+		/// <inheritdoc />
 		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -38,6 +39,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -63,6 +65,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -84,6 +87,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -101,6 +105,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -118,6 +123,7 @@ namespace NHibernate.Caches.RtMemoryCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)

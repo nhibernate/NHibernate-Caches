@@ -10,16 +10,17 @@
 
 using System;
 using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using MergeSystem.Indexus.WinServiceCommon.Provider.Cache;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.SharedCache
 {
+	using System.Threading.Tasks;
+	using System.Threading;
 	public partial class SharedCacheClient : ICache
 	{
 
+		/// <inheritdoc />
 		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -36,6 +37,7 @@ namespace NHibernate.Caches.SharedCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -61,6 +63,7 @@ namespace NHibernate.Caches.SharedCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -82,6 +85,7 @@ namespace NHibernate.Caches.SharedCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -99,6 +103,7 @@ namespace NHibernate.Caches.SharedCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task LockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
@@ -116,6 +121,7 @@ namespace NHibernate.Caches.SharedCache
 			}
 		}
 
+		/// <inheritdoc />
 		public Task UnlockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
