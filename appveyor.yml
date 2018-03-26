@@ -2,13 +2,18 @@ version: 5.2.0.{build}
 image: Visual Studio 2017
 configuration:
 - Debug
+- Release
 environment:
   global:
     netTargetFx: net461
     coreTargetFx: netcoreapp2.0
   matrix:
-    - tests: net
-    - tests: core
+  - tests: net
+  - tests: core
+matrix:
+  exclude:
+  - tests: core
+    configuration: Release
 install:
 # memcache server
 - curl -L -O -S -s http://downloads.northscale.com/memcached-1.4.5-amd64.zip
@@ -17,9 +22,77 @@ install:
 before_build:
 - which msbuild.exe
 - nuget restore NHibernate.Caches.Everything.sln
-build:
-  project: NHibernate.Caches.Everything.sln
-  verbosity: minimal
+# Disable automated build, use build script instead
+build: off
+build_script:
+- ps: >-
+    Invoke-Command -ScriptBlock {
+        $nugetFolderName = 'nuget_gallery'
+        $nugetPath = (Join-Path $env:APPVEYOR_BUILD_FOLDER $nugetFolderName)
+        $generatePackage = 'False'
+        If ($env:CONFIGURATION -eq 'Release') {
+            $generatePackage = 'True'
+        }
+        mkdir $nugetPath
+        dotnet msbuild (Join-Path $env:APPVEYOR_BUILD_FOLDER 'NHibernate.Caches.Everything.sln') /verbosity:minimal `
+            '/p:Platform="Any CPU"' "/p:Configuration=$env:CONFIGURATION" "/p:GeneratePackageOnBuild=$generatePackage" `
+            /p:IncludeSymbols=True /p:IncludeSource=True "/p:PackageOutputPath=$nugetPath"
+    }
+after_build:
+- ps: >-
+    Invoke-Command -ScriptBlock {
+        # Package artificats if this is a release build.
+        If ($env:CONFIGURATION -ne 'Release') {
+            return
+        }
+
+        $version = ($env:APPVEYOR_BUILD_VERSION).Substring(0, ($env:APPVEYOR_BUILD_VERSION).lastIndexOf('.'))
+        $netTargetFx = 'net461'
+        $nugetFolderName = 'nuget_gallery'
+        $nugetPath = (Join-Path $env:APPVEYOR_BUILD_FOLDER $nugetFolderName)
+
+        # Binaries package (does not include .Net Core libs)
+        $libsWithDependencies = @{
+            'EnyimMemcached' = @('Enyim.*');
+            'MemCache' = @('Memcached.ClientLibrary.*', 'ICSharpCode.SharpZipLib.dll');
+            'Prevalence' = @('Bamboo.Prevalence.*');
+            'RtMemoryCache' = @();
+            'SharedCache' = @('MergeSystem.Indexus.WinServiceCommon.dll', 'NLog.dll');
+            'SysCache' = @();
+            'SysCache2' = @();
+            'Velocity' = @('CacheBaseLibrary.dll', 'CASBase.dll', 'CASClient.dll', 'ClientLibrary.dll', 'FabricCommon.dll');
+        }
+
+        $binPackage = (Join-Path $env:APPVEYOR_BUILD_FOLDER "NHCH-$version-bin")
+        mkdir $binPackage
+        cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'readme.md') $binPackage
+        cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'LICENSE.txt') $binPackage
+
+        foreach($lib in $libsWithDependencies.keys) {
+            $fullProjectName = "NHibernate.Caches.$lib"
+            $libDir = Join-Path $binPackage $lib
+            mkdir $libDir
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER 'NHibernate.Caches.snk') $libDir
+            cp (Join-Path $env:APPVEYOR_BUILD_FOLDER "$lib/$fullProjectName/bin/$env:CONFIGURATION/$netTargetFx/$fullProjectName.*") $libDir
+            foreach($dep in $libsWithDependencies[$lib]) {
+                cp (Join-Path (Join-Path $env:APPVEYOR_BUILD_FOLDER 'Lib\net\4.0') $dep) $libDir
+            }
+        }
+        cd $env:APPVEYOR_BUILD_FOLDER
+        7z a "NHCH-$version-bin.zip" "NHCH-$version-bin\"
+
+        #NuGet push bat
+        cd $nugetPath
+        $wc = New-Object System.Net.WebClient
+        $nugetExe = Join-Path $nugetPath 'NuGet.exe'
+        $wc.DownloadFile('https://dist.nuget.org/win-x86-commandline/latest/nuget.exe', $nugetExe)
+        Add-Content 'NuGetPush.bat' "rem In order to use this bat you have to be sure you have executed 'nuget SetApiKey'"
+        Get-Item '*.nupkg' -exclude '*.symbols.nupkg' | ForEach-Object {
+            Add-Content 'NuGetPush.bat' "nuget push -source https://nuget.org/ $($_.Name)"
+        }
+        cd $env:APPVEYOR_BUILD_FOLDER
+        7z a "$nugetFolderName.zip" "$nugetFolderName\"
+    }
 test_script:
 - ps: >-
     Invoke-Command -ScriptBlock {
@@ -56,5 +129,11 @@ test_script:
             exit 1
         }
     }
+artifacts:
+  - path: 'nuget_gallery\*.nupkg'
+  - path: 'nuget_gallery.zip'
+    name: NuGet packages
+  - path: 'NHCH-*-bin.zip'
+    name: Binaries
 on_finish:
 - ps: Stop-Process -Id $MemCached.Id

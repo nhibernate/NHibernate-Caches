@@ -6,6 +6,8 @@
     <Description>Cache provider for NHibernate using http://www.sharedcache.com</Description>
     <TargetFramework>net461</TargetFramework>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <!-- No NuGet packages are maintained for this cache. -->
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.2" />

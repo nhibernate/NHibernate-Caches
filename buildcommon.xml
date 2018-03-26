@@ -79,6 +79,10 @@
       <arg value="${root.dir}/NHibernate.Caches.Everything.sln" />
       <arg value="/p:Platform=&quot;Any CPU&quot;" />
       <arg value="/p:Configuration=&quot;${build.config}&quot;"/>
+      <arg value="/p:GeneratePackageOnBuild=&quot;True&quot;" />
+      <arg value="/p:IncludeSymbols=&quot;True&quot;" />
+      <arg value="/p:IncludeSource=&quot;True&quot;" />
+      <arg value="/p:PackageOutputPath=&quot;${nuget.nupackages.dir}&quot;" />
       <arg value="/t:Restore" />
       <arg value="/t:Rebuild" />
       <arg value="/v:q" />
@@ -146,17 +150,6 @@
     <property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
   </target>
 
-  <target name="common.nuget-package">
-    <exec program="${path::combine(tools.dir, 'nuget-package.cmd')}" verbose="true">
-      <arg value="${nuget.package.project}" />
-      <arg value="-c &quot;Debug&quot;" if="${build.debug == 'true'}" />
-      <arg value="-c &quot;Release&quot;" if="${build.release == 'true'}" />
-      <arg value="--include-symbols" />
-      <arg value="--include-source" />
-      <arg value="-o &quot;${nuget.nupackages.dir}&quot;" />
-    </exec>
-  </target>
-
   <target name="common.nuget-pushbat"
           description="Creates files for the release on nuget gallery.">
 
@@ -172,7 +165,7 @@
         </items>
       </in>
       <do>
-        <echo message="nuget push -source https://www.nuget.org/api/v2/package ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+        <echo message="nuget push -source https://nuget.org/ ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
       </do>
     </foreach>
   </target>

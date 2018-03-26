@@ -35,8 +35,4 @@
     <property name="clean.project" value="SharedCache" />
     <call target="common.clean" />
   </target>
-
-  <target name="nuget-packages">
-    <!-- No NuGet packages are maintained for this cache. -->
-  </target>
 </project>

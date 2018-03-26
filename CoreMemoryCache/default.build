@@ -24,9 +24,4 @@
     <property name="clean.project" value="CoreMemoryCache" />
     <call target="common.clean" />
   </target>
-
-  <target name="nuget-packages" depends="init">
-    <property name="nuget.package.project" value="NHibernate.Caches.CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.csproj" />
-    <call target="common.nuget-package" />
-  </target>
 </project>
