@@ -34,9 +34,4 @@
     <property name="clean.project" value="EnyimMemcached" />
     <call target="common.clean" />
   </target>
-
-  <target name="nuget-packages" depends="init">
-    <property name="nuget.package.project" value="NHibernate.Caches.EnyimMemcached\NHibernate.Caches.EnyimMemcached.csproj" />
-    <call target="common.nuget-package" />
-  </target>
 </project>
