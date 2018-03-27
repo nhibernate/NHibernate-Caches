@@ -32,33 +32,4 @@
     <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.SqlServer/bin" failonerror="false" />
     <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.SqlServer/obj" failonerror="false" />
   </target>
-
-  <target name="nuget-packages" depends="init">
-    <property name="nuget.package.project" value="NHibernate.Caches.CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.csproj" />
-    <call target="common.nuget-package" />
-    <call target="nuget-packages-memcached" />
-    <call target="nuget-packages-memory" />
-    <call target="nuget-packages-redis" />
-    <call target="nuget-packages-sqlserver" />
-  </target>
-
-  <target name="nuget-packages-memcached" depends="init">
-    <property name="nuget.package.project" value="NHibernate.Caches.CoreDistributedCache.Memcached\NHibernate.Caches.CoreDistributedCache.Memcached.csproj" />
-    <call target="common.nuget-package" />
-  </target>
-
-  <target name="nuget-packages-memory" depends="init">
-    <property name="nuget.package.project" value="NHibernate.Caches.CoreDistributedCache.Memory\NHibernate.Caches.CoreDistributedCache.Memory.csproj" />
-    <call target="common.nuget-package" />
-  </target>
-
-  <target name="nuget-packages-redis" depends="init">
-    <property name="nuget.package.project" value="NHibernate.Caches.CoreDistributedCache.Redis\NHibernate.Caches.CoreDistributedCache.Redis.csproj" />
-    <call target="common.nuget-package" />
-  </target>
-
-  <target name="nuget-packages-sqlserver" depends="init">
-    <property name="nuget.package.project" value="NHibernate.Caches.CoreDistributedCache.SqlServer\NHibernate.Caches.CoreDistributedCache.SqlServer.csproj" />
-    <call target="common.nuget-package" />
-  </target>
 </project>
