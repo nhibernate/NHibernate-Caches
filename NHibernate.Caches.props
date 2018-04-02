@@ -1,7 +1,7 @@
 <Project>
   <PropertyGroup>
     <VersionMajor Condition="'$(VersionMajor)' == ''">5</VersionMajor>
-    <VersionMinor Condition="'$(VersionMinor)' == ''">2</VersionMinor>
+    <VersionMinor Condition="'$(VersionMinor)' == ''">3</VersionMinor>
     <VersionPatch Condition="'$(VersionPatch)' == ''">0</VersionPatch>
     <VersionSuffix Condition="'$(VersionSuffix)' == ''"></VersionSuffix>
 

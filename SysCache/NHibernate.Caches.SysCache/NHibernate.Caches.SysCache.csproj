@@ -9,10 +9,10 @@
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* Bug
-    * #19 - Partially configured regions do not fallback on defaults
+    * #27 Documentation fixes
 
 * Improvement
-    * #24 - Generates ICache async counter-parts instead of hand coding them</PackageReleaseNotes>
+    * #33 - Generate XML comment documentation</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />

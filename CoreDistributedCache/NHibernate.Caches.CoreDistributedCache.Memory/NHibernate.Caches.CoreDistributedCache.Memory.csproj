@@ -11,7 +11,7 @@ Meant for testing purpose, consider NHibernate.Caches.CoreMemoryCache for other 
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* New feature
-      * #28 - Add a .Net Core DistributedCache</PackageReleaseNotes>
+    * #28 - Add a .Net Core DistributedCache</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
