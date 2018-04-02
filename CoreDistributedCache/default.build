@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<project
+    name="NHibernate.Caches.CoreDistributedCache"
+    default="common.compile-all"
+    description="Cache provider for NHibernate using .Net Core IDistributedCache (Microsoft.Extensions.Caching.Abstractions)"
+    xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+  <property name="root.dir" value=".." />
+  <include buildfile="${root.dir}/buildcommon.xml" />
+
+  <target name="prepare-bin-pack-specific" />
+
+  <!-- .Net Core projects are released only through NuGet -->
+  <target name="bin-pack" />
+
+  <target name="test" depends="init">
+    <property name="test.project" value="CoreDistributedCache" />
+    <property name="test.file" value="NHibernate.Caches.CoreDistributedCache.Tests" />
+    <call target="common.run-tests" />
+    <call target="common.run-core-tests" />
+  </target>
+
+  <target name="clean">
+    <property name="clean.project" value="CoreDistributedCache" />
+    <call target="common.clean" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.Memcached/bin" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.Memcached/obj" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.Memory/bin" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.Memory/obj" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.Redis/bin" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.Redis/obj" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.SqlServer/bin" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.SqlServer/obj" failonerror="false" />
+  </target>
+</project>

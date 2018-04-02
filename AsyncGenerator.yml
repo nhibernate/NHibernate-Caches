@@ -1,4 +1,33 @@
 ﻿projects:
+- filePath: CoreDistributedCache\NHibernate.Caches.CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.csproj
+  targetFramework: net461
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: ObsoleteAttribute
+    callForwarding: true
+    cancellationTokens:
+      guards: true
+      methodParameter:
+      - anyInterfaceRule: PubliclyExposedType
+        parameter: Optional
+      - parameter: Optional
+        rule: PubliclyExposedType
+      - parameter: Required
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  transformation:
+    configureAwaitArgument: false
+    localFunctions: true
+    asyncLock:
+      type: NHibernate.Util.AsyncLock
+      methodName: LockAsync
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
+    assemblyName: AsyncGenerator.Core
 - filePath: CoreMemoryCache\NHibernate.Caches.CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.csproj
   targetFramework: net461
   concurrentRun: true
@@ -253,6 +282,47 @@
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
 - filePath: NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj
+  targetFramework: net461
+  concurrentRun: true
+  applyChanges: true
+  analyzation:
+    methodConversion:
+    - conversion: Ignore
+      hasAttributeName: OneTimeSetUpAttribute
+    - conversion: Ignore
+      hasAttributeName: OneTimeTearDownAttribute
+    - conversion: Ignore
+      hasAttributeName: SetUpAttribute
+    - conversion: Ignore
+      hasAttributeName: TearDownAttribute
+    - conversion: Smart
+      hasAttributeName: TestAttribute
+    - conversion: Smart
+      hasAttributeName: TheoryAttribute
+    preserveReturnType:
+    - hasAttributeName: TestAttribute
+    - hasAttributeName: TheoryAttribute
+    typeConversion:
+    - conversion: Ignore
+      hasAttributeName: IgnoreAttribute
+    - conversion: Partial
+      hasAttributeName: TestFixtureAttribute
+    - conversion: Partial
+      anyBaseTypeRule: HasTestFixtureAttribute
+    ignoreSearchForMethodReferences:
+    - hasAttributeName: TheoryAttribute
+    - hasAttributeName: TestAttribute
+    cancellationTokens:
+      withoutCancellationToken:
+      - hasAttributeName: TestAttribute
+      - hasAttributeName: TheoryAttribute
+    scanMethodBody: true
+    scanForMissingAsyncMembers:
+    - all: true
+  registerPlugin:
+  - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
+    assemblyName: AsyncGenerator.Core
+- filePath: CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Tests\NHibernate.Caches.CoreDistributedCache.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true

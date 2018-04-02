@@ -64,6 +64,9 @@ namespace NHibernate.Caches.Common.Tests
 		[Test]
 		public async Task TestClearAsync()
 		{
+			if (!SupportsClear)
+				Assert.Ignore("Test not supported by provider");
+
 			const string key = "keyTestClear";
 			const string value = "valueClear";
 

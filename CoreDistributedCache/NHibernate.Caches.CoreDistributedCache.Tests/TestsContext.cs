@@ -4,7 +4,7 @@ using NHibernate.Caches.Common.Tests;
 #endif
 using NUnit.Framework;
 
-namespace NHibernate.Caches.CoreMemoryCache.Tests
+namespace NHibernate.Caches.CoreDistributedCache.Tests
 {
 	[SetUpFixture]
 	public class TestsContext
@@ -13,7 +13,7 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 		public void RunBeforeAnyTests()
 		{
 #if !NETFX
-			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, "corememorycache");
+			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, "coredistributedcache");
 #endif
 			ConfigureLog4Net();
 		}

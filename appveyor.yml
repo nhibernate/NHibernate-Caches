@@ -99,7 +99,7 @@ test_script:
         $TestsFailed = $FALSE
         #netFx tests
         If ($env:TESTS -eq 'net') {
-            @('EnyimMemcached', 'Prevalence', 'RtMemoryCache', 'SysCache', 'SysCache2', 'CoreMemoryCache') | ForEach-Object {
+            @('EnyimMemcached', 'Prevalence', 'RtMemoryCache', 'SysCache', 'SysCache2', 'CoreMemoryCache', 'CoreDistributedCache') | ForEach-Object {
                 nunit3-console (Join-Path $env:APPVEYOR_BUILD_FOLDER "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$env:NETTARGETFX\NHibernate.Caches.$_.Tests.dll") "--result=$_-NetTestResult.xml;format=AppVeyor"
                 If ($LASTEXITCODE -ne 0) {
                     $TestsFailed = $TRUE
@@ -109,8 +109,8 @@ test_script:
 
         #core tests
         If ($env:TESTS -eq 'core') {
-            @('CoreMemoryCache') | ForEach-Object {
-              dotnet (Join-Path $env:APPVEYOR_BUILD_FOLDER "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$env:CORETARGETFX\NHibernate.Caches.$_.Tests.dll") --labels=before --nocolor "--result=$_-CoreTestResult.xml"
+            @('CoreMemoryCache', 'CoreDistributedCache') | ForEach-Object {
+                dotnet (Join-Path $env:APPVEYOR_BUILD_FOLDER "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$env:CORETARGETFX\NHibernate.Caches.$_.Tests.dll") --labels=before --nocolor "--result=$_-CoreTestResult.xml"
                 If ($LASTEXITCODE -ne 0) {
                     $TestsFailed = $TRUE
                 }

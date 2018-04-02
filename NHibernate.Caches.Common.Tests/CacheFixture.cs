@@ -11,6 +11,7 @@ namespace NHibernate.Caches.Common.Tests
 	{
 		protected virtual bool SupportsSlidingExpiration => false;
 		protected virtual bool SupportsDistinguishingKeysWithSameStringRepresentationAndHashcode => true;
+		protected virtual bool SupportsClear => true;
 
 		[Test]
 		public void TestPut()
@@ -56,6 +57,9 @@ namespace NHibernate.Caches.Common.Tests
 		[Test]
 		public void TestClear()
 		{
+			if (!SupportsClear)
+				Assert.Ignore("Test not supported by provider");
+
 			const string key = "keyTestClear";
 			const string value = "valueClear";
 
