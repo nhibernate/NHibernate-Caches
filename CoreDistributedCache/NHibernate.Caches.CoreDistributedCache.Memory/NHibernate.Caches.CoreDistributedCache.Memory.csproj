@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Product>NHibernate.Caches.CoreDistributedCache.Memory</Product>
     <Title>NHibernate.Caches.CoreDistributedCache.Memory</Title>
-    <Description>Memory cache provider for NHibernate using .Net Core IDistributedCache (Microsoft.Extensions.Caching.Redis).
+    <Description>Memory cache provider for NHibernate using .Net Core IDistributedCache (Microsoft.Extensions.Caching.Memory).
 Meant for testing purpose, consider NHibernate.Caches.CoreMemoryCache for other usages.</Description>
     <!-- Targeting net461 explicitly in order to avoid https://github.com/dotnet/standard/issues/506 for net461 consumers-->
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
