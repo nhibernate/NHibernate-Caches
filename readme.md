@@ -20,6 +20,11 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.3.1 for NHibernate 5.0.0/5.1.0
+
+* Bug
+    * #37 Fix CoreDistributedCache.Memory package description
+
 #### Build 5.3.0 for NHibernate 5.0.0/5.1.0
 
 NHibernate 5.1.0 is targeted by new cache providers.
