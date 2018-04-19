@@ -37,12 +37,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 	{
 		protected override bool SupportsSlidingExpiration => true;
 
-		protected override void Configure(Dictionary<string, string> defaultProperties)
-		{
-			XmlConfigurator.Configure();
-			base.Configure(defaultProperties);
-		}
-
 		protected override Func<ICacheProvider> ProviderBuilder =>
 			() => new RtMemoryCacheProvider();
 
