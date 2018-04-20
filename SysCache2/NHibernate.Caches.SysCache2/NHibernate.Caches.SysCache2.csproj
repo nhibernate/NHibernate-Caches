@@ -8,8 +8,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
-    * #33 - Generate XML comment documentation</PackageReleaseNotes>
+    <PackageReleaseNotes>* Bug
+    * #40 NullReferenceException in SysCache2's SysCacheProvider</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
