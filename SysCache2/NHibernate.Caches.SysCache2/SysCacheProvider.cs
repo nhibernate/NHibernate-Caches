@@ -43,6 +43,7 @@ namespace NHibernate.Caches.SysCache2
 			}
 			else
 			{
+				CacheRegionSettings = new Dictionary<string, CacheRegionElement>(0);
 				Log.Info(
 					"No cache regions specified. Cache regions can be specified in sysCache configuration section with custom settings.");
 			}
