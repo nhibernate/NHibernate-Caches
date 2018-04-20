@@ -62,6 +62,7 @@ namespace NHibernate.Caches.SysCache2
 			if (!string.IsNullOrEmpty(regionName)
 				// We do not cache non-configured caches, so must first look-up settings for knowing if it
 				// is a configured one.
+				&& CacheRegionSettings != null
 				&& CacheRegionSettings.TryGetValue(regionName, out var regionSettings))
 			{
 				// The Lazy<T> is required for ensuring the cache is built only once. ConcurrentDictionary
