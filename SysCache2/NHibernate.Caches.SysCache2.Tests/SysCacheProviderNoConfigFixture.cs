@@ -36,13 +36,13 @@ namespace NHibernate.Caches.SysCache2.Tests
 	{
 		private const string DefaultExpirationSetting = "expiration";
 
-    private ICacheProvider _defaultProvider;
+		private ICacheProvider _defaultProvider;
 
 		private readonly Dictionary<string, string> _defaultProperties = new Dictionary<string, string>();
 
 		private readonly List<ICacheProvider> _providers = new List<ICacheProvider>();
 
-    [OneTimeSetUp]
+		[OneTimeSetUp]
 		public void FixtureSetup()
 		{
 			Configure(_defaultProperties);
