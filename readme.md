@@ -20,6 +20,11 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.3.2 for NHibernate 5.0.0/5.1.0
+
+* Bug
+    * #40 NullReferenceException in SysCache2's SysCacheProvider
+
 #### Build 5.3.1 for NHibernate 5.0.0/5.1.0
 
 * Bug
