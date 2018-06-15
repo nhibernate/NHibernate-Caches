@@ -10,6 +10,7 @@ namespace NHibernate.Caches.Common.Tests
 	public abstract partial class CacheFixture : Fixture
 	{
 		protected virtual bool SupportsSlidingExpiration => false;
+		protected virtual bool SupportsLocking => false;
 		protected virtual bool SupportsDistinguishingKeysWithSameStringRepresentationAndHashcode => true;
 		protected virtual bool SupportsClear => true;
 
@@ -52,6 +53,32 @@ namespace NHibernate.Caches.Common.Tests
 			// make sure it's not there
 			item = cache.Get(key);
 			Assert.That(item, Is.Null, "item still exists in cache after remove");
+		}
+
+		[Test]
+		public void TestLockUnlock()
+		{
+			if (!SupportsLocking)
+				Assert.Ignore("Test not supported by provider");
+
+			const string key = "keyTestLock";
+			const string value = "valueLock";
+
+			var cache = GetDefaultCache();
+
+			// add the item
+			cache.Put(key, value);
+
+			cache.Lock(key);
+			Assert.Throws<CacheException>(() => cache.Lock(key));
+
+			Thread.Sleep(cache.Timeout / Timestamper.OneMs);
+
+			for (var i = 0; i < 2; i++)
+			{
+				cache.Lock(key);
+				cache.Unlock(key);
+			}
 		}
 
 		[Test]

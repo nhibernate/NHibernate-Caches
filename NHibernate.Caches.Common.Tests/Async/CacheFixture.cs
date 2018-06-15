@@ -62,6 +62,32 @@ namespace NHibernate.Caches.Common.Tests
 		}
 
 		[Test]
+		public async Task TestLockUnlockAsync()
+		{
+			if (!SupportsLocking)
+				Assert.Ignore("Test not supported by provider");
+
+			const string key = "keyTestLock";
+			const string value = "valueLock";
+
+			var cache = GetDefaultCache();
+
+			// add the item
+			await (cache.PutAsync(key, value, CancellationToken.None));
+
+			await (cache.LockAsync(key, CancellationToken.None));
+			Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None));
+
+			await (Task.Delay(cache.Timeout / Timestamper.OneMs));
+
+			for (var i = 0; i < 2; i++)
+			{
+				await (cache.LockAsync(key, CancellationToken.None));
+				await (cache.UnlockAsync(key, CancellationToken.None));
+			}
+		}
+
+		[Test]
 		public async Task TestClearAsync()
 		{
 			if (!SupportsClear)
