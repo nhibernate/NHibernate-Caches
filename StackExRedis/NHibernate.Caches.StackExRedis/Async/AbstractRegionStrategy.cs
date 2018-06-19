@@ -421,6 +421,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// Clears all the keys from the region.
 		/// </summary>
-		public abstract Task ClearAsync();
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		public abstract Task ClearAsync(CancellationToken cancellationToken);
 	}
 }

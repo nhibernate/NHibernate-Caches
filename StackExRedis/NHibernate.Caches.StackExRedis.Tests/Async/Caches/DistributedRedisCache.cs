@@ -60,7 +60,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		{
 			foreach (var strategy in _regionStrategies)
 			{
-				await (strategy.ClearAsync());
+				await (strategy.ClearAsync(cancellationToken));
 			}
 		}
 

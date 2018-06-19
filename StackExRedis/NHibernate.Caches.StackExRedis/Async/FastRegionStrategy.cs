@@ -17,11 +17,12 @@ using StackExchange.Redis;
 
 namespace NHibernate.Caches.StackExRedis
 {
+	using System.Threading;
 	public partial class FastRegionStrategy : AbstractRegionStrategy
 	{
 
 		/// <inheritdoc />
-		public override Task ClearAsync()
+		public override Task ClearAsync(CancellationToken cancellationToken)
 		{
 			throw new NotSupportedException(
 				$"{nameof(ClearAsync)} operation is not supported, if it cannot be avoided use {nameof(DefaultRegionStrategy)}.");

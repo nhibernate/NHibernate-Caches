@@ -62,6 +62,12 @@
         name: Remove
       - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
         name: RemoveMany
+      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+        name: Unlock
+      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+        name: UnlockMany
+      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+        name: Clear
       - containingType: NHibernate.Caches.StackExRedis.RedisKeyLocker
         name: Unlock
       - containingType: NHibernate.Caches.StackExRedis.RedisKeyLocker

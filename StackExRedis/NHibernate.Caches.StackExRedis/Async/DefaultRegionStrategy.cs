@@ -187,14 +187,17 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public override async Task ClearAsync()
+		public override async Task ClearAsync(CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
+			cancellationToken.ThrowIfCancellationRequested();
 			var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(UpdateVersionLuaScript,
 				_regionKeyArray, _maxVersionNumber)).ConfigureAwait(false);
 			var version = results[0];
 			UpdateVersion(version);
 			if (_usePubSub)
 			{
+				cancellationToken.ThrowIfCancellationRequested();
 				await (ConnectionMultiplexer.GetSubscriber().PublishAsync(RegionKey, version)).ConfigureAwait(false);
 			}
 		}

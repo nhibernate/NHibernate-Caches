@@ -88,8 +88,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			cancellationToken.ThrowIfCancellationRequested();
-			return RegionStrategy.ClearAsync();
+			return RegionStrategy.ClearAsync(cancellationToken);
 		}
 
 		/// <inheritdoc />
