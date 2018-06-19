@@ -37,7 +37,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			await (cache.ClearAsync(CancellationToken.None));
 
-			Assert.That(strategy.CurrentVersion, Is.EqualTo(1L), "The version was not reset to 1");
+			Assert.That(strategy.CurrentVersion, Is.EqualTo(1L), "the version was not reset to 1");
 		}
 
 		[Test]

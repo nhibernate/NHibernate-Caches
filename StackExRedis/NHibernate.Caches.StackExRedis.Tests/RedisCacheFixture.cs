@@ -143,7 +143,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			// Test partial locks by locking the first 5 keys and afterwards try to lock last 6 keys.
 			var lockValue = cache.LockMany(keys.Take(5).ToArray());
 
-			Assert.Throws<CacheException>(() => cache.LockMany(keys.Skip(4).ToArray()), "The fifth key should be locked");
+			Assert.Throws<CacheException>(() => cache.LockMany(keys.Skip(4).ToArray()), "the fifth key should be locked");
 
 			Assert.DoesNotThrow(() =>
 			{

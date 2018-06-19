@@ -8,7 +8,7 @@ namespace NHibernate.Caches.StackExRedis
 	/// <summary>
 	/// The default region strategy. This strategy uses a special key that contains the region current version number which is appended
 	/// after the region prefix. Each time a clear operation is performed the version number is increased and an event is send to all
-	/// clients so that they can update thier local versions. Event if the event was not sent to all clients, each operation has a
+	/// clients so that they can update thier local versions. Even if the event was not sent to all clients, each operation has a
 	/// version check in order to prevent working with stale data.
 	/// </summary>
 	public partial class DefaultRegionStrategy : AbstractRegionStrategy
@@ -327,7 +327,7 @@ namespace NHibernate.Caches.StackExRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				InitializeVersion();
-				// If the lock was aquired in the old version we are unable to unlock the key.
+				// If the lock was acquired in the old version we are unable to unlock the key.
 				return false;
 			}
 		}
@@ -342,7 +342,7 @@ namespace NHibernate.Caches.StackExRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				InitializeVersion();
-				// If the lock was aquired in the old version we are unable to unlock the keys.
+				// If the lock was acquired in the old version we are unable to unlock the keys.
 				return 0;
 			}
 		}

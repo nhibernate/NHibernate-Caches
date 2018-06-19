@@ -73,7 +73,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (Exception e)
 			{
-				throw new CacheException($"Unable to aquire type '{typeName}' from the configuration property '{key}'", e);
+				throw new CacheException($"Unable to acquire type '{typeName}' from the configuration property '{key}'", e);
 			}
 		}
 

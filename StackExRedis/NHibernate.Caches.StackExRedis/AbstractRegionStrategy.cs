@@ -47,7 +47,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// even if an exception occurs which we are also abusing in order to avoid having a special mechanism to 
 		/// clear the dictionary in order to prevent memory leaks.
 		/// </summary>
-		private readonly ConcurrentDictionary<string, string> _aquiredKeyLocks = new ConcurrentDictionary<string, string>();
+		private readonly ConcurrentDictionary<string, string> _acquiredKeyLocks = new ConcurrentDictionary<string, string>();
 
 
 		/// <summary>
@@ -150,7 +150,7 @@ namespace NHibernate.Caches.StackExRedis
 		public bool ExpirationEnabled => Expiration != TimeSpan.Zero;
 
 		/// <summary>
-		/// The timeout of an aquired lock.
+		/// The timeout of an acquired lock.
 		/// </summary>
 		public TimeSpan LockTimeout { get; }
 
@@ -372,7 +372,7 @@ namespace NHibernate.Caches.StackExRedis
 			var cacheKey = GetCacheKey(key);
 			var lockValue = _keyLocker.Lock(cacheKey, LockScript, GetAdditionalKeys(), GetAdditionalValues());
 
-			_aquiredKeyLocks.AddOrUpdate(cacheKey, _ => lockValue, (_, currValue) =>
+			_acquiredKeyLocks.AddOrUpdate(cacheKey, _ => lockValue, (_, currValue) =>
 			{
 				Log.Warn(
 					$"Calling {nameof(Lock)} method for key:'{cacheKey}' that was already locked. " +
@@ -419,7 +419,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			var cacheKey = GetCacheKey(key);
 
-			if (!_aquiredKeyLocks.TryRemove(cacheKey, out var lockValue))
+			if (!_acquiredKeyLocks.TryRemove(cacheKey, out var lockValue))
 			{
 				Log.Warn(
 					$"Calling {nameof(Unlock)} method for key:'{cacheKey}' that was not locked with {nameof(Lock)} method before.");

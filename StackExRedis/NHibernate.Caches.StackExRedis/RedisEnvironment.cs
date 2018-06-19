@@ -55,9 +55,9 @@ namespace NHibernate.Caches.StackExRedis
 		public const string LockKeyTimeout = "cache.lock.key_timeout";
 
 		/// <summary>
-		/// The time limit to aquire the lock in seconds.
+		/// The time limit to acquire the lock in seconds.
 		/// </summary>
-		public const string LockAquireTimeout = "cache.lock.aquire_timeout";
+		public const string LockAcquireTimeout = "cache.lock.acquire_timeout";
 
 		/// <summary>
 		/// The number of retries for acquiring the lock.
@@ -65,12 +65,12 @@ namespace NHibernate.Caches.StackExRedis
 		public const string LockRetryTimes = "cache.lock.retry_times";
 
 		/// <summary>
-		/// The maximum delay before retrying to aquire the lock in milliseconds.
+		/// The maximum delay before retrying to acquire the lock in milliseconds.
 		/// </summary>
 		public const string LockMaxRetryDelay = "cache.lock.max_retry_delay";
 
 		/// <summary>
-		/// The minumum delay before retrying to aquire the lock in milliseconds.
+		/// The minumum delay before retrying to acquire the lock in milliseconds.
 		/// </summary>
 		public const string LockMinRetryDelay = "cache.lock.min_retry_delay";
 
@@ -85,8 +85,8 @@ namespace NHibernate.Caches.StackExRedis
 		public const string LockRetryDelayProvider = "cache.lock.retry_delay_provider";
 
 		/// <summary>
-		/// The postfix for the lock key.
+		/// The suffix for the lock key.
 		/// </summary>
-		public const string LockKeyPostfix = "cache.lock.key_postfix";
+		public const string LockKeySuffix = "cache.lock.key_suffix";
 	}
 }

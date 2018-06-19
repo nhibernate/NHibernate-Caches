@@ -83,7 +83,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (Exception e)
 			{
-				Log.Warn("Unable to aquire type for attribute {0}: ignored. Node: {1}, Exception: {2}", attributeName, node.OuterXml, e);
+				Log.Warn("Unable to acquire type for attribute {0}: ignored. Node: {1}, Exception: {2}", attributeName, node.OuterXml, e);
 				return null;
 			}
 		}

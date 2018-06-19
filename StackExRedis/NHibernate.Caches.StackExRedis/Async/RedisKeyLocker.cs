@@ -30,7 +30,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <param name="extraValues">The extra values that will be provided to the <paramref name="luaScript"/></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The lock value used to lock the key.</returns>
-		/// <exception cref="CacheException">Thrown if the lock was not aquired.</exception>
+		/// <exception cref="CacheException">Thrown if the lock was not acquired.</exception>
 		public Task<string> LockAsync(string key, string luaScript, RedisKey[] extraKeys, RedisValue[] extraValues, CancellationToken cancellationToken)
 		{
 			if (key == null)
@@ -44,7 +44,7 @@ namespace NHibernate.Caches.StackExRedis
 			return InternalLockAsync();
 			async Task<string> InternalLockAsync()
 			{
-				var lockKey = $"{key}{_lockKeyPostfix}";
+				var lockKey = $"{key}{_lockKeySuffix}";
 				var totalAttempts = 0;
 				var lockTimer = new Stopwatch();
 				lockTimer.Restart();
@@ -81,7 +81,7 @@ namespace NHibernate.Caches.StackExRedis
 					}
 					totalAttempts++;
 
-				} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _aquireLockTimeout);
+				} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _acquireLockTimeout);
 
 				throw new CacheException("Unable to acquire cache lock: " +
 												$"region='{_regionName}', " +
@@ -100,7 +100,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <param name="extraValues">The extra values that will be provided to the <paramref name="luaScript"/></param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The lock value used to lock the keys.</returns>
-		/// <exception cref="CacheException">Thrown if the lock was not aquired.</exception>
+		/// <exception cref="CacheException">Thrown if the lock was not acquired.</exception>
 		public Task<string> LockManyAsync(string[] keys, string luaScript, RedisKey[] extraKeys, RedisValue[] extraValues, CancellationToken cancellationToken)
 		{
 			if (keys == null)
@@ -122,7 +122,7 @@ namespace NHibernate.Caches.StackExRedis
 				var lockKeys = new RedisKey[keys.Length];
 				for (var i = 0; i < keys.Length; i++)
 				{
-					lockKeys[i] = $"{keys[i]}{_lockKeyPostfix}";
+					lockKeys[i] = $"{keys[i]}{_lockKeySuffix}";
 				}
 				var totalAttempts = 0;
 				var lockTimer = new Stopwatch();
@@ -152,7 +152,7 @@ namespace NHibernate.Caches.StackExRedis
 					}
 					totalAttempts++;
 
-				} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _aquireLockTimeout);
+				} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _acquireLockTimeout);
 
 				throw new CacheException("Unable to acquire cache lock: " +
 			                                    $"region='{_regionName}', " +
@@ -185,7 +185,7 @@ namespace NHibernate.Caches.StackExRedis
 			return InternalUnlockAsync();
 			async Task<bool> InternalUnlockAsync()
 			{
-				var lockKey = $"{key}{_lockKeyPostfix}";
+				var lockKey = $"{key}{_lockKeySuffix}";
 				if (string.IsNullOrEmpty(luaScript))
 				{
 					cancellationToken.ThrowIfCancellationRequested();
@@ -239,7 +239,7 @@ namespace NHibernate.Caches.StackExRedis
 				var lockKeys = new RedisKey[keys.Length];
 				for (var i = 0; i < keys.Length; i++)
 				{
-					lockKeys[i] = $"{keys[i]}{_lockKeyPostfix}";
+					lockKeys[i] = $"{keys[i]}{_lockKeySuffix}";
 				}
 				if (extraKeys != null)
 				{

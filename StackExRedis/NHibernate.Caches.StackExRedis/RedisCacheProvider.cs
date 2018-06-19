@@ -205,8 +205,8 @@ namespace NHibernate.Caches.StackExRedis
 			lockConfig.KeyTimeout = GetTimeSpanFromSeconds(RedisEnvironment.LockKeyTimeout, properties, lockConfig.KeyTimeout);
 			Log.Debug("Lock key timeout: {0} seconds", lockConfig.KeyTimeout.TotalSeconds);
 
-			lockConfig.AquireTimeout = GetTimeSpanFromSeconds(RedisEnvironment.LockAquireTimeout, properties, lockConfig.AquireTimeout);
-			Log.Debug("Lock aquire timeout: {0} seconds", lockConfig.AquireTimeout.TotalSeconds);
+			lockConfig.AcquireTimeout = GetTimeSpanFromSeconds(RedisEnvironment.LockAcquireTimeout, properties, lockConfig.AcquireTimeout);
+			Log.Debug("Lock acquire timeout: {0} seconds", lockConfig.AcquireTimeout.TotalSeconds);
 
 			lockConfig.RetryTimes = GetInteger(RedisEnvironment.LockRetryTimes, properties, lockConfig.RetryTimes);
 			Log.Debug("Lock retry times: {0}", lockConfig.RetryTimes);
@@ -223,8 +223,8 @@ namespace NHibernate.Caches.StackExRedis
 			lockConfig.RetryDelayProvider = GetInstanceOfType(RedisEnvironment.LockRetryDelayProvider, properties, lockConfig.RetryDelayProvider);
 			Log.Debug("Lock retry delay provider: {0}", lockConfig.RetryDelayProvider);
 
-			lockConfig.KeyPostfix = GetString(RedisEnvironment.LockKeyPostfix, properties, lockConfig.KeyPostfix);
-			Log.Debug("Lock key postfix: {0}", lockConfig.KeyPostfix);
+			lockConfig.KeySuffix = GetString(RedisEnvironment.LockKeySuffix, properties, lockConfig.KeySuffix);
+			Log.Debug("Lock key suffix: {0}", lockConfig.KeySuffix);
 
 			return config;
 		}

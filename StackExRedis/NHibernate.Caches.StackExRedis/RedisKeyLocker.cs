@@ -13,9 +13,9 @@ namespace NHibernate.Caches.StackExRedis
 	internal partial class RedisKeyLocker
 	{
 		private readonly string _regionName;
-		private readonly string _lockKeyPostfix;
+		private readonly string _lockKeySuffix;
 		private readonly TimeSpan _lockTimeout;
-		private readonly double _aquireLockTimeout;
+		private readonly double _acquireLockTimeout;
 		private readonly int _retryTimes;
 		private readonly TimeSpan _maxRetryDelay;
 		private readonly TimeSpan _minRetryDelay;
@@ -36,9 +36,9 @@ namespace NHibernate.Caches.StackExRedis
 		{
 			_regionName = regionName;
 			_database = database;
-			_lockKeyPostfix = configuration.KeyPostfix;
+			_lockKeySuffix = configuration.KeySuffix;
 			_lockTimeout = configuration.KeyTimeout;
-			_aquireLockTimeout = configuration.AquireTimeout.TotalMilliseconds;
+			_acquireLockTimeout = configuration.AcquireTimeout.TotalMilliseconds;
 			_retryTimes = configuration.RetryTimes;
 			_maxRetryDelay = configuration.MaxRetryDelay;
 			_minRetryDelay = configuration.MinRetryDelay;
@@ -54,14 +54,14 @@ namespace NHibernate.Caches.StackExRedis
 		/// <param name="extraKeys">The extra keys that will be provided to the <paramref name="luaScript"/></param>
 		/// <param name="extraValues">The extra values that will be provided to the <paramref name="luaScript"/></param>
 		/// <returns>The lock value used to lock the key.</returns>
-		/// <exception cref="CacheException">Thrown if the lock was not aquired.</exception>
+		/// <exception cref="CacheException">Thrown if the lock was not acquired.</exception>
 		public string Lock(string key, string luaScript, RedisKey[] extraKeys, RedisValue[] extraValues)
 		{
 			if (key == null)
 			{
 				throw new ArgumentNullException(nameof(key));
 			}
-			var lockKey = $"{key}{_lockKeyPostfix}";
+			var lockKey = $"{key}{_lockKeySuffix}";
 			var totalAttempts = 0;
 			var lockTimer = new Stopwatch();
 			lockTimer.Restart();
@@ -97,7 +97,7 @@ namespace NHibernate.Caches.StackExRedis
 				}
 				totalAttempts++;
 
-			} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _aquireLockTimeout);
+			} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _acquireLockTimeout);
 
 			throw new CacheException("Unable to acquire cache lock: " +
 												$"region='{_regionName}', " +
@@ -114,7 +114,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <param name="extraKeys">The extra keys that will be provided to the <paramref name="luaScript"/></param>
 		/// <param name="extraValues">The extra values that will be provided to the <paramref name="luaScript"/></param>
 		/// <returns>The lock value used to lock the keys.</returns>
-		/// <exception cref="CacheException">Thrown if the lock was not aquired.</exception>
+		/// <exception cref="CacheException">Thrown if the lock was not acquired.</exception>
 		public string LockMany(string[] keys, string luaScript, RedisKey[] extraKeys, RedisValue[] extraValues)
 		{
 			if (keys == null)
@@ -129,7 +129,7 @@ namespace NHibernate.Caches.StackExRedis
 			var lockKeys = new RedisKey[keys.Length];
 			for (var i = 0; i < keys.Length; i++)
 			{
-				lockKeys[i] = $"{keys[i]}{_lockKeyPostfix}";
+				lockKeys[i] = $"{keys[i]}{_lockKeySuffix}";
 			}
 			var totalAttempts = 0;
 			var lockTimer = new Stopwatch();
@@ -158,7 +158,7 @@ namespace NHibernate.Caches.StackExRedis
 				}
 				totalAttempts++;
 
-			} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _aquireLockTimeout);
+			} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _acquireLockTimeout);
 
 			throw new CacheException("Unable to acquire cache lock: " +
 			                                    $"region='{_regionName}', " +
@@ -182,7 +182,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(key));
 			}
-			var lockKey = $"{key}{_lockKeyPostfix}";
+			var lockKey = $"{key}{_lockKeySuffix}";
 			if (string.IsNullOrEmpty(luaScript))
 			{
 				return _database.LockRelease(lockKey, lockValue);
@@ -225,7 +225,7 @@ namespace NHibernate.Caches.StackExRedis
 			var lockKeys = new RedisKey[keys.Length];
 			for (var i = 0; i < keys.Length; i++)
 			{
-				lockKeys[i] = $"{keys[i]}{_lockKeyPostfix}";
+				lockKeys[i] = $"{keys[i]}{_lockKeySuffix}";
 			}
 			if (extraKeys != null)
 			{

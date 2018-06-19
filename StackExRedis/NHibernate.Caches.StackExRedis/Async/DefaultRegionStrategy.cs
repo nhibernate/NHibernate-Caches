@@ -164,7 +164,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				await (InitializeVersionAsync()).ConfigureAwait(false);
-				// If the lock was aquired in the old version we are unable to unlock the key.
+				// If the lock was acquired in the old version we are unable to unlock the key.
 				return false;
 			}
 		}
@@ -181,7 +181,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				cancellationToken.ThrowIfCancellationRequested();
 				await (InitializeVersionAsync()).ConfigureAwait(false);
-				// If the lock was aquired in the old version we are unable to unlock the keys.
+				// If the lock was acquired in the old version we are unable to unlock the keys.
 				return 0;
 			}
 		}

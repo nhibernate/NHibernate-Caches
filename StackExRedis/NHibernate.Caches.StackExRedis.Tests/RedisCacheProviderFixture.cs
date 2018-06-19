@@ -30,23 +30,23 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			var strategy = cache.RegionStrategy;
 			Assert.That(strategy, Is.Not.Null, "strategy was not set for the pre-configured foo cache");
-			Assert.That(strategy, Is.TypeOf<DefaultRegionStrategy>(), "Unexpected strategy type for foo region");
-			Assert.That(strategy.Expiration, Is.EqualTo(TimeSpan.FromSeconds(500)), "Unexpected expiration value for foo region");
+			Assert.That(strategy, Is.TypeOf<DefaultRegionStrategy>(), "unexpected strategy type for foo region");
+			Assert.That(strategy.Expiration, Is.EqualTo(TimeSpan.FromSeconds(500)), "unexpected expiration value for foo region");
 
 			cache = (RedisCache) DefaultProvider.BuildCache("noExplicitExpiration", null);
 			Assert.That(cache.RegionStrategy.Expiration, Is.EqualTo(TimeSpan.FromSeconds(300)),
-				"Unexpected expiration value for noExplicitExpiration region");
-			Assert.That(cache.RegionStrategy.UseSlidingExpiration, Is.True, "Unexpected sliding value for noExplicitExpiration region");
+				"unexpected expiration value for noExplicitExpiration region");
+			Assert.That(cache.RegionStrategy.UseSlidingExpiration, Is.True, "unexpected sliding value for noExplicitExpiration region");
 
 			cache = (RedisCache) DefaultProvider
 				.BuildCache("noExplicitExpiration", new Dictionary<string, string> { { "expiration", "100" } });
 			Assert.That(cache.RegionStrategy.Expiration, Is.EqualTo(TimeSpan.FromSeconds(100)),
-				"Unexpected expiration value for noExplicitExpiration region with default expiration");
+				"unexpected expiration value for noExplicitExpiration region with default expiration");
 
 			cache = (RedisCache) DefaultProvider
 				.BuildCache("noExplicitExpiration", new Dictionary<string, string> { { Cfg.Environment.CacheDefaultExpiration, "50" } });
 			Assert.That(cache.RegionStrategy.Expiration, Is.EqualTo(TimeSpan.FromSeconds(50)),
-				"Unexpected expiration value for noExplicitExpiration region with cache.default_expiration");
+				"unexpected expiration value for noExplicitExpiration region with cache.default_expiration");
 		}
 
 	}

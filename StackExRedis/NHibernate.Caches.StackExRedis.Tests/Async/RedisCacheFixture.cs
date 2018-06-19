@@ -146,7 +146,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			// Test partial locks by locking the first 5 keys and afterwards try to lock last 6 keys.
 			var lockValue = await (cache.LockManyAsync(keys.Take(5).ToArray(), CancellationToken.None));
 
-			Assert.ThrowsAsync<CacheException>(() => cache.LockManyAsync(keys.Skip(4).ToArray(), CancellationToken.None), "The fifth key should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache.LockManyAsync(keys.Skip(4).ToArray(), CancellationToken.None), "the fifth key should be locked");
 
 			Assert.DoesNotThrowAsync(async () =>
 			{

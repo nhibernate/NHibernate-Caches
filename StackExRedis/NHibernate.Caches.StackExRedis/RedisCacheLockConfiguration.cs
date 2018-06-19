@@ -14,14 +14,14 @@ namespace NHibernate.Caches.StackExRedis
 		public TimeSpan KeyTimeout { get; set; } = TimeSpan.FromSeconds(5);
 
 		/// <summary>
-		/// The postfix for the lock key.
+		/// The suffix for the lock key.
 		/// </summary>
-		public string KeyPostfix { get; set; } = ":lock";
+		public string KeySuffix { get; set; } = ":lock";
 
 		/// <summary>
-		/// The time limit to aquire the lock.
+		/// The time limit to acquire the lock.
 		/// </summary>
-		public TimeSpan AquireTimeout { get; set; } = TimeSpan.FromSeconds(5);
+		public TimeSpan AcquireTimeout { get; set; } = TimeSpan.FromSeconds(5);
 
 		/// <summary>
 		/// The number of retries for acquiring the lock.
@@ -29,12 +29,12 @@ namespace NHibernate.Caches.StackExRedis
 		public int RetryTimes { get; set; } = 3;
 
 		/// <summary>
-		/// The maximum delay before retrying to aquire the lock.
+		/// The maximum delay before retrying to acquire the lock.
 		/// </summary>
 		public TimeSpan MaxRetryDelay { get; set; } = TimeSpan.FromMilliseconds(400);
 
 		/// <summary>
-		/// The minumum delay before retrying to aquire the lock.
+		/// The minumum delay before retrying to acquire the lock.
 		/// </summary>
 		public TimeSpan MinRetryDelay { get; set; } = TimeSpan.FromMilliseconds(10);
 
@@ -53,8 +53,8 @@ namespace NHibernate.Caches.StackExRedis
 		{
 			var sb = new StringBuilder();
 			sb.AppendFormat("KeyTimeout={0}s", KeyTimeout.TotalSeconds);
-			sb.AppendFormat("KeyPostfix=({0})", KeyPostfix);
-			sb.AppendFormat("AquireTimeout={0}s", AquireTimeout.TotalSeconds);
+			sb.AppendFormat("KeySuffix=({0})", KeySuffix);
+			sb.AppendFormat("AcquireTimeout={0}s", AcquireTimeout.TotalSeconds);
 			sb.AppendFormat("RetryTimes={0}", RetryTimes);
 			sb.AppendFormat("MaxRetryDelay={0}ms", MaxRetryDelay.TotalMilliseconds);
 			sb.AppendFormat("MinRetryDelay={0}ms", MinRetryDelay.TotalMilliseconds);

@@ -300,7 +300,7 @@ namespace NHibernate.Caches.StackExRedis
 				var cacheKey = GetCacheKey(key);
 				var lockValue = await (_keyLocker.LockAsync(cacheKey, LockScript, GetAdditionalKeys(), GetAdditionalValues(), cancellationToken)).ConfigureAwait(false);
 
-				_aquiredKeyLocks.AddOrUpdate(cacheKey, _ => lockValue, (_, currValue) =>
+				_acquiredKeyLocks.AddOrUpdate(cacheKey, _ => lockValue, (_, currValue) =>
 				{
 					Log.Warn(
 					$"Calling {nameof(LockAsync)} method for key:'{cacheKey}' that was already locked. " +
@@ -367,7 +367,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				var cacheKey = GetCacheKey(key);
 
-				if (!_aquiredKeyLocks.TryRemove(cacheKey, out var lockValue))
+				if (!_acquiredKeyLocks.TryRemove(cacheKey, out var lockValue))
 				{
 					Log.Warn(
 					$"Calling {nameof(UnlockAsync)} method for key:'{cacheKey}' that was not locked with {nameof(LockAsync)} method before.");

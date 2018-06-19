@@ -19,7 +19,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			var props = GetDefaultProperties();
 			props["expiration"] = "0";
 			Assert.Throws<CacheException>(() => DefaultProvider.BuildCache(DefaultRegion, props), 
-				"Default region strategy should not allow to have no expiration");
+				"default region strategy should not allow to have no expiration");
 		}
 
 		[Test]
@@ -36,7 +36,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			cache.Clear();
 
-			Assert.That(strategy.CurrentVersion, Is.EqualTo(1L), "The version was not reset to 1");
+			Assert.That(strategy.CurrentVersion, Is.EqualTo(1L), "the version was not reset to 1");
 		}
 
 		[Test]
