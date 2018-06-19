@@ -1,10 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using NHibernate.Cache;
-using NHibernate.Util;
 
 namespace NHibernate.Caches.StackExRedis
 {
@@ -81,7 +77,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 		}
 
-		public static TType GetInstanceOfType<TType>(string key, IDictionary<string, string> properties, TType defaultValue, params object[] arguments)
+		public static TType GetInstanceOfType<TType>(string key, IDictionary<string, string> properties, TType defaultValue)
 		{
 			var type = GetSystemType(key, properties, null);
 			if (type == null)
@@ -93,37 +89,7 @@ namespace NHibernate.Caches.StackExRedis
 				throw new CacheException($"Type '{type}' from the configuration property '{key}' is not assignable to '{typeof(TType)}'");
 			}
 
-			try
-			{
-				var argsByType = new object[] { properties }.Concat(arguments).ToDictionary(o => o.GetType());
-
-				// Try to find a constructor that we can instantiate
-				foreach (var ctor in type.GetConstructors().OrderByDescending(o => o.GetParameters().Length))
-				{
-					var parameters = ctor.GetParameters();
-					if (parameters.Any(o => !argsByType.ContainsKey(o.ParameterType)))
-					{
-						continue;
-					}
-
-					var args = new object[parameters.Length];
-					for (var i = 0; i < parameters.Length; i++)
-					{
-						args[i] = argsByType[parameters[i].ParameterType];
-					}
-
-					return (TType) ctor.Invoke(args);
-				}
-				throw new CacheException($"Unable to find a constructor for type '{type}' from configuration property '{key}'");
-			}
-			catch (InvalidOperationException)
-			{
-				throw;
-			}
-			catch (Exception e)
-			{
-				throw new CacheException($"Unable to create an instance of type '{type}' from configuration property '{key}'.", e);
-			}
+			return (TType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(type);
 		}
 	}
 }
