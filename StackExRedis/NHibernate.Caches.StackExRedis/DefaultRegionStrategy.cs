@@ -14,125 +14,37 @@ namespace NHibernate.Caches.StackExRedis
 	public partial class DefaultRegionStrategy : AbstractRegionStrategy
 	{
 		private const string InvalidVersionMessage = "Invalid version";
+		private static readonly string UpdateVersionLuaScript;
+		private static readonly string InitializeVersionLuaScript;
+		private static readonly string GetLuaScript;
+		private static readonly string GetManyLuaScript;
+		private static readonly string PutLuaScript;
+		private static readonly string PutManyLuaScript;
+		private static readonly string RemoveLuaScript;
+		private static readonly string RemoveManyLuaScript;
+		private static readonly string LockLuaScript;
+		private static readonly string LockManyLuaScript;
+		private static readonly string UnlockLuaScript;
+		private static readonly string UnlockManyLuaScript;
 
-		private static readonly string CheckVersionCode = $@"
-	local version = redis.call('get', KEYS[#KEYS])
-	if version ~= ARGV[#ARGV] then
-		return redis.error_reply('{InvalidVersionMessage}')
-	end";
+		static DefaultRegionStrategy()
+		{
+			UpdateVersionLuaScript = LuaScriptProvider.GetScript<DefaultRegionStrategy>("UpdateVersion");
+			InitializeVersionLuaScript = LuaScriptProvider.GetScript<DefaultRegionStrategy>("InitializeVersion");
+			// For each operation we have to prepend the check version script
+			const string checkVersion = "CheckVersion";
+			GetLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Get));
+			GetManyLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(GetMany));
+			PutLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Put));
+			PutManyLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(PutMany));
+			RemoveLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Remove));
+			RemoveManyLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(RemoveMany));
+			LockLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Lock));
+			LockManyLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(LockMany));
+			UnlockLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Unlock));
+			UnlockManyLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(UnlockMany));
+		}
 
-		private const string UpdateVersionLuaScript = @"
-	local version = redis.call('incr', KEYS[1])
-	if version > tonumber(ARGV[1]) then
-		version = 1
-		redis.call('set', KEYS[1], version)
-	end
-	return version";
-
-		private const string InitializeVersionLuaScript = @"
-	if redis.call('exists', KEYS[1]) == 1 then
-		return redis.call('get', KEYS[1])
-	else
-		redis.call('set', KEYS[1], 1)
-		return 1
-	end";
-
-		private static readonly string GetLuaScript = $@"
-	{CheckVersionCode}
-	local value = redis.call('get', KEYS[1])
-	if value ~= nil and ARGV[1] == '1' then
-		redis.call('pexpire', KEYS[1], ARGV[2])
-	end
-	return value";
-
-		private static readonly string GetManyLuaScript = $@"
-	{CheckVersionCode}
-	local values = {{}}
-	local sliding = ARGV[#ARGV-2]
-	local expirationMs = ARGV[#ARGV-1]
-	for i=1,#KEYS-1 do
-		local value = redis.call('get', KEYS[i])
-		if value ~= nil and sliding == '1' then
-			redis.call('pexpire', KEYS[i], expirationMs)
-		end
-		values[i] = value
-	end
-	return values";
-
-		private static readonly string PutLuaScript = $@"
-	{CheckVersionCode}
-	return redis.call('set', KEYS[1], ARGV[1], 'px', ARGV[3])";
-
-		private static readonly string PutManyLuaScript = $@"
-	{CheckVersionCode}
-	local expirationMs = ARGV[#ARGV-1]
-	for i=1,#KEYS-1 do
-		redis.call('set', KEYS[i], ARGV[i], 'px', expirationMs)
-	end";
-
-		private static readonly string RemoveLuaScript = $@"
-	{CheckVersionCode}
-	return redis.call('del', KEYS[1])";
-
-		private static readonly string RemoveManyLuaScript = $@"
-	{CheckVersionCode}
-	local removedKeys = 0
-	for i=1,#KEYS-1 do
-		removedKeys = removedKeys + redis.call('del', KEYS[i])
-	end
-	return removedKeys";
-
-		private static readonly string LockLuaScript = $@"
-	{CheckVersionCode}
-	if redis.call('set', KEYS[1], ARGV[1], 'nx', 'px', ARGV[2]) == false then
-		return 0
-	else 
-		return 1
-	end";
-
-		private static readonly string LockManyLuaScript = $@"
-	{CheckVersionCode}
-	local lockValue = ARGV[#ARGV-2]
-	local expirationMs = ARGV[#ARGV-1]
-	local lockedKeys = {{}}
-	local lockedKeyIndex = 1
-	local locked = true
-	for i=1,#KEYS-1 do
-		if redis.call('set', KEYS[i], lockValue, 'nx', 'px', expirationMs) == false then
-			locked = 0
-			break
-		else
-			lockedKeys[lockedKeyIndex] = KEYS[i]
-			lockedKeyIndex = lockedKeyIndex + 1
-		end
-	end
-	if locked == true then
-		return 1
-	else
-		for i=1,#lockedKeys do
-			redis.call('del', lockedKeys[i])
-		end
-		return 0
-	end";
-
-		private static readonly string UnlockLuaScript = $@"
-	{CheckVersionCode}
-	if redis.call('get', KEYS[1]) == ARGV[1] then
-		return redis.call('del', KEYS[1])
-	else 
-		return 0
-	end";
-
-		private static readonly string UnlockManyLuaScript = $@"
-	{CheckVersionCode}
-	local lockValue = ARGV[1]
-	local removedKeys = 0
-	for i=1,#KEYS-1 do
-		if redis.call('get', KEYS[i]) == lockValue then
-			removedKeys = removedKeys + redis.call('del', KEYS[i])
-		end
-	end
-	return removedKeys";
 
 		private readonly RedisKey[] _regionKeyArray;
 		private readonly RedisValue[] _maxVersionNumber;
