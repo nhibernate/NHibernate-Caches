@@ -12,16 +12,11 @@ namespace NHibernate.Caches.StackExRedis
 	/// </summary>
 	internal partial class RedisKeyLocker
 	{
-		private readonly string _regionName;
 		private readonly string _lockKeySuffix;
 		private readonly TimeSpan _lockTimeout;
-		private readonly double _acquireLockTimeout;
-		private readonly int _retryTimes;
-		private readonly TimeSpan _maxRetryDelay;
-		private readonly TimeSpan _minRetryDelay;
-		private readonly ICacheLockRetryDelayProvider _lockRetryDelayProvider;
 		private readonly ICacheLockValueProvider _lockValueProvider;
 		private readonly IDatabase _database;
+		private readonly RetryPolicy<string, Func<string>> _retryPolicy;
 
 		/// <summary>
 		/// Default constructor.
@@ -34,16 +29,29 @@ namespace NHibernate.Caches.StackExRedis
 			IDatabase database,
 			RedisCacheLockConfiguration configuration)
 		{
-			_regionName = regionName;
 			_database = database;
 			_lockKeySuffix = configuration.KeySuffix;
 			_lockTimeout = configuration.KeyTimeout;
-			_acquireLockTimeout = configuration.AcquireTimeout.TotalMilliseconds;
-			_retryTimes = configuration.RetryTimes;
-			_maxRetryDelay = configuration.MaxRetryDelay;
-			_minRetryDelay = configuration.MinRetryDelay;
-			_lockRetryDelayProvider = configuration.RetryDelayProvider;
 			_lockValueProvider = configuration.ValueProvider;
+
+			var acquireTimeout = configuration.AcquireTimeout;
+			var retryTimes = configuration.RetryTimes;
+			var maxRetryDelay = configuration.MaxRetryDelay;
+			var minRetryDelay = configuration.MinRetryDelay;
+			var lockRetryDelayProvider = configuration.RetryDelayProvider;
+
+			_retryPolicy = new RetryPolicy<string, Func<string>>(
+					retryTimes,
+					acquireTimeout,
+					() => lockRetryDelayProvider.GetValue(minRetryDelay, maxRetryDelay)
+				)
+				.ShouldRetry(s => s == null)
+				.OnFaliure((totalAttempts, elapsedMs, getKeysFn) =>
+					throw new CacheException("Unable to acquire cache lock: " +
+					                         $"region='{regionName}', " +
+					                         $"keys='{getKeysFn()}', " +
+					                         $"total attempts='{totalAttempts}', " +
+					                         $"total acquiring time= '{elapsedMs}ms'"));
 		}
 
 		/// <summary>
@@ -62,16 +70,10 @@ namespace NHibernate.Caches.StackExRedis
 				throw new ArgumentNullException(nameof(key));
 			}
 			var lockKey = $"{key}{_lockKeySuffix}";
-			var totalAttempts = 0;
-			var lockTimer = new Stopwatch();
-			lockTimer.Restart();
-			do
+			string Context() => lockKey;
+
+			return _retryPolicy.Execute(() =>
 			{
-				if (totalAttempts > 0)
-				{
-					var retryDelay = _lockRetryDelayProvider.GetValue(_minRetryDelay, _maxRetryDelay);
-					Thread.Sleep(retryDelay);
-				}
 				var lockValue = _lockValueProvider.GetValue();
 				if (!string.IsNullOrEmpty(luaScript))
 				{
@@ -80,7 +82,7 @@ namespace NHibernate.Caches.StackExRedis
 					{
 						keys = keys.Concat(extraKeys).ToArray();
 					}
-					var values = new RedisValue[] {lockValue, (long)_lockTimeout.TotalMilliseconds};
+					var values = new RedisValue[] {lockValue, (long) _lockTimeout.TotalMilliseconds};
 					if (extraValues != null)
 					{
 						values = values.Concat(extraValues).ToArray();
@@ -95,15 +97,9 @@ namespace NHibernate.Caches.StackExRedis
 				{
 					return lockValue;
 				}
-				totalAttempts++;
 
-			} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _acquireLockTimeout);
-
-			throw new CacheException("Unable to acquire cache lock: " +
-												$"region='{_regionName}', " +
-												$"key='{key}', " +
-												$"total attempts='{totalAttempts}', " +
-												$"total acquiring time= '{lockTimer.ElapsedMilliseconds}ms'");
+				return null; // retry
+			}, Context);
 		}
 
 		/// <summary>
@@ -125,21 +121,14 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(luaScript));
 			}
+			string Context() => string.Join(",", keys.Select(o => $"{o}{_lockKeySuffix}"));
 
-			var lockKeys = new RedisKey[keys.Length];
-			for (var i = 0; i < keys.Length; i++)
+			return _retryPolicy.Execute(() =>
 			{
-				lockKeys[i] = $"{keys[i]}{_lockKeySuffix}";
-			}
-			var totalAttempts = 0;
-			var lockTimer = new Stopwatch();
-			lockTimer.Restart();
-			do
-			{
-				if (totalAttempts > 0)
+				var lockKeys = new RedisKey[keys.Length];
+				for (var i = 0; i < keys.Length; i++)
 				{
-					var retryDelay = _lockRetryDelayProvider.GetValue(_minRetryDelay, _maxRetryDelay);
-					Thread.Sleep(retryDelay);
+					lockKeys[i] = $"{keys[i]}{_lockKeySuffix}";
 				}
 				var lockValue = _lockValueProvider.GetValue();
 				if (extraKeys != null)
@@ -156,15 +145,9 @@ namespace NHibernate.Caches.StackExRedis
 				{
 					return lockValue;
 				}
-				totalAttempts++;
 
-			} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _acquireLockTimeout);
-
-			throw new CacheException("Unable to acquire cache lock: " +
-			                                    $"region='{_regionName}', " +
-			                                    $"keys='{string.Join(",", lockKeys)}', " +
-			                                    $"total attempts='{totalAttempts}', " +
-			                                    $"total acquiring time= '{lockTimer.ElapsedMilliseconds}ms'");
+				return null; // retry
+			}, Context);
 		}
 
 		/// <summary>

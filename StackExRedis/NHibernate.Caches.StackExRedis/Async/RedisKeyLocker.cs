@@ -41,54 +41,37 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return Task.FromCanceled<string>(cancellationToken);
 			}
-			return InternalLockAsync();
-			async Task<string> InternalLockAsync()
+			var lockKey = $"{key}{_lockKeySuffix}";
+			string Context() => lockKey;
+
+			return _retryPolicy.ExecuteAsync(async () =>
 			{
-				var lockKey = $"{key}{_lockKeySuffix}";
-				var totalAttempts = 0;
-				var lockTimer = new Stopwatch();
-				lockTimer.Restart();
-				do
+				var lockValue = _lockValueProvider.GetValue();
+				if (!string.IsNullOrEmpty(luaScript))
 				{
-					if (totalAttempts > 0)
+					var keys = new RedisKey[] {lockKey};
+					if (extraKeys != null)
 					{
-						var retryDelay = _lockRetryDelayProvider.GetValue(_minRetryDelay, _maxRetryDelay);
-						await (Task.Delay(retryDelay, cancellationToken)).ConfigureAwait(false);
+						keys = keys.Concat(extraKeys).ToArray();
 					}
-					var lockValue = _lockValueProvider.GetValue();
-					if (!string.IsNullOrEmpty(luaScript))
+					var values = new RedisValue[] {lockValue, (long) _lockTimeout.TotalMilliseconds};
+					if (extraValues != null)
 					{
-						var keys = new RedisKey[] {lockKey};
-						if (extraKeys != null)
-						{
-							keys = keys.Concat(extraKeys).ToArray();
-						}
-						var values = new RedisValue[] {lockValue, (long)_lockTimeout.TotalMilliseconds};
-						if (extraValues != null)
-						{
-							values = values.Concat(extraValues).ToArray();
-						}
-						cancellationToken.ThrowIfCancellationRequested();
-						var result = (RedisValue[]) await (_database.ScriptEvaluateAsync(luaScript, keys, values)).ConfigureAwait(false);
-						if ((bool) result[0])
-						{
-							return lockValue;
-						}
+						values = values.Concat(extraValues).ToArray();
 					}
-					else if (await (_database.LockTakeAsync(lockKey, lockValue, _lockTimeout)).ConfigureAwait(false))
+					var result = (RedisValue[]) await (_database.ScriptEvaluateAsync(luaScript, keys, values)).ConfigureAwait(false);
+					if ((bool) result[0])
 					{
 						return lockValue;
 					}
-					totalAttempts++;
+				}
+				else if (await (_database.LockTakeAsync(lockKey, lockValue, _lockTimeout)).ConfigureAwait(false))
+				{
+					return lockValue;
+				}
 
-				} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _acquireLockTimeout);
-
-				throw new CacheException("Unable to acquire cache lock: " +
-												$"region='{_regionName}', " +
-												$"key='{key}', " +
-												$"total attempts='{totalAttempts}', " +
-												$"total acquiring time= '{lockTimer.ElapsedMilliseconds}ms'");
-			}
+				return null; // retry
+			}, Context, cancellationToken);
 		}
 
 		/// <summary>
@@ -115,51 +98,33 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return Task.FromCanceled<string>(cancellationToken);
 			}
-			return InternalLockManyAsync();
-			async Task<string> InternalLockManyAsync()
-			{
+			string Context() => string.Join(",", keys.Select(o => $"{o}{_lockKeySuffix}"));
 
+			return _retryPolicy.ExecuteAsync(async () =>
+			{
 				var lockKeys = new RedisKey[keys.Length];
 				for (var i = 0; i < keys.Length; i++)
 				{
 					lockKeys[i] = $"{keys[i]}{_lockKeySuffix}";
 				}
-				var totalAttempts = 0;
-				var lockTimer = new Stopwatch();
-				lockTimer.Restart();
-				do
+				var lockValue = _lockValueProvider.GetValue();
+				if (extraKeys != null)
 				{
-					if (totalAttempts > 0)
-					{
-						var retryDelay = _lockRetryDelayProvider.GetValue(_minRetryDelay, _maxRetryDelay);
-						await (Task.Delay(retryDelay, cancellationToken)).ConfigureAwait(false);
-					}
-					var lockValue = _lockValueProvider.GetValue();
-					if (extraKeys != null)
-					{
-						lockKeys = lockKeys.Concat(extraKeys).ToArray();
-					}
-					var values = new RedisValue[] {lockValue, (long) _lockTimeout.TotalMilliseconds};
-					if (extraValues != null)
-					{
-						values = values.Concat(extraValues).ToArray();
-					}
-					cancellationToken.ThrowIfCancellationRequested();
-					var result = (RedisValue[]) await (_database.ScriptEvaluateAsync(luaScript, lockKeys, values)).ConfigureAwait(false);
-					if ((bool) result[0])
-					{
-						return lockValue;
-					}
-					totalAttempts++;
+					lockKeys = lockKeys.Concat(extraKeys).ToArray();
+				}
+				var values = new RedisValue[] {lockValue, (long) _lockTimeout.TotalMilliseconds};
+				if (extraValues != null)
+				{
+					values = values.Concat(extraValues).ToArray();
+				}
+				var result = (RedisValue[]) await (_database.ScriptEvaluateAsync(luaScript, lockKeys, values)).ConfigureAwait(false);
+				if ((bool) result[0])
+				{
+					return lockValue;
+				}
 
-				} while (_retryTimes > totalAttempts - 1 && lockTimer.ElapsedMilliseconds < _acquireLockTimeout);
-
-				throw new CacheException("Unable to acquire cache lock: " +
-			                                    $"region='{_regionName}', " +
-			                                    $"keys='{string.Join(",", lockKeys)}', " +
-			                                    $"total attempts='{totalAttempts}', " +
-			                                    $"total acquiring time= '{lockTimer.ElapsedMilliseconds}ms'");
-			}
+				return null; // retry
+			}, Context, cancellationToken);
 		}
 
 		/// <summary>

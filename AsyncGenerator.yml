@@ -38,6 +38,8 @@
       hasAttributeName: ObsoleteAttribute
     - conversion: Smart
       containingTypeName: AbstractRegionStrategy
+    - conversion: Smart
+      containingTypeName: RedisKeyLocker
     callForwarding: true
     cancellationTokens:
       guards: true

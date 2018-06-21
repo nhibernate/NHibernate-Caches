@@ -190,7 +190,6 @@ namespace NHibernate.Caches.StackExRedis
 		public override async Task ClearAsync(CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			cancellationToken.ThrowIfCancellationRequested();
 			var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(UpdateVersionLuaScript,
 				_regionKeyArray, _maxVersionNumber)).ConfigureAwait(false);
 			var version = results[0];
