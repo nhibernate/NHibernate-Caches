@@ -1,11 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
 using NHibernate.Cache;
+using NHibernate.Cache.Entry;
 using NHibernate.Caches.Common.Tests;
+using NHibernate.Collection;
+using NHibernate.Engine;
+using NHibernate.Persister.Entity;
+using NHibernate.Type;
+using NSubstitute;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.StackExRedis.Tests
@@ -19,6 +29,238 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 		protected override Func<ICacheProvider> ProviderBuilder =>
 			() => new RedisCacheProvider();
+
+		[Serializable]
+		public class MyEntity
+		{
+			public int Id { get; set; }
+		}
+
+		[Test]
+		public void TestNHibernateAnyTypeSerialization()
+		{
+			var objectTypeCacheEntryType = typeof(AnyType.ObjectTypeCacheEntry);
+			var entityNameField = objectTypeCacheEntryType.GetField("entityName", BindingFlags.Instance | BindingFlags.NonPublic);
+			Assert.That(entityNameField, Is.Not.Null, "field entityName in NHibernate.Type.AnyType.ObjectTypeCacheEntry was not found");
+			var idField = objectTypeCacheEntryType.GetField("id", BindingFlags.Instance | BindingFlags.NonPublic);
+			Assert.That(idField, Is.Not.Null, "field id in NHibernate.Type.AnyType.ObjectTypeCacheEntry was not found");
+
+			var entityName = nameof(MyEntity);
+			var propertyValues = new Dictionary<IType, object>
+			{
+				{NHibernateUtil.Object, new MyEntity{Id = 2}}
+			};
+
+			var sfImpl = Substitute.For<ISessionFactoryImplementor>();
+			var sessionImpl = Substitute.For<ISessionImplementor>();
+			sessionImpl.BestGuessEntityName(Arg.Any<object>()).Returns(o => o[0].GetType().Name);
+			sessionImpl.GetContextEntityIdentifier(Arg.Is<object>(o => o is MyEntity)).Returns(o => ((MyEntity) o[0]).Id);
+			var entityPersister = Substitute.For<IEntityPersister>();
+			entityPersister.EntityName.Returns(entityName);
+			entityPersister.IsLazyPropertiesCacheable.Returns(false);
+			entityPersister.PropertyTypes.Returns(propertyValues.Keys.ToArray());
+
+			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, entityName, sfImpl);
+			var cacheEntry = new CacheEntry(propertyValues.Values.ToArray(), entityPersister, false, null, sessionImpl, null);
+
+			Assert.That(cacheEntry.DisassembledState, Has.Length.EqualTo(1));
+			var anyObject = cacheEntry.DisassembledState[0];
+			Assert.That(anyObject, Is.TypeOf(objectTypeCacheEntryType));
+			Assert.That(entityNameField.GetValue(anyObject), Is.EqualTo(nameof(MyEntity)));
+			Assert.That(idField.GetValue(anyObject), Is.EqualTo(2));
+
+			var cache = GetDefaultCache();
+			cache.Put(cacheKey, cacheEntry);
+			var value = cache.Get(cacheKey);
+
+			Assert.That(value, Is.TypeOf<CacheEntry>());
+			var retrievedCacheEntry = (CacheEntry) value;
+			Assert.That(retrievedCacheEntry.DisassembledState, Has.Length.EqualTo(1));
+			var retrievedAnyObject = retrievedCacheEntry.DisassembledState[0];
+			Assert.That(retrievedAnyObject, Is.TypeOf(objectTypeCacheEntryType));
+			Assert.That(entityNameField.GetValue(retrievedAnyObject), Is.EqualTo(nameof(MyEntity)),
+				"entityName is different from the original AnyType.ObjectTypeCacheEntry");
+			Assert.That(idField.GetValue(retrievedAnyObject), Is.EqualTo(2),
+				"id is different from the original AnyType.ObjectTypeCacheEntry");
+		}
+
+		[Test]
+		public void TestNHibernateStandardTypesSerialization()
+		{
+			var entityName = nameof(MyEntity);
+			var xmlDoc = new XmlDocument();
+			xmlDoc.LoadXml("<Root>XmlDoc</Root>");
+			var propertyValues = new Dictionary<IType, object>
+			{
+				{NHibernateUtil.AnsiString, "test"},
+				{NHibernateUtil.Binary, new byte[] {1, 2, 3, 4}},
+				{NHibernateUtil.BinaryBlob, new byte[] {1, 2, 3, 4}},
+				{NHibernateUtil.Boolean, true},
+				{NHibernateUtil.Byte, (byte) 1},
+				{NHibernateUtil.Character, 'a'},
+				{NHibernateUtil.CultureInfo, CultureInfo.CurrentCulture},
+				{NHibernateUtil.DateTime, DateTime.Now},
+				{NHibernateUtil.DateTimeNoMs, DateTime.Now},
+				{NHibernateUtil.LocalDateTime, DateTime.Now},
+				{NHibernateUtil.UtcDateTime, DateTime.UtcNow},
+				{NHibernateUtil.LocalDateTimeNoMs, DateTime.Now},
+				{NHibernateUtil.UtcDateTimeNoMs, DateTime.UtcNow},
+				{NHibernateUtil.DateTimeOffset, DateTimeOffset.Now},
+				{NHibernateUtil.Date, DateTime.Today},
+				{NHibernateUtil.Decimal, 2.5m},
+				{NHibernateUtil.Double, 2.5d},
+				{NHibernateUtil.Currency, 2.5m},
+				{NHibernateUtil.Guid, Guid.NewGuid()},
+				{NHibernateUtil.Int16, (short) 1},
+				{NHibernateUtil.Int32, 3},
+				{NHibernateUtil.Int64, 3L},
+				{NHibernateUtil.SByte, (sbyte) 1},
+				{NHibernateUtil.UInt16, (ushort) 1},
+				{NHibernateUtil.UInt32, (uint) 1},
+				{NHibernateUtil.UInt64, (ulong) 1},
+				{NHibernateUtil.Single, 1.1f},
+				{NHibernateUtil.String, "test"},
+				{NHibernateUtil.StringClob, "test"},
+				{NHibernateUtil.Time, DateTime.Now},
+				{NHibernateUtil.Ticks, DateTime.Now},
+				{NHibernateUtil.TimeAsTimeSpan, TimeSpan.FromMilliseconds(15)},
+				{NHibernateUtil.TimeSpan, TimeSpan.FromMilliseconds(1234)},
+				{NHibernateUtil.DbTimestamp, DateTime.Now},
+				{NHibernateUtil.TrueFalse, false},
+				{NHibernateUtil.YesNo, true},
+				{NHibernateUtil.Class, typeof(IType)},
+				{NHibernateUtil.ClassMetaType, entityName},
+				{NHibernateUtil.Serializable, new MyEntity {Id = 1}},
+				{NHibernateUtil.AnsiChar, 'a'},
+				{NHibernateUtil.XmlDoc, xmlDoc},
+				{NHibernateUtil.XDoc, XDocument.Parse("<Root>XDoc</Root>")},
+				{NHibernateUtil.Uri, new Uri("http://test.com")}
+			};
+
+			var sfImpl = Substitute.For<ISessionFactoryImplementor>();
+			var sessionImpl = Substitute.For<ISessionImplementor>();
+			var entityPersister = Substitute.For<IEntityPersister>();
+			entityPersister.EntityName.Returns(entityName);
+			entityPersister.IsLazyPropertiesCacheable.Returns(false);
+			entityPersister.PropertyTypes.Returns(propertyValues.Keys.ToArray());
+
+			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, entityName, sfImpl);
+			var cacheEntry = new CacheEntry(propertyValues.Values.ToArray(), entityPersister, false, null, sessionImpl, null);
+
+			var cache = GetDefaultCache();
+			cache.Put(cacheKey, cacheEntry);
+			var value = cache.Get(cacheKey);
+
+			Assert.That(value, Is.TypeOf<CacheEntry>());
+			var retrievedCacheEntry = (CacheEntry) value;
+			Assert.That(retrievedCacheEntry.DisassembledState, Is.EquivalentTo(cacheEntry.DisassembledState),
+				"DisassembledState is different from the original CacheEntry");
+		}
+
+		[Test]
+		public void TestNHibernateCacheEntrySerialization()
+		{
+			var entityName = nameof(MyEntity);
+			var propertyValues = new Dictionary<IType, object>
+			{
+				{NHibernateUtil.String, "test"}
+			};
+
+			var sfImpl = Substitute.For<ISessionFactoryImplementor>();
+			var sessionImpl = Substitute.For<ISessionImplementor>();
+			var entityPersister = Substitute.For<IEntityPersister>();
+			entityPersister.EntityName.Returns(entityName);
+			entityPersister.IsLazyPropertiesCacheable.Returns(false);
+			entityPersister.PropertyTypes.Returns(propertyValues.Keys.ToArray());
+
+			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, entityName, sfImpl);
+			var cacheEntry = new CacheEntry(propertyValues.Values.ToArray(), entityPersister, true, 4, sessionImpl, null);
+
+			var cache = GetDefaultCache();
+			cache.Put(cacheKey, cacheEntry);
+			var value = cache.Get(cacheKey);
+
+			Assert.That(value, Is.TypeOf<CacheEntry>());
+			var retrievedCacheEntry = (CacheEntry) value;
+			Assert.That(retrievedCacheEntry.AreLazyPropertiesUnfetched, Is.EqualTo(cacheEntry.AreLazyPropertiesUnfetched),
+				"AreLazyPropertiesUnfetched is different from the original CacheEntry");
+			Assert.That(retrievedCacheEntry.DisassembledState, Is.EquivalentTo(cacheEntry.DisassembledState),
+				"DisassembledState is different from the original CacheEntry");
+			Assert.That(retrievedCacheEntry.Subclass, Is.EqualTo(cacheEntry.Subclass),
+				"Subclass is different from the original CacheEntry");
+			Assert.That(retrievedCacheEntry.Version, Is.EqualTo(cacheEntry.Version),
+				"Version is different from the original CacheEntry");
+		}
+
+		[Test]
+		public void TestNHibernateCollectionCacheEntrySerialization()
+		{
+			var sfImpl = Substitute.For<ISessionFactoryImplementor>();
+			var collection = Substitute.For<IPersistentCollection>();
+			collection.Disassemble(null).Returns(o => new object[] {"test"});
+
+			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, "MyCollection", sfImpl);
+			var cacheEntry = new CollectionCacheEntry(collection, null);
+			Assert.That(cacheEntry.State, Has.Length.EqualTo(1));
+
+			var cache = GetDefaultCache();
+			cache.Put(cacheKey, cacheEntry);
+			var value = cache.Get(cacheKey);
+
+			Assert.That(value, Is.TypeOf<CollectionCacheEntry>());
+			var retrievedCacheEntry = (CollectionCacheEntry) value;
+			Assert.That(retrievedCacheEntry.State, Has.Length.EqualTo(1));
+			Assert.That(retrievedCacheEntry.State[0], Is.EquivalentTo("test"),
+				"State is different from the original CollectionCacheEntry");
+		}
+
+		[Test]
+		public void TestNHibernateCacheLockSerialization()
+		{
+			var sfImpl = Substitute.For<ISessionFactoryImplementor>();
+			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, "CacheLock", sfImpl);
+			var cacheEntry = new CacheLock(1234, 1, 5);
+			cacheEntry.Lock(123, 2);
+
+			var cache = GetDefaultCache();
+			cache.Put(cacheKey, cacheEntry);
+			var value = cache.Get(cacheKey);
+
+			Assert.That(value, Is.TypeOf<CacheLock>());
+			var retrievedCacheEntry = (CacheLock) value;
+			Assert.That(retrievedCacheEntry.Id, Is.EqualTo(cacheEntry.Id),
+				"Id is different from the original CacheLock");
+			Assert.That(retrievedCacheEntry.IsLock, Is.EqualTo(cacheEntry.IsLock),
+				"IsLock is different from the original CacheLock");
+			Assert.That(retrievedCacheEntry.WasLockedConcurrently, Is.EqualTo(cacheEntry.WasLockedConcurrently),
+				"WasLockedConcurrently is different from the original CacheLock");
+			Assert.That(retrievedCacheEntry.ToString(), Is.EqualTo(cacheEntry.ToString()),
+				"ToString() is different from the original CacheLock");
+		}
+
+		[Test]
+		public void TestNHibernateCachedItemSerialization()
+		{
+			var sfImpl = Substitute.For<ISessionFactoryImplementor>();
+			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, "CachedItem", sfImpl);
+			var cacheEntry = new CachedItem("test", 111, 5);
+			cacheEntry.Lock(123, 2);
+
+			var cache = GetDefaultCache();
+			cache.Put(cacheKey, cacheEntry);
+			var value = cache.Get(cacheKey);
+
+			Assert.That(value, Is.TypeOf<CachedItem>());
+			var retrievedCacheEntry = (CachedItem) value;
+			Assert.That(retrievedCacheEntry.FreshTimestamp, Is.EqualTo(cacheEntry.FreshTimestamp),
+				"FreshTimestamp is different from the original CachedItem");
+			Assert.That(retrievedCacheEntry.IsLock, Is.EqualTo(cacheEntry.IsLock),
+				"IsLock is different from the original CachedItem");
+			Assert.That(retrievedCacheEntry.Value, Is.EqualTo(cacheEntry.Value),
+				"Value is different from the original CachedItem");
+			Assert.That(retrievedCacheEntry.ToString(), Is.EqualTo(cacheEntry.ToString()),
+				"ToString() is different from the original CachedItem");
+		}
 
 		[Test]
 		public void TestEnvironmentName()

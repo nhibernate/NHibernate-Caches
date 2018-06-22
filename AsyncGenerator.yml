@@ -450,6 +450,8 @@
       withoutCancellationToken:
       - hasAttributeName: TestAttribute
       - hasAttributeName: TheoryAttribute
+    ignoreSearchForAsyncCounterparts:
+    - name: Disassemble
     scanMethodBody: true
     searchAsyncCounterpartsInInheritedTypes: true
     scanForMissingAsyncMembers:
