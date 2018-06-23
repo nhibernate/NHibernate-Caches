@@ -82,6 +82,53 @@ namespace NHibernate.Caches.Common.Tests
 		}
 
 		[Test]
+		public void TestConcurrentLockUnlock()
+		{
+			if (!SupportsLocking)
+				Assert.Ignore("Test not supported by provider");
+
+			const string value = "value";
+			const string key = "keyToLock";
+
+			var cache = GetDefaultCache();
+
+			cache.Put(key, value);
+			Assert.That(cache.Get(key), Is.EqualTo(value), "Unable to retrieved cached object for key");
+
+			// Simulate NHibernate ReadWriteCache behavior with multiple concurrent threads
+			// Thread 1
+			cache.Lock(key);
+
+			// Thread 2
+			try
+			{
+				Assert.Throws<CacheException>(() => cache.Lock(key), "The key should be locked");
+			}
+			finally
+			{
+				cache.Unlock(key);
+			}
+
+			// Thread 3
+			try
+			{
+				Assert.Throws<CacheException>(() => cache.Lock(key), "The key should still be locked");
+			}
+			finally
+			{
+				cache.Unlock(key);
+			}
+			
+			// Thread 1
+			cache.Unlock(key);
+
+			Assert.DoesNotThrow(() => cache.Lock(key), "The key should be unlocked");
+			cache.Unlock(key);
+
+			cache.Remove(key);
+		}
+
+		[Test]
 		public void TestClear()
 		{
 			if (!SupportsClear)

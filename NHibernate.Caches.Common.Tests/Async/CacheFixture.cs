@@ -88,6 +88,53 @@ namespace NHibernate.Caches.Common.Tests
 		}
 
 		[Test]
+		public async Task TestConcurrentLockUnlockAsync()
+		{
+			if (!SupportsLocking)
+				Assert.Ignore("Test not supported by provider");
+
+			const string value = "value";
+			const string key = "keyToLock";
+
+			var cache = GetDefaultCache();
+
+			await (cache.PutAsync(key, value, CancellationToken.None));
+			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key");
+
+			// Simulate NHibernate ReadWriteCache behavior with multiple concurrent threads
+			// Thread 1
+			await (cache.LockAsync(key, CancellationToken.None));
+
+			// Thread 2
+			try
+			{
+				Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None), "The key should be locked");
+			}
+			finally
+			{
+				await (cache.UnlockAsync(key, CancellationToken.None));
+			}
+
+			// Thread 3
+			try
+			{
+				Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None), "The key should still be locked");
+			}
+			finally
+			{
+				await (cache.UnlockAsync(key, CancellationToken.None));
+			}
+			
+			// Thread 1
+			await (cache.UnlockAsync(key, CancellationToken.None));
+
+			Assert.DoesNotThrowAsync(() => cache.LockAsync(key, CancellationToken.None), "The key should be unlocked");
+			await (cache.UnlockAsync(key, CancellationToken.None));
+
+			await (cache.RemoveAsync(key, CancellationToken.None));
+		}
+
+		[Test]
 		public async Task TestClearAsync()
 		{
 			if (!SupportsClear)
