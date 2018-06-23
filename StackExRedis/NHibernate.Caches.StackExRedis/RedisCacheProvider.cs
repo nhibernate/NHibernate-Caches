@@ -164,6 +164,11 @@ namespace NHibernate.Caches.StackExRedis
 			config.UseSlidingExpiration = GetBoolean("sliding", properties,
 				regionConfig.UseSlidingExpiration ?? GetBoolean(RedisEnvironment.UseSlidingExpiration, properties,
 					_defaultCacheConfiguration.DefaultUseSlidingExpiration));
+
+			config.UseHashCode = GetBoolean("hashcode", properties,
+				regionConfig.UseHashCode ?? GetBoolean(RedisEnvironment.UseHashCode, properties,
+					_defaultCacheConfiguration.DefaultUseHashCode));
+
 			Log.Debug("Use sliding expiration for region {0}: {1}", regionConfig.Region, config.UseSlidingExpiration);
 
 			return config;
@@ -200,6 +205,10 @@ namespace NHibernate.Caches.StackExRedis
 			config.DefaultUseSlidingExpiration = GetBoolean(RedisEnvironment.UseSlidingExpiration, properties,
 				config.DefaultUseSlidingExpiration);
 			Log.Debug("Default use sliding expiration: {0}", config.DefaultUseSlidingExpiration);
+
+			config.DefaultUseHashCode = GetBoolean(RedisEnvironment.UseHashCode, properties,
+				config.DefaultUseHashCode);
+			Log.Debug("Default use hash code: {0}", config.DefaultUseSlidingExpiration);
 
 			var lockConfig = config.LockConfiguration;
 			lockConfig.KeyTimeout = GetTimeSpanFromSeconds(RedisEnvironment.LockKeyTimeout, properties, lockConfig.KeyTimeout);

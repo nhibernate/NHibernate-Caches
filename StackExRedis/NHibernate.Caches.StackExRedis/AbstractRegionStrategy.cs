@@ -63,6 +63,7 @@ namespace NHibernate.Caches.StackExRedis
 			RegionName = configuration.RegionName;
 			Expiration = configuration.Expiration;
 			UseSlidingExpiration = configuration.UseSlidingExpiration;
+			UseHashCode = configuration.UseHashCode;
 			RegionKey = configuration.RegionKey;
 			ConnectionMultiplexer = connectionMultiplexer;
 			Database = connectionMultiplexer.GetDatabase(configuration.Database);
@@ -143,6 +144,11 @@ namespace NHibernate.Caches.StackExRedis
 		/// </summary>
 		/// <value><see langword="true" /> for resetting a cached item expiration each time it is accessed.</value>
 		public bool UseSlidingExpiration { get; }
+
+		/// <summary>
+		/// Whether the hash code of the key should be added to the cache key.
+		/// </summary>
+		public bool UseHashCode { get; }
 
 		/// <summary>
 		/// Is the expiration enabled?
@@ -491,7 +497,9 @@ namespace NHibernate.Caches.StackExRedis
 		{
 			// Hash tag (wrap with curly brackets) the region key in order to ensure that all region keys
 			// will be located on the same server, when a Redis cluster is used.
-			return string.Concat("{", RegionKey, "}:", value.ToString(), "@", value.GetHashCode());
+			return UseHashCode
+				? string.Concat("{", RegionKey, "}:", value.ToString(), "@", value.GetHashCode())
+				: string.Concat("{", RegionKey, "}:", value.ToString());
 		}
 
 		/// <summary>

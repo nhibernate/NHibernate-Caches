@@ -296,7 +296,9 @@ namespace NHibernate.Caches.StackExRedis
 		/// <inheritdoc />
 		protected override string GetCacheKey(object value)
 		{
-			return string.Concat("{", RegionKey, "}-", _currentVersion, ":", value.ToString(), "@", value.GetHashCode());
+			return UseHashCode
+				? string.Concat("{", RegionKey, "}-", _currentVersion, ":", value.ToString(), "@", value.GetHashCode())
+				: string.Concat("{", RegionKey, "}-", _currentVersion, ":", value.ToString());
 		}
 
 		private void InitializeVersion()

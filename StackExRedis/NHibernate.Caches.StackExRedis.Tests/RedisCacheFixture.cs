@@ -262,6 +262,160 @@ namespace NHibernate.Caches.StackExRedis.Tests
 				"ToString() is different from the original CachedItem");
 		}
 
+		[Serializable]
+		protected class CustomCacheKey
+		{
+			private readonly int _hashCode;
+
+			public CustomCacheKey(object id, string entityName, bool useIdHashCode)
+			{
+				Id = id;
+				EntityName = entityName;
+				_hashCode = useIdHashCode ? id.GetHashCode() : base.GetHashCode();
+			}
+
+			public object Id { get; }
+
+			public string EntityName { get; }
+
+			public override string ToString()
+			{
+				return EntityName + "#" + Id;
+			}
+
+			public override bool Equals(object obj)
+			{
+				if (!(obj is CustomCacheKey other))
+				{
+					return false;
+				}
+				return Equals(other.Id, Id) && Equals(other.EntityName, EntityName);
+			}
+
+			public override int GetHashCode()
+			{
+				return _hashCode.GetHashCode();
+			}
+		}
+
+		[Test]
+		public void TestEqualObjectsWithDifferentHashCodeDefaultConfiguration()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(1, "test", false);
+			var obj2 = new CustomCacheKey(1, "test", false);
+
+			var cache = GetDefaultCache();
+
+			cache.Put(obj1, value);
+			Assert.That(cache.Get(obj1), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(cache.Get(obj2), Is.Null, "The hash code should be used in the cache key");
+			cache.Remove(obj1);
+		}
+
+		[Test]
+		public void TestEqualObjectsWithDifferentHashCodeGlobalConfiguration()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(1, "test", false);
+			var obj2 = new CustomCacheKey(1, "test", false);
+
+			var props = GetDefaultProperties();
+			var cacheProvider = ProviderBuilder();
+			props[RedisEnvironment.UseHashCode] = "false";
+			cacheProvider.Start(props);
+			var cache = cacheProvider.BuildCache(DefaultRegion, props);
+
+			cache.Put(obj1, value);
+			Assert.That(cache.Get(obj1), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(cache.Get(obj2), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			cache.Remove(obj1);
+		}
+
+		[Test]
+		public void TestEqualObjectsWithDifferentHashCodeRegionConfiguration()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(1, "test", false);
+			var obj2 = new CustomCacheKey(1, "test", false);
+
+			var props = GetDefaultProperties();
+			var cacheProvider = ProviderBuilder();
+			cacheProvider.Start(props);
+			props["hashcode"] = "false";
+			var cache = cacheProvider.BuildCache(DefaultRegion, props);
+
+			cache.Put(obj1, value);
+			Assert.That(cache.Get(obj1), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(cache.Get(obj2), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			cache.Remove(obj1);
+		}
+
+		[Serializable]
+		protected class ObjectEqualToString
+		{
+			public ObjectEqualToString(int id)
+			{
+				Id = id;
+			}
+
+			public int Id { get; }
+
+			public override int GetHashCode()
+			{
+				return Id.GetHashCode();
+			}
+
+			public override string ToString()
+			{
+				return nameof(ObjectEqualToString);
+			}
+
+			public override bool Equals(object obj)
+			{
+				if (!(obj is ObjectEqualToString other))
+				{
+					return false;
+				}
+
+				return other.Id == Id;
+			}
+		}
+
+		[Test]
+		public void TestNonEqualObjectsWithEqualToString()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(new ObjectEqualToString(1), "test", true);
+			var obj2 = new CustomCacheKey(new ObjectEqualToString(2), "test", true);
+
+			var cache = GetDefaultCache();
+
+			cache.Put(obj1, value);
+			Assert.That(cache.Get(obj1), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(cache.Get(obj2), Is.Null, "Unexectedly found a cache entry for key obj2 after obj1 put");
+			cache.Remove(obj1);
+		}
+
+		[Test]
+		public void TestNonEqualObjectsWithEqualToStringNoHashCode()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(new ObjectEqualToString(1), "test", true);
+			var obj2 = new CustomCacheKey(new ObjectEqualToString(2), "test", true);
+
+			var props = GetDefaultProperties();
+			var cacheProvider = ProviderBuilder();
+			props[RedisEnvironment.UseHashCode] = "false";
+			cacheProvider.Start(props);
+			var cache = cacheProvider.BuildCache(DefaultRegion, props);
+
+			cache.Put(obj1, value);
+			Assert.That(cache.Get(obj1), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(cache.Get(obj2), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			cache.Remove(obj1);
+		}
+
 		[Test]
 		public void TestEnvironmentName()
 		{

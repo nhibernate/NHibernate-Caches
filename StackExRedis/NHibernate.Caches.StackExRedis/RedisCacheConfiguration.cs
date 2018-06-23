@@ -40,6 +40,11 @@ namespace NHibernate.Caches.StackExRedis
 		public bool DefaultUseSlidingExpiration { get; set; }
 
 		/// <summary>
+		/// Whether the hash code of the key should be added to the cache key.
+		/// </summary>
+		public bool DefaultUseHashCode { get; set; } = true;
+
+		/// <summary>
 		/// The default expiration time for the keys to expire.
 		/// </summary>
 		public TimeSpan DefaultExpiration { get; set; } = TimeSpan.FromSeconds(300);

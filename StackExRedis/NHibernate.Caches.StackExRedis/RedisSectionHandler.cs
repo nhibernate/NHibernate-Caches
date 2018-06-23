@@ -32,7 +32,8 @@ namespace NHibernate.Caches.StackExRedis
 						GetTimespanFromSeconds(node, "expiration"),
 						GetBoolean(node, "sliding"),
 						GetInteger(node, "database"),
-						GetType(node, "strategy")
+						GetType(node, "strategy"),
+						GetBoolean(node, "hashcode")
 					));
 				}
 				else

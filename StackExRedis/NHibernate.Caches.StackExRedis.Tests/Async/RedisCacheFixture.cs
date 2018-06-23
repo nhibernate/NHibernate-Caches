@@ -260,6 +260,93 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		}
 
 		[Test]
+		public async Task TestEqualObjectsWithDifferentHashCodeDefaultConfigurationAsync()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(1, "test", false);
+			var obj2 = new CustomCacheKey(1, "test", false);
+
+			var cache = GetDefaultCache();
+
+			await (cache.PutAsync(obj1, value, CancellationToken.None));
+			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.Null, "The hash code should be used in the cache key");
+			await (cache.RemoveAsync(obj1, CancellationToken.None));
+		}
+
+		[Test]
+		public async Task TestEqualObjectsWithDifferentHashCodeGlobalConfigurationAsync()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(1, "test", false);
+			var obj2 = new CustomCacheKey(1, "test", false);
+
+			var props = GetDefaultProperties();
+			var cacheProvider = ProviderBuilder();
+			props[RedisEnvironment.UseHashCode] = "false";
+			cacheProvider.Start(props);
+			var cache = cacheProvider.BuildCache(DefaultRegion, props);
+
+			await (cache.PutAsync(obj1, value, CancellationToken.None));
+			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			await (cache.RemoveAsync(obj1, CancellationToken.None));
+		}
+
+		[Test]
+		public async Task TestEqualObjectsWithDifferentHashCodeRegionConfigurationAsync()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(1, "test", false);
+			var obj2 = new CustomCacheKey(1, "test", false);
+
+			var props = GetDefaultProperties();
+			var cacheProvider = ProviderBuilder();
+			cacheProvider.Start(props);
+			props["hashcode"] = "false";
+			var cache = cacheProvider.BuildCache(DefaultRegion, props);
+
+			await (cache.PutAsync(obj1, value, CancellationToken.None));
+			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			await (cache.RemoveAsync(obj1, CancellationToken.None));
+		}
+
+		[Test]
+		public async Task TestNonEqualObjectsWithEqualToStringAsync()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(new ObjectEqualToString(1), "test", true);
+			var obj2 = new CustomCacheKey(new ObjectEqualToString(2), "test", true);
+
+			var cache = GetDefaultCache();
+
+			await (cache.PutAsync(obj1, value, CancellationToken.None));
+			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.Null, "Unexectedly found a cache entry for key obj2 after obj1 put");
+			await (cache.RemoveAsync(obj1, CancellationToken.None));
+		}
+
+		[Test]
+		public async Task TestNonEqualObjectsWithEqualToStringNoHashCodeAsync()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(new ObjectEqualToString(1), "test", true);
+			var obj2 = new CustomCacheKey(new ObjectEqualToString(2), "test", true);
+
+			var props = GetDefaultProperties();
+			var cacheProvider = ProviderBuilder();
+			props[RedisEnvironment.UseHashCode] = "false";
+			cacheProvider.Start(props);
+			var cache = cacheProvider.BuildCache(DefaultRegion, props);
+
+			await (cache.PutAsync(obj1, value, CancellationToken.None));
+			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			await (cache.RemoveAsync(obj1, CancellationToken.None));
+		}
+
+		[Test]
 		public async Task TestEnvironmentNameAsync()
 		{
 			var props = GetDefaultProperties();

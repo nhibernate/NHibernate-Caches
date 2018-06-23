@@ -44,6 +44,11 @@ namespace NHibernate.Caches.StackExRedis
 		public const string UseSlidingExpiration = "cache.use_sliding_expiration";
 
 		/// <summary>
+		/// Whether the hash code of the key should be added to the cache key.
+		/// </summary>
+		public const string UseHashCode = "cache.use_hash_code";
+
+		/// <summary>
 		/// The prefix that will be prepended before each cache key in order to avoid having collisions when multiple clients
 		/// uses the same Redis database.
 		/// </summary>
