@@ -450,6 +450,10 @@
       withoutCancellationToken:
       - hasAttributeName: TestAttribute
       - hasAttributeName: TheoryAttribute
+    exceptionHandling:
+      catchMethodBody:
+      - all: true
+        result: false
     ignoreSearchForAsyncCounterparts:
     - name: Disassemble
     scanMethodBody: true

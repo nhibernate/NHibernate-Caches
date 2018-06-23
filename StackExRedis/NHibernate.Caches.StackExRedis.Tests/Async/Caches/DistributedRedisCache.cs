@@ -24,17 +24,10 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		/// <inheritdoc />
 		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
-			try
-			{
-				// Use a random strategy to get the value.
-				// A real distributed cache should use a proper load balancing.
-				var strategy = _regionStrategies[_random.Next(0, _regionStrategies.Length - 1)];
-				return strategy.GetAsync(key, cancellationToken);
-			}
-			catch (Exception ex)
-			{
-				return Task.FromException<object>(ex);
-			}
+			// Use a random strategy to get the value.
+			// A real distributed cache should use a proper load balancing.
+			var strategy = _regionStrategies[_random.Next(0, _regionStrategies.Length - 1)];
+			return strategy.GetAsync(key, cancellationToken);
 		}
 
 		/// <inheritdoc />
