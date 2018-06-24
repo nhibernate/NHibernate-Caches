@@ -260,7 +260,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		}
 
 		[Test]
-		public async Task TestEqualObjectsWithDifferentHashCodeDefaultConfigurationAsync()
+		public async Task TestEqualObjectsWithDifferentHashCodeAsync()
 		{
 			var value = "value";
 			var obj1 = new CustomCacheKey(1, "test", false);
@@ -270,31 +270,31 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			await (cache.PutAsync(obj1, value, CancellationToken.None));
 			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			await (cache.RemoveAsync(obj1, CancellationToken.None));
+		}
+
+		[Test]
+		public async Task TestEqualObjectsWithDifferentHashCodeAndUseHashCodeGlobalConfigurationAsync()
+		{
+			var value = "value";
+			var obj1 = new CustomCacheKey(1, "test", false);
+			var obj2 = new CustomCacheKey(1, "test", false);
+
+			var props = GetDefaultProperties();
+			var cacheProvider = ProviderBuilder();
+			props[RedisEnvironment.UseHashCode] = "true";
+			cacheProvider.Start(props);
+			var cache = cacheProvider.BuildCache(DefaultRegion, props);
+
+			await (cache.PutAsync(obj1, value, CancellationToken.None));
+			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
 			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.Null, "The hash code should be used in the cache key");
 			await (cache.RemoveAsync(obj1, CancellationToken.None));
 		}
 
 		[Test]
-		public async Task TestEqualObjectsWithDifferentHashCodeGlobalConfigurationAsync()
-		{
-			var value = "value";
-			var obj1 = new CustomCacheKey(1, "test", false);
-			var obj2 = new CustomCacheKey(1, "test", false);
-
-			var props = GetDefaultProperties();
-			var cacheProvider = ProviderBuilder();
-			props[RedisEnvironment.UseHashCode] = "false";
-			cacheProvider.Start(props);
-			var cache = cacheProvider.BuildCache(DefaultRegion, props);
-
-			await (cache.PutAsync(obj1, value, CancellationToken.None));
-			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
-			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
-			await (cache.RemoveAsync(obj1, CancellationToken.None));
-		}
-
-		[Test]
-		public async Task TestEqualObjectsWithDifferentHashCodeRegionConfigurationAsync()
+		public async Task TestEqualObjectsWithDifferentHashCodeAndUseHashCodeRegionConfigurationAsync()
 		{
 			var value = "value";
 			var obj1 = new CustomCacheKey(1, "test", false);
@@ -303,12 +303,12 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			var props = GetDefaultProperties();
 			var cacheProvider = ProviderBuilder();
 			cacheProvider.Start(props);
-			props["hashcode"] = "false";
+			props["hashcode"] = "true";
 			var cache = cacheProvider.BuildCache(DefaultRegion, props);
 
 			await (cache.PutAsync(obj1, value, CancellationToken.None));
 			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
-			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.Null, "The hash code should be used in the cache key");
 			await (cache.RemoveAsync(obj1, CancellationToken.None));
 		}
 
@@ -323,12 +323,12 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			await (cache.PutAsync(obj1, value, CancellationToken.None));
 			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
-			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.Null, "Unexectedly found a cache entry for key obj2 after obj1 put");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
 			await (cache.RemoveAsync(obj1, CancellationToken.None));
 		}
 
 		[Test]
-		public async Task TestNonEqualObjectsWithEqualToStringNoHashCodeAsync()
+		public async Task TestNonEqualObjectsWithEqualToStringUseHashCodeAsync()
 		{
 			var value = "value";
 			var obj1 = new CustomCacheKey(new ObjectEqualToString(1), "test", true);
@@ -336,13 +336,13 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			var props = GetDefaultProperties();
 			var cacheProvider = ProviderBuilder();
-			props[RedisEnvironment.UseHashCode] = "false";
+			props[RedisEnvironment.UseHashCode] = "true";
 			cacheProvider.Start(props);
 			var cache = cacheProvider.BuildCache(DefaultRegion, props);
 
 			await (cache.PutAsync(obj1, value, CancellationToken.None));
 			Assert.That(await (cache.GetAsync(obj1, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
-			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.EqualTo(value), "Unable to retrieved cached object for key obj2");
+			Assert.That(await (cache.GetAsync(obj2, CancellationToken.None)), Is.Null, "Unexectedly found a cache entry for key obj2 after obj1 put");
 			await (cache.RemoveAsync(obj1, CancellationToken.None));
 		}
 
