@@ -273,16 +273,12 @@ namespace NHibernate.Caches.SysCache
 				throw new ArgumentNullException(nameof(value), "null value not allowed");
 			}
 			var cacheKey = GetCacheKey(key);
-			if (_cache[cacheKey] != null)
+			if (Log.IsDebugEnabled())
 			{
-				Log.Debug("updating value of key '{0}' to '{1}'.", cacheKey, value);
-
-				// Remove the key to re-add it again below
-				_cache.Remove(cacheKey);
-			}
-			else
-			{
-				Log.Debug("adding new data: key={0}&value={1}", cacheKey, value);
+				Log.Debug(
+					_cache[cacheKey] != null
+						? "updating value of key '{0}' to '{1}'."
+						: "adding new data: key={0}&value={1}", cacheKey, value);
 			}
 
 			if (!_rootCacheKeyStored)
@@ -290,7 +286,7 @@ namespace NHibernate.Caches.SysCache
 				StoreRootCacheKey();
 			}
 
-			_cache.Add(
+			_cache.Insert(
 				cacheKey,
 				new DictionaryEntry(key, value),
 				new CacheDependency(null, new[] { _rootCacheKey }),
