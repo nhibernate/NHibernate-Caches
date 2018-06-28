@@ -48,12 +48,13 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			Assert.That(config.Properties.Count, Is.EqualTo(0), "Properties count");
 			Assert.That(config.Regions, Is.Not.Null, "Regions");
 			Assert.That(config.Regions.Length, Is.EqualTo(0));
+			Assert.That(config.AppendHashcodeToKey, Is.True);
 		}
 
 		[Test]
 		public void TestGetConfigFromFile()
 		{
-			const string xmlSimple = "<coredistributedcache factory-class=\"factory1\"><properties><property name=\"prop1\">Value1</property></properties><cache region=\"foo\" expiration=\"500\" sliding=\"true\" /></coredistributedcache>";
+			const string xmlSimple = "<coredistributedcache factory-class=\"factory1\" append-hashcode=\"false\"><properties><property name=\"prop1\">Value1</property></properties><cache region=\"foo\" expiration=\"500\" sliding=\"true\" /></coredistributedcache>";
 
 			var handler = new CoreDistributedCacheSectionHandler();
 			var section = GetConfigurationSection(xmlSimple);
@@ -76,6 +77,8 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			Assert.That(config.Regions[0].Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
 			Assert.That(config.Regions[0].Properties, Does.ContainKey("expiration"));
 			Assert.That(config.Regions[0].Properties["expiration"], Is.EqualTo("500"));
+
+			Assert.That(config.AppendHashcodeToKey, Is.False);
 		}
 	}
 }

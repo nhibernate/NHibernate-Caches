@@ -22,6 +22,9 @@ It's recommended to research for a while before deciding which one is better for
 
 #### Build 5.4 for NHibernate 5.1.0
 
+* New feature
+    * #47 - Add an option for appending hashcode to key
+
 * Task
     * #46 - Update NHibernate to 5.1.0
 

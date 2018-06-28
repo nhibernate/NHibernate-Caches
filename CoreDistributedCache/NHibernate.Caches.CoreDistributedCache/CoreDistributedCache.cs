@@ -96,6 +96,13 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <value><see langword="true" /> for resetting a cached item expiration each time it is accessed.</value>
 		public bool UseSlidingExpiration { get; private set; }
 
+		/// <summary>Should the keys be appended with their hashcode?</summary>
+		/// <remarks>This option is a workaround for distinguishing composite-id missing an
+		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
+		/// between processes running different runtimes. Configure it through
+		/// <see cref="CoreDistributedCacheProvider.AppendHashcodeToKey"/>.</remarks>
+		public bool AppendHashcodeToKey { get; internal set; }
+
 		private void Configure(IDictionary<string, string> props)
 		{
 			var regionPrefix = DefaultRegionPrefix;
@@ -168,7 +175,9 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 		private string GetCacheKey(object key)
 		{
-			var keyAsString = string.Concat(_cacheKeyPrefix, _fullRegion, ":", key.ToString(), "@", key.GetHashCode());
+			var keyAsString = AppendHashcodeToKey
+				? string.Concat(_cacheKeyPrefix, _fullRegion, ":", key.ToString(), "@", key.GetHashCode())
+				: string.Concat(_cacheKeyPrefix, _fullRegion, ":", key.ToString());
 
 			if (_maxKeySize < keyAsString.Length)
 			{

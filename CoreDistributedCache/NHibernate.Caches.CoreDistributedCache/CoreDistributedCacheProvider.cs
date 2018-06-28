@@ -50,6 +50,23 @@ namespace NHibernate.Caches.CoreDistributedCache
 		[CLSCompliant(false)]
 		public static IDistributedCacheFactory CacheFactory { get; set; }
 
+		/// <summary>Should the keys be appended with their hashcode?</summary>
+		/// <value><see langword="true" /> by default.</value>
+		/// <remarks>
+		/// <para>This option is a workaround for distinguishing composite-id missing an
+		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
+		/// between processes running different runtimes.
+		/// </para>
+		/// <para>
+		/// Changes to this property affect only caches built after the change.
+		/// </para>
+		/// <para>
+		/// The value of this property can be set with the attribute <c>append-hashcode</c> of the
+		/// <c>coredistributedcache</c> configuration section.
+		/// </para>
+		/// </remarks>
+		public static bool AppendHashcodeToKey { get; set; }
+
 		static CoreDistributedCacheProvider()
 		{
 			Log = NHibernateLogger.For(typeof(CoreDistributedCacheProvider));
@@ -83,6 +100,8 @@ namespace NHibernate.Caches.CoreDistributedCache
 			{
 				ConfiguredCachesProperties.Add(cache.Region, cache.Properties);
 			}
+
+			AppendHashcodeToKey = config.AppendHashcodeToKey;
 		}
 
 		#region ICacheProvider Members
@@ -139,7 +158,11 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 				Log.Debug("building cache with region: {0}, properties: {1}, factory: {2}" , regionName, sb.ToString(), CacheFactory.GetType().FullName);
 			}
-			return new CoreDistributedCache(CacheFactory.BuildCache(), CacheFactory.Constraints, regionName, properties);
+			return
+				new CoreDistributedCache(CacheFactory.BuildCache(), CacheFactory.Constraints, regionName, properties)
+				{
+					AppendHashcodeToKey = AppendHashcodeToKey
+				};
 		}
 
 		/// <inheritdoc />

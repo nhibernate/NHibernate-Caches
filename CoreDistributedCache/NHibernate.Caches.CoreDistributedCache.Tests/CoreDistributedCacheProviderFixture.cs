@@ -64,5 +64,25 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			Assert.That(cache.Expiration, Is.EqualTo(TimeSpan.FromSeconds(50)),
 				"Unexpected expiration value for noExplicitExpiration region with cache.default_expiration");
 		}
+
+		[Test]
+		public void TestAppendHashcodeToKey()
+		{
+			Assert.That(CoreDistributedCacheProvider.AppendHashcodeToKey, Is.True, "Default is not true");
+
+			var cache = DefaultProvider.BuildCache("foo", null) as CoreDistributedCache;
+			Assert.That(cache.AppendHashcodeToKey, Is.True, "First built cache not correctly set");
+
+			CoreDistributedCacheProvider.AppendHashcodeToKey = false;
+			try
+			{
+				cache = DefaultProvider.BuildCache("foo", null) as CoreDistributedCache;
+				Assert.That(cache.AppendHashcodeToKey, Is.False, "Second built cache not correctly set");
+			}
+			finally
+			{
+				CoreDistributedCacheProvider.AppendHashcodeToKey = true;
+			}
+		}
 	}
 }

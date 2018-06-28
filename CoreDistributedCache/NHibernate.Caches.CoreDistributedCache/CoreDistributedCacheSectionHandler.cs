@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Xml;
@@ -52,8 +53,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 						node.OuterXml);
 				}
 			}
+			var appendHashcodeToKey = !StringComparer.OrdinalIgnoreCase.Equals(
+				section.Attributes?["append-hashcode"]?.Value, "false");
 
-			return new CacheConfig(factoryClass, properties, caches.ToArray());
+			return new CacheConfig(factoryClass, properties, caches.ToArray(), appendHashcodeToKey);
 		}
 
 		#endregion
