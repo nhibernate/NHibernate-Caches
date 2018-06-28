@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Extensions.Caching.Distributed;
 
@@ -15,16 +16,39 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <see cref="IDistributedCache"/> instances.</param>
 		/// <param name="properties">The cache configuration properties.</param>
 		/// <param name="regions">The configured cache regions.</param>
-		public CacheConfig(string factoryClass, IDictionary<string, string> properties, RegionConfig[] regions)
+		// Since 5.4
+		[Obsolete("Use overload with appendHashcodeToKey additional parameter")]
+		public CacheConfig(string factoryClass, IDictionary<string, string> properties, RegionConfig[] regions) :
+			this(factoryClass, properties, regions, true)
+		{
+		}
+
+		/// <summary>
+		/// Build a cache configuration.
+		/// </summary>
+		/// <param name="factoryClass">The <see cref="IDistributedCacheFactory"/> factory class name to use for getting
+		/// <see cref="IDistributedCache"/> instances.</param>
+		/// <param name="properties">The cache configuration properties.</param>
+		/// <param name="regions">The configured cache regions.</param>
+		/// <param name="appendHashcodeToKey">Should the keys be appended with their hashcode?</param>
+		public CacheConfig(
+			string factoryClass, IDictionary<string, string> properties, RegionConfig[] regions, bool appendHashcodeToKey)
 		{
 			FactoryClass = factoryClass;
 			Regions = regions;
 			Properties = properties;
+			AppendHashcodeToKey = appendHashcodeToKey;
 		}
 
 		/// <summary>The <see cref="IDistributedCacheFactory"/> factory class name to use for getting
 		/// <see cref="IDistributedCache"/> instances.</summary>
 		public string FactoryClass { get; }
+
+		/// <summary>Should the keys be appended with their hashcode?</summary>
+		/// <remarks>This option is a workaround for distinguishing composite-id missing an
+		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
+		/// between processes running different runtimes.</remarks>
+		public bool AppendHashcodeToKey { get; }
 
 		/// <summary>The configured cache regions.</summary>
 		public RegionConfig[] Regions { get; }
