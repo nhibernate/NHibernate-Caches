@@ -20,7 +20,9 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
-#### Build 5.4 for NHibernate 5.1.0
+#### Build 5.4.0 for NHibernate 5.1.0
+
+NHibernate 5.1.0 is targeted by all cache providers.
 
 * Bug
     * #48 - Avoid undue cache misses
@@ -28,6 +30,9 @@ It's recommended to research for a while before deciding which one is better for
 * New feature
     * #47 - Add an option for appending hashcode to key
     * #38 - Add a Core RtMemoryCache
+
+* Improvement
+    * #36 - Push symbols packages
 
 * Task
     * #46 - Update NHibernate to 5.1.0
