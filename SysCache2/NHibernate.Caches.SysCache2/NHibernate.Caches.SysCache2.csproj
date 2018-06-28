@@ -16,8 +16,7 @@
     <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
-    <PackageReference Include="NHibernate" Version="5.0.0" />
+    <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />

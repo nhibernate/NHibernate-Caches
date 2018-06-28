@@ -21,7 +21,6 @@ This provider is not bound to a specific implementation and require a cache fact
     <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
     <PackageReference Include="Microsoft.Extensions.Caching.Abstractions" Version="2.0.0" />
     <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>

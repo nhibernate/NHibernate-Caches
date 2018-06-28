@@ -33,11 +33,11 @@ namespace NHibernate.Caches.SysCache
 	public class SysCacheProvider : ICacheProvider
 	{
 		private static readonly Dictionary<string, IDictionary<string, string>> ConfiguredCachesProperties;
-		private static readonly IInternalLogger Log;
+		private static readonly INHibernateLogger Log;
 
 		static SysCacheProvider()
 		{
-			Log = LoggerProvider.LoggerFor(typeof(SysCacheProvider));
+			Log = NHibernateLogger.For(typeof(SysCacheProvider));
 			ConfiguredCachesProperties = new Dictionary<string, IDictionary<string, string>>();
 
 			if (!(ConfigurationManager.GetSection("syscache") is CacheConfig[] list))
@@ -81,7 +81,7 @@ namespace NHibernate.Caches.SysCache
 				properties = new Dictionary<string, string>(1);
 			}
 
-			if (Log.IsDebugEnabled)
+			if (Log.IsDebugEnabled())
 			{
 				var sb = new StringBuilder();
 
@@ -94,7 +94,7 @@ namespace NHibernate.Caches.SysCache
 					sb.Append(";");
 				}
 
-				Log.DebugFormat("building cache with region: {0}, properties: {1}" , regionName, sb.ToString());
+				Log.Debug("building cache with region: {0}, properties: {1}" , regionName, sb.ToString());
 			}
 			return new SysCache(regionName, properties);
 		}

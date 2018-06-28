@@ -10,7 +10,7 @@ namespace NHibernate.Caches.Prevalence
 	public partial class PrevalenceCache : ICache
 	{
 		private const string CacheKeyPrefix = "NHibernate-Cache:";
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor((typeof(PrevalenceCache)));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PrevalenceCache));
 		private readonly string region;
 		private readonly CacheSystem system;
 
@@ -46,10 +46,7 @@ namespace NHibernate.Caches.Prevalence
 				return null;
 			}
 			string cacheKey = GetCacheKey(key);
-			if (log.IsDebugEnabled)
-			{
-				log.Debug(String.Format("Fetching object '{0}' from the cache.", cacheKey));
-			}
+			log.Debug("Fetching object '{0}' from the cache.", cacheKey);
 
 			object obj = system.Get(cacheKey);
 			if (obj == null)
@@ -74,25 +71,16 @@ namespace NHibernate.Caches.Prevalence
 		{
 			if (key == null)
 			{
-				if (log.IsErrorEnabled)
-				{
-					log.Error("null key passed to 'Put'");
-				}
+				log.Error("null key passed to 'Put'");
 				throw new ArgumentNullException("key", "null key not allowed");
 			}
 			if (value == null)
 			{
-				if (log.IsErrorEnabled)
-				{
-					log.Error("null value passed to 'Put'");
-				}
+				log.Error("null value passed to 'Put'");
 				throw new ArgumentNullException("value", "null value not allowed");
 			}
 			string cacheKey = GetCacheKey(key);
-			if (log.IsDebugEnabled)
-			{
-				log.Debug(String.Format("setting value {1} for key {0}", cacheKey, value));
-			}
+			log.Debug("setting value {1} for key {0}", cacheKey, value);
 			system.Add(cacheKey, new DictionaryEntry(key, value));
 		}
 
@@ -101,37 +89,25 @@ namespace NHibernate.Caches.Prevalence
 		{
 			if (key == null)
 			{
-				if (log.IsErrorEnabled)
-				{
-					log.Error("null key passed to 'Remove'");
-				}
+				log.Error("null key passed to 'Remove'");
 				throw new ArgumentNullException("key");
 			}
 			string cacheKey = GetCacheKey(key);
-			if (log.IsDebugEnabled)
-			{
-				log.Debug("removing item with key: " + cacheKey);
-			}
+			log.Debug("removing item with key: {0}", cacheKey);
 			system.Remove(cacheKey);
 		}
 
 		/// <inheritdoc />
 		public void Clear()
 		{
-			if (log.IsInfoEnabled)
-			{
-				log.Info("clearing all objects from system");
-			}
+			log.Info("clearing all objects from system");
 			system.Clear();
 		}
 
 		/// <inheritdoc />
 		public void Destroy()
 		{
-			if (log.IsInfoEnabled)
-			{
-				log.Info("'Destroy' was called");
-			}
+			log.Info("'Destroy' was called");
 			Clear();
 		}
 

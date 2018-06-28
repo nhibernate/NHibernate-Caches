@@ -47,11 +47,11 @@ namespace NHibernate.Caches.Velocity
 	/// </summary>
 	public class VelocityProvider : ICacheProvider
 	{
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 
 		static VelocityProvider()
 		{
-			log = LoggerProvider.LoggerFor((typeof(VelocityProvider)));
+			log = NHibernateLogger.For(typeof(VelocityProvider));
 			var configs = ConfigurationManager.GetSection("velocity") as VelocityConfig[];
 		}
 
@@ -68,7 +68,7 @@ namespace NHibernate.Caches.Velocity
 			{
 				properties = new Dictionary<string, string>();
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				var sb = new StringBuilder();
 				foreach (var de in properties)
@@ -79,7 +79,7 @@ namespace NHibernate.Caches.Velocity
 					sb.Append(de.Value);
 					sb.Append(";");
 				}
-				log.Debug("building cache with region: " + regionName + ", properties: " + sb);
+				log.Debug("building cache with region: {0}, properties: {1}", regionName, sb);
 			}
 			return new VelocityClient(regionName, properties);
 		}

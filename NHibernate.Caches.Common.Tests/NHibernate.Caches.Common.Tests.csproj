@@ -12,12 +12,7 @@
   <ItemGroup>
     <PackageReference Include="NUnit" Version="3.9.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net461'">
-    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
-    <PackageReference Include="NHibernate" Version="5.0.0" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
-    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
+  <ItemGroup>
     <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>
 </Project>

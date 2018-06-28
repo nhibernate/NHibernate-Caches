@@ -15,7 +15,7 @@ namespace NHibernate.Caches.EnyimMemcached
 	/// </summary>
 	public partial class MemCacheClient : ICache
 	{
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 		[ThreadStatic] private static HashAlgorithm hasher;
 
 		[ThreadStatic] private static MD5 md5;
@@ -27,7 +27,7 @@ namespace NHibernate.Caches.EnyimMemcached
 
 		static MemCacheClient()
 		{
-			log = LoggerProvider.LoggerFor(typeof (MemCacheClient));
+			log = NHibernateLogger.For(typeof(MemCacheClient));
 		}
 
 		/// <summary>
@@ -78,26 +78,17 @@ namespace NHibernate.Caches.EnyimMemcached
 				if (expirationString != null)
 				{
 					expiry = Convert.ToInt32(expirationString);
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("using expiration of {0} seconds", expiry);
-					}
+					log.Debug("using expiration of {0} seconds", expiry);
 				}
 
 				if (properties.ContainsKey("regionPrefix"))
 				{
 					regionPrefix = properties["regionPrefix"];
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("new regionPrefix :{0}", regionPrefix);
-					}
+					log.Debug("new regionPrefix :{0}", regionPrefix);
 				}
 				else
 				{
-					if (log.IsDebugEnabled)
-					{
-						log.Debug("no regionPrefix value given, using defaults");
-					}
+					log.Debug("no regionPrefix value given, using defaults");
 				}
 			}
 		}
@@ -135,10 +126,7 @@ namespace NHibernate.Caches.EnyimMemcached
 			{
 				return null;
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("fetching object {0} from the cache", key);
-			}
+			log.Debug("fetching object {0} from the cache", key);
 			object maybeObj = client.Get(KeyAsString(key));
 			if (maybeObj == null)
 			{
@@ -168,20 +156,14 @@ namespace NHibernate.Caches.EnyimMemcached
 				throw new ArgumentNullException("value", "null value not allowed");
 			}
 
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("setting value for item {0}", key);
-			}
+			log.Debug("setting value for item {0}", key);
 			bool returnOk = client.Store(
 				StoreMode.Set, KeyAsString(key),
 				new DictionaryEntry(GetAlternateKeyHash(key), value),
 				TimeSpan.FromSeconds(expiry));
 			if (!returnOk)
 			{
-				if (log.IsWarnEnabled)
-				{
-					log.WarnFormat("could not save: {0} => {1}", key, value);
-				}
+				log.Warn("could not save: {0} => {1}", key, value);
 			}
 		}
 
@@ -192,10 +174,7 @@ namespace NHibernate.Caches.EnyimMemcached
 			{
 				throw new ArgumentNullException("key");
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("removing item {0}", key);
-			}
+			log.Debug("removing item {0}", key);
 			client.Remove(KeyAsString(key));
 		}
 

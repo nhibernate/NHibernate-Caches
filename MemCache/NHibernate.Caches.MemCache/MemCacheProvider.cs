@@ -41,7 +41,7 @@ namespace NHibernate.Caches.MemCache
 	/// </summary>
 	public class MemCacheProvider : ICacheProvider
 	{
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 		private static readonly string[] servers;
 		private static readonly int[] weights;
 
@@ -49,7 +49,7 @@ namespace NHibernate.Caches.MemCache
 
 		static MemCacheProvider()
 		{
-			log = LoggerProvider.LoggerFor((typeof(MemCacheProvider)));
+			log = NHibernateLogger.For(typeof(MemCacheProvider));
 			var configs = ConfigurationManager.GetSection("memcache") as MemCacheConfig[];
 			if (configs != null)
 			{
@@ -58,10 +58,7 @@ namespace NHibernate.Caches.MemCache
 				foreach (MemCacheConfig config in configs)
 				{
 					myServers.Add(string.Format("{0}:{1}", config.Host, config.Port));
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("adding config for memcached on host {0}", config.Host);
-					}
+					log.Debug("adding config for memcached on host {0}", config.Host);
 					if (config.Weight > 0)
 					{
 						myWeights.Add(config.Weight);
@@ -85,7 +82,7 @@ namespace NHibernate.Caches.MemCache
 			{
 				properties = new Dictionary<string, string>();
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				var sb = new StringBuilder();
 				foreach (var pair in properties)
@@ -96,7 +93,7 @@ namespace NHibernate.Caches.MemCache
 					sb.Append(pair.Value);
 					sb.Append(";");
 				}
-				log.Debug("building cache with region: " + regionName + ", properties: " + sb);
+				log.Debug("building cache with region: {0}, properties: {1}", regionName, sb);
 			}
 			return new MemCacheClient(regionName, properties);
 		}
@@ -120,7 +117,7 @@ namespace NHibernate.Caches.MemCache
 					return;
 				}
 
-				bool debugEnabled = log.IsDebugEnabled;
+				bool debugEnabled = log.IsDebugEnabled();
 
 				if (servers != null && servers.Length > 0)
 				{
@@ -135,7 +132,7 @@ namespace NHibernate.Caches.MemCache
 					pool.Failover = Convert.ToBoolean(properties["failover"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("failover set to {0}", pool.Failover);
+						log.Debug("failover set to {0}", pool.Failover);
 					}
 				}
 				if (properties.ContainsKey("initial_connections"))
@@ -143,7 +140,7 @@ namespace NHibernate.Caches.MemCache
 					pool.InitConnections = Convert.ToInt32(properties["initial_connections"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("initial_connections set to {0}", pool.InitConnections);
+						log.Debug("initial_connections set to {0}", pool.InitConnections);
 					}
 				}
 				if (properties.ContainsKey("maintenance_sleep"))
@@ -151,7 +148,7 @@ namespace NHibernate.Caches.MemCache
 					pool.MaintenanceSleep = Convert.ToInt64(properties["maintenance_sleep"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("maintenance_sleep set to {0}", pool.MaintenanceSleep);
+						log.Debug("maintenance_sleep set to {0}", pool.MaintenanceSleep);
 					}
 				}
 				if (properties.ContainsKey("max_busy"))
@@ -159,7 +156,7 @@ namespace NHibernate.Caches.MemCache
 					pool.MaxBusy = Convert.ToInt64(properties["max_busy"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("max_busy set to {0}", pool.MaxBusy);
+						log.Debug("max_busy set to {0}", pool.MaxBusy);
 					}
 				}
 				if (properties.ContainsKey("max_connections"))
@@ -167,7 +164,7 @@ namespace NHibernate.Caches.MemCache
 					pool.MaxConnections = Convert.ToInt32(properties["max_connections"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("max_connections set to {0}", pool.MaxConnections);
+						log.Debug("max_connections set to {0}", pool.MaxConnections);
 					}
 				}
 				if (properties.ContainsKey("max_idle"))
@@ -175,7 +172,7 @@ namespace NHibernate.Caches.MemCache
 					pool.MaxIdle = Convert.ToInt64(properties["max_idle"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("max_idle set to {0}", pool.MaxIdle);
+						log.Debug("max_idle set to {0}", pool.MaxIdle);
 					}
 				}
 				if (properties.ContainsKey("min_connections"))
@@ -183,7 +180,7 @@ namespace NHibernate.Caches.MemCache
 					pool.MinConnections = Convert.ToInt32(properties["min_connections"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("min_connections set to {0}", pool.MinConnections);
+						log.Debug("min_connections set to {0}", pool.MinConnections);
 					}
 				}
 				if (properties.ContainsKey("nagle"))
@@ -191,7 +188,7 @@ namespace NHibernate.Caches.MemCache
 					pool.Nagle = Convert.ToBoolean(properties["nagle"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("nagle set to {0}", pool.Nagle);
+						log.Debug("nagle set to {0}", pool.Nagle);
 					}
 				}
 				if (properties.ContainsKey("socket_timeout"))
@@ -199,7 +196,7 @@ namespace NHibernate.Caches.MemCache
 					pool.SocketTimeout = Convert.ToInt32(properties["socket_timeout"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("socket_timeout set to {0}", pool.SocketTimeout);
+						log.Debug("socket_timeout set to {0}", pool.SocketTimeout);
 					}
 				}
 				if (properties.ContainsKey("socket_connect_timeout"))
@@ -207,7 +204,7 @@ namespace NHibernate.Caches.MemCache
 					pool.SocketConnectTimeout = Convert.ToInt32(properties["socket_connect_timeout"]);
 					if (debugEnabled)
 					{
-						log.DebugFormat("socket_connect_timeout set to {0}", pool.SocketConnectTimeout);
+						log.Debug("socket_connect_timeout set to {0}", pool.SocketConnectTimeout);
 					}
 				}
 

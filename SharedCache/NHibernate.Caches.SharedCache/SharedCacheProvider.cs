@@ -36,11 +36,11 @@ namespace NHibernate.Caches.SharedCache
 	/// </summary>
 	public class SharedCacheProvider : ICacheProvider
 	{
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 
 		static SharedCacheProvider()
 		{
-			log = LoggerProvider.LoggerFor((typeof(SharedCacheProvider)));
+			log = NHibernateLogger.For(typeof(SharedCacheProvider));
 			var configs = ConfigurationManager.GetSection("sharedcache") as SharedCacheConfig[];
 		}
 
@@ -55,7 +55,7 @@ namespace NHibernate.Caches.SharedCache
 			{
 				properties = new Dictionary<string, string>();
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				var sb = new StringBuilder();
 				foreach (var de in properties)
@@ -66,7 +66,7 @@ namespace NHibernate.Caches.SharedCache
 					sb.Append(de.Value);
 					sb.Append(";");
 				}
-				log.Debug("building cache with region: " + regionName + ", properties: " + sb);
+				log.Debug("building cache with region: {0}, properties: {1}", regionName, sb);
 			}
 			return new SharedCacheClient(regionName, properties);
 		}

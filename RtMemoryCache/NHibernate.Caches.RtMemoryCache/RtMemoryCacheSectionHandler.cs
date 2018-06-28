@@ -9,7 +9,7 @@ namespace NHibernate.Caches.RtMemoryCache
 	/// </summary>
 	public class RtMemoryCacheSectionHandler : IConfigurationSectionHandler
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(RtMemoryCacheSectionHandler));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(RtMemoryCacheSectionHandler));
 
 		#region IConfigurationSectionHandler Members
 
@@ -45,7 +45,7 @@ namespace NHibernate.Caches.RtMemoryCache
 				}
 				else
 				{
-					Log.WarnFormat("Found a cache node lacking a region name: ignored. Node: {0}",
+					Log.Warn("Found a cache node lacking a region name: ignored. Node: {0}",
 						node.OuterXml);
 				}
 			}
