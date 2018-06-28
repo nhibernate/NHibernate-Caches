@@ -14,7 +14,7 @@ namespace NHibernate.Caches.EnyimMemcached
 	/// </summary>
 	public class MemCacheProvider : ICacheProvider
 	{
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 		private static MemcachedClient clientInstance;
 		private static readonly IMemcachedClientConfiguration config;
 		private static readonly object syncObject = new object();
@@ -22,7 +22,7 @@ namespace NHibernate.Caches.EnyimMemcached
 
 		static MemCacheProvider()
 		{
-			log = LoggerProvider.LoggerFor(typeof (MemCacheProvider));
+			log = NHibernateLogger.For(typeof(MemCacheProvider));
 			config = ConfigurationManager.GetSection("enyim.com/memcached") as IMemcachedClientConfiguration;
 			if (config == null)
 			{
@@ -45,7 +45,7 @@ namespace NHibernate.Caches.EnyimMemcached
 			{
 				properties = new Dictionary<string, string>();
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				var sb = new StringBuilder();
 				foreach (var pair in properties)
@@ -56,7 +56,7 @@ namespace NHibernate.Caches.EnyimMemcached
 					sb.Append(pair.Value);
 					sb.Append(";");
 				}
-				log.Debug("building cache with region: " + regionName + ", properties: " + sb);
+				log.Debug("building cache with region: {0}, properties: {1}", regionName, sb);
 			}
 			return new MemCacheClient(regionName, properties, clientInstance);
 		}

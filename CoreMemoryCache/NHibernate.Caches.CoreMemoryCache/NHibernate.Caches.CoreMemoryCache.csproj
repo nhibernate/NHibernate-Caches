@@ -10,8 +10,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* New feature
-    * #25 - Add a .Net Core MemoryCache</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
@@ -21,7 +21,6 @@
     <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.4" />
     <PackageReference Include="Microsoft.Extensions.Caching.Memory" Version="2.0.0" />
     <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>

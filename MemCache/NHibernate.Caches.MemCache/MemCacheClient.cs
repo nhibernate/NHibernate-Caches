@@ -40,7 +40,7 @@ namespace NHibernate.Caches.MemCache
 	public partial class MemCacheClient : ICache
 	{
 		internal const string PoolName = "nhibernate";
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 		[ThreadStatic] private static HashAlgorithm hasher;
 
 		[ThreadStatic] private static MD5 md5;
@@ -53,7 +53,7 @@ namespace NHibernate.Caches.MemCache
 
 		static MemCacheClient()
 		{
-			log = LoggerProvider.LoggerFor(typeof(MemCacheClient));
+			log = NHibernateLogger.For(typeof(MemCacheClient));
 		}
 
 		/// <summary>
@@ -87,46 +87,31 @@ namespace NHibernate.Caches.MemCache
 				if (properties.ContainsKey("compression_enabled"))
 				{
 					client.EnableCompression = Convert.ToBoolean(properties["compression_enabled"]);
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("compression_enabled set to {0}", client.EnableCompression);
-					}
+					log.Debug("compression_enabled set to {0}", client.EnableCompression);
 				}
 
 				var expirationString = GetExpirationString(properties);
 				if (expirationString != null)
 				{
 					expiry = Convert.ToInt32(expirationString);
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("using expiration of {0} seconds", expiry);
-					}
+					log.Debug("using expiration of {0} seconds", expiry);
 				}
 
 				if (properties.ContainsKey("regionPrefix"))
 				{
 					regionPrefix = properties["regionPrefix"];
 
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("new regionPrefix :{0}", regionPrefix);
-					}
+					log.Debug("new regionPrefix :{0}", regionPrefix);
 				}
 				else
 				{
-					if (log.IsDebugEnabled)
-					{
-						log.Debug("no regionPrefix value given, using defaults");
-					}
+					log.Debug("no regionPrefix value given, using defaults");
 				}
 
 				if (properties.ContainsKey("lingering_delete_disabled"))
 				{
 					noLingeringDelete = Convert.ToBoolean(properties["lingering_delete_disabled"]);
-					if (log.IsDebugEnabled)
-					{
-						log.DebugFormat("lingering_delete_disabled set to {0}", noLingeringDelete);
-					}
+					log.Debug("lingering_delete_disabled set to {0}", noLingeringDelete);
 				}
 			}
 		}
@@ -174,10 +159,7 @@ namespace NHibernate.Caches.MemCache
 			{
 				return null;
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("fetching object {0} from the cache", key);
-			}
+			log.Debug("fetching object {0} from the cache", key);
 			object maybeObj = client.Get(KeyAsString(key));
 			if (maybeObj == null)
 			{
@@ -210,18 +192,12 @@ namespace NHibernate.Caches.MemCache
 				throw new ArgumentNullException("value", "null value not allowed");
 			}
 
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("setting value for item {0}", key);
-			}
+			log.Debug("setting value for item {0}", key);
 			bool returnOk = client.Set(KeyAsString(key), new DictionaryEntry(GetAlternateKeyHash(key), value),
 				DateTime.Now.AddSeconds(expiry));
 			if (!returnOk)
 			{
-				if (log.IsWarnEnabled)
-				{
-					log.WarnFormat("could not save: {0} => {1}", key, value);
-				}
+				log.Warn("could not save: {0} => {1}", key, value);
 			}
 		}
 
@@ -232,10 +208,7 @@ namespace NHibernate.Caches.MemCache
 			{
 				throw new ArgumentNullException("key");
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("removing item {0}", key);
-			}
+			log.Debug("removing item {0}", key);
 
 			if (noLingeringDelete)
 				client.Delete(KeyAsString(key)); // Memcached 1.4+ does not support lingering deletes anymore

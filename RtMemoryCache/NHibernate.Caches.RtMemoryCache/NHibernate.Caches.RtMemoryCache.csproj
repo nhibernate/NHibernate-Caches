@@ -8,19 +8,15 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Bug
-    * #27 Documentation fixes
-
-* Improvement
-    * #33 - Generate XML comment documentation</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
     <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
-    <PackageReference Include="NHibernate" Version="5.0.0" />
+    <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />

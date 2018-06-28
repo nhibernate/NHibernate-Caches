@@ -8,8 +8,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
-    * #33 - Generate XML comment documentation</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
@@ -17,8 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EnyimMemcached" Version="2.12.0" />
-    <PackageReference Include="Iesi.Collections" Version="4.0.2" />
-    <PackageReference Include="NHibernate" Version="5.0.0" />
+    <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />

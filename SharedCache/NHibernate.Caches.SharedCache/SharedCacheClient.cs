@@ -35,12 +35,12 @@ namespace NHibernate.Caches.SharedCache
 	/// </summary>
 	public partial class SharedCacheClient : ICache
 	{
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 		private readonly string region;
 
 		static SharedCacheClient()
 		{
-			log = LoggerProvider.LoggerFor(typeof(SharedCacheClient));
+			log = NHibernateLogger.For(typeof(SharedCacheClient));
 		}
 
 		/// <summary>
@@ -73,10 +73,7 @@ namespace NHibernate.Caches.SharedCache
 			{
 				return null;
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("fetching object {0} from the cache", key);
-			}
+			log.Debug("fetching object {0} from the cache", key);
 
 			return IndexusDistributionCache.SharedCache.Get(key.ToString());
 		}
@@ -93,10 +90,7 @@ namespace NHibernate.Caches.SharedCache
 				throw new ArgumentNullException("value", "null value not allowed");
 			}
 
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("setting value for item {0}", key);
-			}
+			log.Debug("setting value for item {0}", key);
 
 			IndexusDistributionCache.SharedCache.Add(key.ToString(), value);
 		}
@@ -108,10 +102,7 @@ namespace NHibernate.Caches.SharedCache
 			{
 				throw new ArgumentNullException("key");
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("removing item {0}", key);
-			}
+			log.Debug("removing item {0}", key);
 
 			IndexusDistributionCache.SharedCache.Remove(key.ToString());
 		}

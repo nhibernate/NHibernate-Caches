@@ -17,14 +17,14 @@ namespace NHibernate.Caches.SysCache2
 		private static readonly Dictionary<string, CacheRegionElement> CacheRegionSettings;
 
 		/// <summary>Log4net logger.</summary>
-		private static readonly IInternalLogger Log;
+		private static readonly INHibernateLogger Log;
 
 		/// <summary>
 		/// Initializes the <see cref="SysCacheProvider"/> class.
 		/// </summary>
 		static SysCacheProvider()
 		{
-			Log = LoggerProvider.LoggerFor(typeof(SysCacheProvider));
+			Log = NHibernateLogger.For(typeof(SysCacheProvider));
 			// We need to determine which cache regions are configured in the configuration file, but we cant create the
 			// cache regions at this time because there could be nhibernate configuration values
 			// that we need for the cache regions such as connection info to be used for data dependencies. But this info
@@ -81,13 +81,10 @@ namespace NHibernate.Caches.SysCache2
 
 		private ICache BuildCache(string regionName, IDictionary<string, string> properties, CacheRegionElement settings)
 		{
-			if (Log.IsDebugEnabled)
-			{
-				Log.DebugFormat(
-					settings != null
-						? "building cache region, '{0}', from configuration"
-						: "building non-configured cache region : {0}", regionName);
-			}
+			Log.Debug(
+				settings != null
+					? "building cache region, '{0}', from configuration"
+					: "building non-configured cache region : {0}", regionName);
 			return new SysCacheRegion(regionName, settings, properties);
 		}
 

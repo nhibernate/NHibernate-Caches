@@ -49,13 +49,13 @@ namespace NHibernate.Caches.Velocity
 	public partial class VelocityClient : ICache
 	{
 		private const string CacheName = "nhibernate";
-		private static readonly IInternalLogger log;
+		private static readonly INHibernateLogger log;
 		private readonly System.Data.Caching.Cache cache;
 		private readonly string region;
 
 		static VelocityClient()
 		{
-			log = LoggerProvider.LoggerFor(typeof(VelocityClient));
+			log = NHibernateLogger.For(typeof(VelocityClient));
 		}
 
 		/// <summary>
@@ -95,10 +95,7 @@ namespace NHibernate.Caches.Velocity
 			{
 				return null;
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("fetching object {0} from the cache", key);
-			}
+			log.Debug("fetching object {0} from the cache", key);
 
 			CacheItemVersion version = null;
 			return cache.Get(region, key.ToString(), ref version);
@@ -116,10 +113,7 @@ namespace NHibernate.Caches.Velocity
 				throw new ArgumentNullException("value", "null value not allowed");
 			}
 
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("setting value for item {0}", key);
-			}
+			log.Debug("setting value for item {0}", key);
 
 			cache.Put(region, key.ToString(), value, null, null);
 		}
@@ -131,10 +125,7 @@ namespace NHibernate.Caches.Velocity
 			{
 				throw new ArgumentNullException("key");
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.DebugFormat("removing item {0}", key);
-			}
+			log.Debug("removing item {0}", key);
 
 			if (Get(key.ToString()) != null)
 			{

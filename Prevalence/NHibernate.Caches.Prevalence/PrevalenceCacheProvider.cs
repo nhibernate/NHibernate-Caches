@@ -14,7 +14,7 @@ namespace NHibernate.Caches.Prevalence
 	/// </summary>
 	public class PrevalenceCacheProvider : ICacheProvider
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor((typeof(PrevalenceCacheProvider)));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PrevalenceCacheProvider));
 		private string dataDir;
 		private PrevalenceEngine engine;
 		private CacheSystem system;
@@ -37,7 +37,7 @@ namespace NHibernate.Caches.Prevalence
 			{
 				properties = new Dictionary<string, string>();
 			}
-			if (log.IsDebugEnabled)
+			if (log.IsDebugEnabled())
 			{
 				var sb = new StringBuilder();
 				foreach (var de in properties)
@@ -48,7 +48,7 @@ namespace NHibernate.Caches.Prevalence
 					sb.Append(de.Value);
 					sb.Append(";");
 				}
-				log.Debug(string.Format("building cache with region: {0}, properties: {1}", regionName, sb));
+				log.Debug("building cache with region: {0}, properties: {1}", regionName, sb);
 			}
 			dataDir = GetDataDirFromConfig(regionName, properties);
 			if (system == null)
@@ -120,10 +120,7 @@ namespace NHibernate.Caches.Prevalence
 					{
 						string regionPrefix = properties["regionPrefix"];
 
-						if (log.IsDebugEnabled)
-						{
-							log.DebugFormat("new regionPrefix :{0}", regionPrefix);
-						}
+						log.Debug("new regionPrefix :{0}", regionPrefix);
 
 						dataDir = Path.Combine(dataDir, regionPrefix);
 					}
@@ -131,16 +128,10 @@ namespace NHibernate.Caches.Prevalence
 			}
 			if (Directory.Exists(dataDir) == false)
 			{
-				if (log.IsDebugEnabled)
-				{
-					log.Debug(String.Format("Data directory {0} doesn't exist: creating it.", dataDir));
-				}
+				log.Debug("Data directory {0} doesn't exist: creating it.", dataDir);
 				Directory.CreateDirectory(dataDir);
 			}
-			if (log.IsDebugEnabled)
-			{
-				log.Debug(String.Format("configuring cache in {0}.", dataDir));
-			}
+			log.Debug("configuring cache in {0}.", dataDir);
 			return dataDir;
 		}
 	}

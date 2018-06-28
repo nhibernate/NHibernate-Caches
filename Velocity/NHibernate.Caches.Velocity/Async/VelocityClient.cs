@@ -81,10 +81,7 @@ namespace NHibernate.Caches.Velocity
 			return InternalRemoveAsync();
 			async Task InternalRemoveAsync()
 			{
-				if (log.IsDebugEnabled)
-				{
-					log.DebugFormat("removing item {0}", key);
-				}
+				log.Debug("removing item {0}", key);
 
 				if (await (GetAsync(key.ToString(), cancellationToken)).ConfigureAwait(false) != null)
 				{

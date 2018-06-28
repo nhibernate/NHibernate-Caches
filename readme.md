@@ -20,6 +20,11 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.4 for NHibernate 5.1.0
+
+* Task
+    * #46 - Update NHibernate to 5.1.0
+
 #### Build 5.3.2 for NHibernate 5.0.0/5.1.0
 
 * Bug

@@ -35,7 +35,7 @@ namespace NHibernate.Caches.SysCache
 	/// </summary>
 	public partial class SysCache : ICache
 	{
-		private static readonly IInternalLogger Log = LoggerProvider.LoggerFor(typeof(SysCache));
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(SysCache));
 		private string _regionPrefix;
 		private readonly System.Web.Caching.Cache _cache;
 
@@ -119,10 +119,7 @@ namespace NHibernate.Caches.SysCache
 		{
 			if (props == null)
 			{
-				if (Log.IsWarnEnabled)
-				{
-					Log.Warn("configuring cache with default values");
-				}
+				Log.Warn("configuring cache with default values");
 				Expiration = DefaultExpiration;
 				UseSlidingExpiration = _defaultUseSlidingExpiration;
 				Priority = CacheItemPriority.Default;
@@ -141,7 +138,7 @@ namespace NHibernate.Caches.SysCache
 		{
 			if (props.TryGetValue("regionPrefix", out var result))
 			{
-				Log.DebugFormat("new regionPrefix: {0}", result);
+				Log.Debug("new regionPrefix: {0}", result);
 			}
 			else
 			{
@@ -165,20 +162,17 @@ namespace NHibernate.Caches.SysCache
 				{
 					var seconds = Convert.ToInt32(expirationString);
 					result = TimeSpan.FromSeconds(seconds);
-					Log.DebugFormat("new expiration value: {0}", seconds);
+					Log.Debug("new expiration value: {0}", seconds);
 				}
 				catch (Exception ex)
 				{
-					Log.ErrorFormat("error parsing expiration value '{0}'", expirationString);
+					Log.Error("error parsing expiration value '{0}'", expirationString);
 					throw new ArgumentException($"could not parse expiration '{expirationString}' as a number of seconds", ex);
 				}
 			}
 			else
 			{
-				if (Log.IsDebugEnabled)
-				{
-					Log.Debug("no expiration value given, using defaults");
-				}
+				Log.Debug("no expiration value given, using defaults");
 			}
 			return result;
 		}
@@ -186,7 +180,7 @@ namespace NHibernate.Caches.SysCache
 		private static bool GetUseSlidingExpiration(IDictionary<string, string> props)
 		{
 			var sliding = PropertiesHelper.GetBoolean("cache.use_sliding_expiration", props, _defaultUseSlidingExpiration);
-			Log.DebugFormat("Use sliding expiration value: {0}", sliding);
+			Log.Debug("Use sliding expiration value: {0}", sliding);
 			return sliding;
 		}
 
@@ -196,7 +190,7 @@ namespace NHibernate.Caches.SysCache
 			if (props.TryGetValue("priority", out var priorityString))
 			{
 				result = ConvertCacheItemPriorityFromXmlString(priorityString);
-				Log.DebugFormat("new priority: {0}", result);
+				Log.Debug("new priority: {0}", result);
 			}
 			return result;
 		}
@@ -237,7 +231,7 @@ namespace NHibernate.Caches.SysCache
 						return CacheItemPriority.NotRemovable;
 				}
 			}
-			Log.ErrorFormat("priority value out of range: {0}", priorityString);
+			Log.Error("priority value out of range: {0}", priorityString);
 			throw new IndexOutOfRangeException("Priority must be a valid System.Web.Caching.CacheItemPriority; was: " +
 				priorityString);
 		}
@@ -255,7 +249,7 @@ namespace NHibernate.Caches.SysCache
 				return null;
 			}
 			var cacheKey = GetCacheKey(key);
-			Log.DebugFormat("Fetching object '{0}' from the cache.", cacheKey);
+			Log.Debug("Fetching object '{0}' from the cache.", cacheKey);
 
 			var obj = _cache.Get(cacheKey);
 			if (obj == null)
@@ -281,14 +275,14 @@ namespace NHibernate.Caches.SysCache
 			var cacheKey = GetCacheKey(key);
 			if (_cache[cacheKey] != null)
 			{
-				Log.DebugFormat("updating value of key '{0}' to '{1}'.", cacheKey, value);
+				Log.Debug("updating value of key '{0}' to '{1}'.", cacheKey, value);
 
 				// Remove the key to re-add it again below
 				_cache.Remove(cacheKey);
 			}
 			else
 			{
-				Log.DebugFormat("adding new data: key={0}&value={1}", cacheKey, value);
+				Log.Debug("adding new data: key={0}&value={1}", cacheKey, value);
 			}
 
 			if (!_rootCacheKeyStored)
@@ -314,7 +308,7 @@ namespace NHibernate.Caches.SysCache
 				throw new ArgumentNullException(nameof(key));
 			}
 			var cacheKey = GetCacheKey(key);
-			Log.DebugFormat("removing item with key: {0}", cacheKey);
+			Log.Debug("removing item with key: {0}", cacheKey);
 			_cache.Remove(cacheKey);
 		}
 

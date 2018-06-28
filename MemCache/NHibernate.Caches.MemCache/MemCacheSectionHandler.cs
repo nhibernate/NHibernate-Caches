@@ -36,7 +36,7 @@ namespace NHibernate.Caches.MemCache
 	/// </summary>
 	public class MemCacheSectionHandler : IConfigurationSectionHandler
 	{
-		private static readonly IInternalLogger log = LoggerProvider.LoggerFor((typeof(MemCacheSectionHandler)));
+		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(MemCacheSectionHandler));
 
 		#region IConfigurationSectionHandler Members
 
@@ -60,10 +60,7 @@ namespace NHibernate.Caches.MemCache
 					XmlAttribute w = node.Attributes["weight"];
 					if (h == null || p == null)
 					{
-						if (log.IsWarnEnabled)
-						{
-							log.Warn("incomplete node found - each memcached element must have a 'host' and a 'port' attribute.");
-						}
+						log.Warn("incomplete node found - each memcached element must have a 'host' and a 'port' attribute.");
 						continue;
 					}
 					string host = h.Value;
