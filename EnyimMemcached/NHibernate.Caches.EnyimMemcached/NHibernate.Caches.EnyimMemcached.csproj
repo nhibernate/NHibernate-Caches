@@ -8,8 +8,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
-    * #33 - Generate XML comment documentation</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />

@@ -8,8 +8,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Bug
-    * #40 NullReferenceException in SysCache2's SysCacheProvider</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />

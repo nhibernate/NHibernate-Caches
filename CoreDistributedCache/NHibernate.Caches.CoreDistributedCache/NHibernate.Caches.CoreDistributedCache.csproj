@@ -10,8 +10,8 @@ This provider is not bound to a specific implementation and require a cache fact
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* New feature
-    * #28 - Add a .Net Core DistributedCache</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
