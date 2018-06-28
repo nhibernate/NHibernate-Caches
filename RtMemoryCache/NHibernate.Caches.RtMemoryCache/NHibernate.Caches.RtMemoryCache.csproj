@@ -4,12 +4,15 @@
     <Product>NHibernate.Caches.RtMemoryCache</Product>
     <Title>NHibernate.Caches.RtMemoryCache</Title>
     <Description>Cache provider for NHibernate using MemoryCache (System.Runtime.Caching).</Description>
-    <TargetFramework>net461</TargetFramework>
+    <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* Bug
     * #48 - Avoid undue cache misses
+
+* New Feature
+    * #38 - Add a Core RtMemoryCache
 
 * Task
     * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
@@ -21,9 +24,13 @@
   <ItemGroup>
     <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
     <Reference Include="System.Configuration" />
     <Reference Include="System.Runtime.Caching" />
+  </ItemGroup>
+  <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
+    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="../../readme.md">

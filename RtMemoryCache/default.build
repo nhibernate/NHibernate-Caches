@@ -19,6 +19,7 @@
     <property name="test.project" value="RtMemoryCache" />
     <property name="test.file" value="NHibernate.Caches.RtMemoryCache.Tests" />
     <call target="common.run-tests" />
+    <call target="common.run-core-tests" />
   </target>
 
   <target name="clean">

@@ -27,6 +27,7 @@ It's recommended to research for a while before deciding which one is better for
 
 * New feature
     * #47 - Add an option for appending hashcode to key
+    * #38 - Add a Core RtMemoryCache
 
 * Task
     * #46 - Update NHibernate to 5.1.0

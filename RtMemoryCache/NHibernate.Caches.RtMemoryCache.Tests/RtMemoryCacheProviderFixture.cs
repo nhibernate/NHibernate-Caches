@@ -34,12 +34,6 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 	[TestFixture]
 	public class RtMemoryCacheProviderFixture : CacheProviderFixture
 	{
-		protected override void Configure(Dictionary<string, string> defaultProperties)
-		{
-			XmlConfigurator.Configure();
-			base.Configure(defaultProperties);
-		}
-
 		protected override Func<ICacheProvider> ProviderBuilder =>
 			() => new RtMemoryCacheProvider();
 
