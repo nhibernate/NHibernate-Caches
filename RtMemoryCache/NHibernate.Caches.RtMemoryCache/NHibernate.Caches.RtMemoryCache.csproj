@@ -11,6 +11,9 @@
     <PackageReleaseNotes>* Bug
     * #48 - Avoid undue cache misses
 
+* New Feature
+    * #38 - Add a Core RtMemoryCache
+
 * Task
     * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
   </PropertyGroup>
@@ -26,8 +29,8 @@
     <Reference Include="System.Runtime.Caching" />
   </ItemGroup>
   <ItemGroup Condition=" '$(TargetFramework)' == 'netstandard2.0' ">
-    <PackageReference Include="System.Runtime.Caching" Version="4.5.0-preview2-26406-04" />
-    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0-preview2-26406-04" />
+    <PackageReference Include="System.Runtime.Caching" Version="4.5.0" />
+    <PackageReference Include="System.Configuration.ConfigurationManager" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="../../readme.md">
