@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../NHibernate.Caches.props" />
+  <PropertyGroup>
+    <Product>NHibernate.Caches.Util.JsonSerializer.Tests</Product>
+    <Description>Unit tests for json serializer.</Description>
+    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <IsTestProject>true</IsTestProject>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+    <OutputType>Exe</OutputType>
+    <GenerateProgramFile>false</GenerateProgramFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj" />
+    <ProjectReference Include="..\NHibernate.Caches.Util.JsonSerializer\NHibernate.Caches.Util.JsonSerializer.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.8" />
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+    <PackageReference Include="NUnitLite" Version="3.9.0" />
+  </ItemGroup>
+</Project>

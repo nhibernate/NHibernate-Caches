@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../NHibernate.Caches.props" />
+  <PropertyGroup>
+    <Product>NHibernate.Caches.Common</Product>
+    <Title>NHibernate.Caches.Common</Title>
+    <Description>Common types of NHibernate.Caches providers.</Description>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="NHibernate" Version="5.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../readme.md">
+      <PackagePath>./NHibernate.Caches.readme.md</PackagePath>
+    </Content>
+    <Content Include="../LICENSE.txt">
+      <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
+    </Content>
+  </ItemGroup>
+</Project>

@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <Import Project="../../NHibernate.Caches.props" />
+  <PropertyGroup>
+    <Product>NHibernate.Caches.Util.JsonSerializer</Product>
+    <Title>NHibernate.Caches.Util.JsonSerializer</Title>
+    <Description>Json.NET serializer for distributed NHibernate.Caches providers.</Description>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
+    <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NHibernate.Caches.Common\NHibernate.Caches.Common.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="../../readme.md">
+      <PackagePath>./NHibernate.Caches.readme.md</PackagePath>
+    </Content>
+    <Content Include="../../LICENSE.txt">
+      <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
+    </Content>
+  </ItemGroup>
+</Project>
