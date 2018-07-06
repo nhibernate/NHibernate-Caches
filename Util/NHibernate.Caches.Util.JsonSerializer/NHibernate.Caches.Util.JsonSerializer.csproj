@@ -14,6 +14,7 @@
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
+    <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\NHibernate.Caches.Common\NHibernate.Caches.Common.csproj" />

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project
+    name="NHibernate.Caches.Commmon"
+    default="common.compile-all"
+    description="Common types of NHibernate.Caches providers."
+    xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+  <property name="root.dir" value=".." />
+  <include buildfile="${root.dir}/buildcommon.xml" />
+
+  <target name="prepare-bin-pack-specific" />
+
+  <!-- .Net Core projects are released only through NuGet -->
+  <target name="bin-pack" />
+
+  <target name="test" depends="init">
+    <property name="test.project" value="" />
+    <property name="test.file" value="NHibernate.Caches.Common.Tests" />
+    <call target="common.run-tests" />
+    <call target="common.run-core-tests" />
+  </target>
+
+  <target name="clean">
+    <property name="clean.project" value="Common" />
+    <delete dir="${root.dir}/NHibernate.Caches.${clean.project}/bin" failonerror="false" />
+    <delete dir="${root.dir}/NHibernate.Caches.${clean.project}/obj" failonerror="false" />
+    <delete dir="${root.dir}/NHibernate.Caches.${clean.project}.Tests/bin" failonerror="false" />
+    <delete dir="${root.dir}/NHibernate.Caches.${clean.project}.Tests/obj" failonerror="false" />
+  </target>
+</project>
