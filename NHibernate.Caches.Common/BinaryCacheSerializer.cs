@@ -4,10 +4,10 @@ using System.Runtime.Serialization.Formatters.Binary;
 namespace NHibernate.Caches.Common
 {
 	/// <inheritdoc />
-	public class BinaryCacheSerializer : ICacheSerializer
+	public class BinaryCacheSerializer : CacheSerializerBase
 	{
 		/// <inheritdoc />
-		public byte[] Serialize(object value)
+		public override byte[] Serialize(object value)
 		{
 			var serializer = new BinaryFormatter();
 			using (var stream = new MemoryStream())
@@ -18,7 +18,7 @@ namespace NHibernate.Caches.Common
 		}
 
 		/// <inheritdoc />
-		public object Deserialize(byte[] value)
+		public override object Deserialize(byte[] value)
 		{
 			var serializer = new BinaryFormatter();
 			using (var stream = new MemoryStream(value))

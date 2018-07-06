@@ -7,22 +7,22 @@ using System.Threading.Tasks;
 namespace NHibernate.Caches.Common
 {
 	/// <summary>
-	/// Defines methods for serializing objects that will be stored in a distributed cache.
+	/// Base class for serializing objects that will be stored in a distributed cache.
 	/// </summary>
-	public interface ICacheSerializer
+	public abstract class CacheSerializerBase
 	{
 		/// <summary>
 		/// Serialize the object.
 		/// </summary>
 		/// <param name="value">The object to serialize.</param>
 		/// <returns>The serialized object.</returns>
-		byte[] Serialize(object value);
+		public abstract byte[] Serialize(object value);
 
 		/// <summary>
 		/// Deserialize the object.
 		/// </summary>
 		/// <param name="data">The data of the object to deserialize.</param>
 		/// <returns>The deserialized object.</returns>
-		object Deserialize(byte[] data);
+		public abstract object Deserialize(byte[] data);
 	}
 }

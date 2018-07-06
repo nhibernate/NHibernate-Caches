@@ -10,6 +10,6 @@ namespace NHibernate.Caches.Common.Tests
 	[TestFixture]
 	public class BinaryCacheSerializerFixture : CacheSerializerFixture
 	{
-		protected override Func<ICacheSerializer> SerializerProvider => () => new BinaryCacheSerializer();
+		protected override Func<CacheSerializerBase> SerializerProvider => () => new BinaryCacheSerializer();
 	}
 }

@@ -24,7 +24,7 @@ namespace NHibernate.Caches.Util.JsonSerializer
 	/// not yield only basic value types or array of them, their return type has to be registered explicitly
 	/// by <see cref="RegisterType(System.Type, string)"/> method.
 	/// </summary>
-	public class JsonCacheSerializer : ICacheSerializer
+	public class JsonCacheSerializer : CacheSerializerBase
 	{
 		private const string TypeMetadataName = "$type";
 		private const string ShortTypeMetadataName = "$t";
@@ -151,7 +151,7 @@ namespace NHibernate.Caches.Util.JsonSerializer
 		}
 
 		/// <inheritdoc />
-		public object Deserialize(byte[] value)
+		public override object Deserialize(byte[] value)
 		{
 			using (var reader = new CustomJsonTextReader(new StringReader(Encoding.UTF8.GetString(value))))
 			{
@@ -160,7 +160,7 @@ namespace NHibernate.Caches.Util.JsonSerializer
 		}
 
 		/// <inheritdoc />
-		public byte[] Serialize(object value)
+		public override byte[] Serialize(object value)
 		{
 			using (var stringWriter = new StringWriter(new StringBuilder(256), CultureInfo.InvariantCulture))
 			using (var writer = new CustomJsonTextWriter(stringWriter))

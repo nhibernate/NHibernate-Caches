@@ -20,9 +20,9 @@ namespace NHibernate.Caches.Common.Tests
 	[TestFixture]
 	public abstract class CacheSerializerFixture
 	{
-		protected abstract Func<ICacheSerializer> SerializerProvider { get; }
+		protected abstract Func<CacheSerializerBase> SerializerProvider { get; }
 
-		protected ICacheSerializer DefaultSerializer { get; private set; }
+		protected CacheSerializerBase DefaultSerializer { get; private set; }
 
 		[OneTimeSetUp]
 		public void FixtureSetup()

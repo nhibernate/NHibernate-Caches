@@ -16,7 +16,7 @@ namespace NHibernate.Caches.Util.JsonSerializer.Tests
 	[TestFixture]
 	public class JsonCacheSerializerFixture : CacheSerializerFixture
 	{
-		protected override Func<ICacheSerializer> SerializerProvider => CreateDefaultSerializer;
+		protected override Func<CacheSerializerBase> SerializerProvider => CreateDefaultSerializer;
 
 		[Test]
 		public void TestStrictSerialization()
@@ -26,68 +26,7 @@ namespace NHibernate.Caches.Util.JsonSerializer.Tests
 				"Non standard types should be registered explicitly");
 		}
 
-		[Test]
-		public void TestAliasNames()
-		{
-			var original = new object[]
-			{
-				(short) 1,
-				(ushort) 2,
-				3,
-				(uint) 4,
-				(long) 5,
-				(ulong) 6,
-				(sbyte) 7,
-				(byte) 8,
-				9.1m,
-				10.2f,
-				11.3,
-				Guid.Empty,
-				'a',
-				TimeSpan.FromTicks(1234),
-				DateTimeOffset.FromUnixTimeSeconds(100),
-				new DateTime(2000, 1, 1, 0, 0, 0, DateTimeKind.Utc),
-				new byte[] {12},
-				new List<object>{13},
-				new Hashtable{{14, 14}},
-				// TODO: add missing NH types when upgraded to 5.2
-				new UnfetchedLazyProperty(),
-				new UnknownBackrefProperty()
-			};
-			var expectedJson =
-				"{\"$t\":\"oa\",\"$vs\":[" +
-					"{\"$t\":\"s\",\"$v\":1}," +
-					"{\"$t\":\"us\",\"$v\":2}," +
-					"{\"$t\":\"i\",\"$v\":3}," +
-					"{\"$t\":\"ui\",\"$v\":4}," +
-					"5," +
-					"{\"$t\":\"ul\",\"$v\":6}," +
-					"{\"$t\":\"sb\",\"$v\":7}," +
-					"{\"$t\":\"b\",\"$v\":8}," +
-					"{\"$t\":\"d\",\"$v\":9.1}," +
-					"{\"$t\":\"f\",\"$v\":10.2}," +
-					"11.3," +
-					"{\"$t\":\"g\",\"$v\":\"00000000-0000-0000-0000-000000000000\"}," +
-					"{\"$t\":\"c\",\"$v\":\"a\"}," +
-					"{\"$t\":\"ts\",\"$v\":\"00:00:00.0001234\"}," +
-					"{\"$t\":\"do\",\"$v\":\"1970-01-01T00:01:40+00:00\"}," +
-					"\"2000-01-01T00:00:00Z\"," +
-					"{\"$t\":\"ba\",\"$v\":\"DA==\"}," +
-					"{\"$t\":\"lo\",\"$vs\":[{\"$t\":\"i\",\"$v\":13}]}," +
-					"{\"$t\":\"ht\",\"i:14\":{\"$t\":\"i\",\"$v\":14}}," +
-					"{\"$t\":\"up\"}," +
-					"{\"$t\":\"ub\"}" +
-				"]}";
-			var data = DefaultSerializer.Serialize(original);
-			var json = Encoding.UTF8.GetString(data);
-			Assert.That(json, Is.EqualTo(expectedJson));
-
-			var copy = DefaultSerializer.Deserialize(data);
-
-			AssertEqual(original, copy);
-		}
-
-		private ICacheSerializer CreateDefaultSerializer()
+		private CacheSerializerBase CreateDefaultSerializer()
 		{
 			var serializer = new JsonCacheSerializer();
 			serializer.RegisterType(typeof(CustomEntity), "cue");
