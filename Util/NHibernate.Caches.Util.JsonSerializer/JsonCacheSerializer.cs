@@ -284,16 +284,17 @@ namespace NHibernate.Caches.Util.JsonSerializer
 		/// Instead, the <see cref="OnDeserialized"/> method should be appended to the <see cref="JsonContract.OnDeserializedCallbacks"/>
 		/// of the <see cref="Hashtable"/> <see cref="JsonContract"/>.
 		/// </summary>
-		private class HashtableConverter : JsonConverter<Hashtable>
+		private class HashtableConverter : JsonConverter
 		{
 			/// <inheritdoc />
-			public override void WriteJson(JsonWriter writer, Hashtable value, Serializer serializer)
+			public override void WriteJson(JsonWriter writer, object value, Serializer serializer)
 			{
 				writer.WriteStartObject();
 				writer.WritePropertyName(ShortTypeMetadataName);
 				writer.WriteValue(TypeAliases[typeof(Hashtable)]);
 
-				foreach (DictionaryEntry entry in value)
+				var hashtable = (Hashtable) value;
+				foreach (DictionaryEntry entry in hashtable)
 				{
 					var type = entry.Key.GetType();
 					if (type == typeof(string))
@@ -314,10 +315,17 @@ namespace NHibernate.Caches.Util.JsonSerializer
 			}
 
 			/// <inheritdoc />
-			public override Hashtable ReadJson(JsonReader reader, System.Type objectType, Hashtable existingValue, bool hasExistingValue,
-				Serializer serializer)
+			public override bool CanRead => false;
+
+			/// <inheritdoc />
+			public override object ReadJson(JsonReader reader, System.Type objectType, object existingValue, Serializer serializer)
 			{
 				throw new NotSupportedException();
+			}
+
+			public override bool CanConvert(System.Type objectType)
+			{
+				return typeof(Hashtable) == objectType;
 			}
 
 			public static void OnDeserialized(object o, Serializer serializer)
@@ -344,9 +352,6 @@ namespace NHibernate.Caches.Util.JsonSerializer
 					hashtable.Remove(key);
 				}
 			}
-
-			/// <inheritdoc />
-			public override bool CanRead => false;
 		}
 
 		/// <summary>
