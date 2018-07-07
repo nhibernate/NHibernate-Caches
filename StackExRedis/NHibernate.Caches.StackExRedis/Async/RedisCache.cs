@@ -92,13 +92,20 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public Task LockAsync(object key, CancellationToken cancellationToken)
+		Task ICache.LockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return RegionStrategy.LockAsync(key, cancellationToken);
+			return LockAsync(key, cancellationToken);
+		}
+
+		/// <inheritdoc />
+		public async Task<object> LockAsync(object key, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return await (RegionStrategy.LockAsync(key, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <inheritdoc />
@@ -109,13 +116,30 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+		public Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return RegionStrategy.UnlockAsync(key, cancellationToken);
+			try
+			{
+				return RegionStrategy.UnlockAsync(key, (string)lockValue, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		/// <inheritdoc />
+		Task ICache.UnlockAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			return UnlockAsync(key, null, cancellationToken);
 		}
 
 		/// <inheritdoc />

@@ -35,22 +35,6 @@ namespace NHibernate.Caches.StackExRedis
 		private readonly RedisKeyLocker _keyLocker;
 
 		/// <summary>
-		/// With the current NHibernate version (5.1) the <see cref="ICache.Lock"/> method does not have a
-		/// return value that would indicate which lock value was used to lock the key, that would then be
-		/// passed to the <see cref="ICache.Unlock"/> method in order to prevent unlocking keys that were locked
-		/// by others. Luckily, the <see cref="ICache.Lock"/> and <see cref="ICache.Unlock"/> methods are currently
-		/// always called inside a lock statement which we abuse by storing the locked key when the
-		/// <see cref="ICache.Lock"/> is called and use it when <see cref="ICache.Unlock"/> is called. This
-		/// means that our <see cref="Lock"/> and <see cref="Unlock"/> are not thread safe and have to be called
-		/// sequentially in order prevent overriding the lock key for a given key.
-		/// Currently, the <see cref="ICache.Unlock"/> is always called after the <see cref="ICache.Lock"/> method
-		/// even if an exception occurs which we are also abusing in order to avoid having a special mechanism to 
-		/// clear the dictionary in order to prevent memory leaks.
-		/// </summary>
-		private readonly ConcurrentDictionary<string, string> _acquiredKeyLocks = new ConcurrentDictionary<string, string>();
-
-
-		/// <summary>
 		/// The constructor for creating the region strategy.
 		/// </summary>
 		/// <param name="connectionMultiplexer">The Redis connection.</param>
@@ -405,17 +389,7 @@ namespace NHibernate.Caches.StackExRedis
 
 			var cacheKey = GetCacheKey(key);
 			Log.Debug("Locking object with key: '{0}'.", cacheKey);
-			var lockValue = _keyLocker.Lock(cacheKey, LockScript, GetAdditionalKeys(), GetAdditionalValues());
-
-			_acquiredKeyLocks.AddOrUpdate(cacheKey, _ => lockValue, (_, currValue) =>
-			{
-				Log.Warn(
-					$"Calling {nameof(Lock)} method for key:'{cacheKey}' that was already locked. " +
-					$"{nameof(Unlock)} method must be called after each {nameof(Lock)} call for " +
-					$"the same key prior calling {nameof(Lock)} again with the same key.");
-				return lockValue;
-			});
-			return lockValue;
+			return _keyLocker.Lock(cacheKey, LockScript, GetAdditionalKeys(), GetAdditionalValues());
 		}
 
 		/// <summary>
@@ -450,8 +424,9 @@ namespace NHibernate.Caches.StackExRedis
 		/// Unlocks the key.
 		/// </summary>
 		/// <param name="key">The key to unlock.</param>
+		/// <param name="lockValue">The value used to lock the key.</param>
 		/// <returns>Whether the key was unlocked</returns>
-		public virtual bool Unlock(object key)
+		public virtual bool Unlock(object key, string lockValue)
 		{
 			if (key == null)
 			{
@@ -460,14 +435,6 @@ namespace NHibernate.Caches.StackExRedis
 
 			var cacheKey = GetCacheKey(key);
 			Log.Debug("Unlocking object with key: '{0}'.", cacheKey);
-
-			if (!_acquiredKeyLocks.TryRemove(cacheKey, out var lockValue))
-			{
-				Log.Warn(
-					$"Calling {nameof(Unlock)} method for key:'{cacheKey}' that was not locked with {nameof(Lock)} method before.");
-				return false;
-			}
-
 			var unlocked = _keyLocker.Unlock(cacheKey, lockValue, UnlockScript, GetAdditionalKeys(), GetAdditionalValues());
 			Log.Debug("Unlock key '{0}' result: {1}", cacheKey, unlocked);
 			return unlocked;
@@ -477,7 +444,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// Unlocks many keys at once.
 		/// </summary>
 		/// <param name="keys">The keys to unlock.</param>
-		/// <param name="lockValue">The value used to lock the keys</param>
+		/// <param name="lockValue">The value used to lock the keys.</param>
 		/// <returns>The number of unlocked keys.</returns>
 		public virtual int UnlockMany(object[] keys, string lockValue)
 		{

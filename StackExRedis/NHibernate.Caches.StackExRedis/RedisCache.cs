@@ -85,9 +85,15 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		void ICache.Lock(object key)
 		{
-			RegionStrategy.Lock(key);
+			Lock(key);
+		}
+
+		/// <inheritdoc />
+		public object Lock(object key)
+		{
+			return RegionStrategy.Lock(key);
 		}
 
 		/// <inheritdoc />
@@ -97,9 +103,15 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
+		public void Unlock(object key, object lockValue)
 		{
-			RegionStrategy.Unlock(key);
+			RegionStrategy.Unlock(key, (string)lockValue);
+		}
+
+		/// <inheritdoc />
+		void ICache.Unlock(object key)
+		{
+			Unlock(key, null);
 		}
 
 		/// <inheritdoc />

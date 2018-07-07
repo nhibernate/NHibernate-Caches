@@ -321,23 +321,16 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return Task.FromCanceled<string>(cancellationToken);
 			}
-			return InternalLockAsync();
-			async Task<string> InternalLockAsync()
+			try
 			{
 
 				var cacheKey = GetCacheKey(key);
 				Log.Debug("Locking object with key: '{0}'.", cacheKey);
-				var lockValue = await (_keyLocker.LockAsync(cacheKey, LockScript, GetAdditionalKeys(), GetAdditionalValues(), cancellationToken)).ConfigureAwait(false);
-
-				_acquiredKeyLocks.AddOrUpdate(cacheKey, _ => lockValue, (_, currValue) =>
-				{
-					Log.Warn(
-					$"Calling {nameof(LockAsync)} method for key:'{cacheKey}' that was already locked. " +
-					$"{nameof(UnlockAsync)} method must be called after each {nameof(LockAsync)} call for " +
-					$"the same key prior calling {nameof(LockAsync)} again with the same key.");
-					return lockValue;
-				});
-				return lockValue;
+				return _keyLocker.LockAsync(cacheKey, LockScript, GetAdditionalKeys(), GetAdditionalValues(), cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<string>(ex);
 			}
 		}
 
@@ -385,9 +378,10 @@ namespace NHibernate.Caches.StackExRedis
 		/// Unlocks the key.
 		/// </summary>
 		/// <param name="key">The key to unlock.</param>
+		/// <param name="lockValue">The value used to lock the key.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>Whether the key was unlocked</returns>
-		public virtual Task<bool> UnlockAsync(object key, CancellationToken cancellationToken)
+		public virtual Task<bool> UnlockAsync(object key, string lockValue, CancellationToken cancellationToken)
 		{
 			if (key == null)
 			{
@@ -403,14 +397,6 @@ namespace NHibernate.Caches.StackExRedis
 
 				var cacheKey = GetCacheKey(key);
 				Log.Debug("Unlocking object with key: '{0}'.", cacheKey);
-
-				if (!_acquiredKeyLocks.TryRemove(cacheKey, out var lockValue))
-				{
-					Log.Warn(
-					$"Calling {nameof(UnlockAsync)} method for key:'{cacheKey}' that was not locked with {nameof(LockAsync)} method before.");
-					return false;
-				}
-
 				var unlocked = await (_keyLocker.UnlockAsync(cacheKey, lockValue, UnlockScript, GetAdditionalKeys(), GetAdditionalValues(), cancellationToken)).ConfigureAwait(false);
 				Log.Debug("Unlock key '{0}' result: {1}", cacheKey, unlocked);
 				return unlocked;
@@ -421,7 +407,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// Unlocks many keys at once.
 		/// </summary>
 		/// <param name="keys">The keys to unlock.</param>
-		/// <param name="lockValue">The value used to lock the keys</param>
+		/// <param name="lockValue">The value used to lock the keys.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The number of unlocked keys.</returns>
 		public virtual Task<int> UnlockManyAsync(object[] keys, string lockValue, CancellationToken cancellationToken)

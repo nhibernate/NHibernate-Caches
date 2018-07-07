@@ -182,12 +182,12 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public override async Task<bool> UnlockAsync(object key, CancellationToken cancellationToken)
+		public override async Task<bool> UnlockAsync(object key, string lockValue, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			try
 			{
-				return await (base.UnlockAsync(key, cancellationToken)).ConfigureAwait(false);
+				return await (base.UnlockAsync(key, lockValue, cancellationToken)).ConfigureAwait(false);
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{

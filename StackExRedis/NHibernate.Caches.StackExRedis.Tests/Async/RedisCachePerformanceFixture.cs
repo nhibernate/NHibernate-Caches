@@ -84,8 +84,8 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		{
 			return TestOperationAsync("Lock/Unlock", true, async (cache, key, _) =>
 			{
-				await (cache.LockAsync(key, CancellationToken.None));
-				await (cache.UnlockAsync(key, CancellationToken.None));
+				var value = await (cache.LockAsync(key, CancellationToken.None));
+				await (cache.UnlockAsync(key, value, CancellationToken.None));
 			});
 		}
 

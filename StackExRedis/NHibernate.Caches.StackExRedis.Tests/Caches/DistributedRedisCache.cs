@@ -83,19 +83,23 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		{
 			// A simple locking that requires all instances to obtain the lock
 			// A real distributed cache should use something like the Redlock algorithm.
+			var lockValues = new string[_regionStrategies.Length];
 			try
 			{
-				foreach (var strategy in _regionStrategies)
+				for (var i = 0; i < _regionStrategies.Length; i++)
 				{
-					strategy.Lock(key);
+					lockValues[i] = _regionStrategies[i].Lock(key);
 				}
-
 			}
 			catch (CacheException)
 			{
-				foreach (var strategy in _regionStrategies)
+				for (var i = 0; i < _regionStrategies.Length; i++)
 				{
-					strategy.Unlock(key);
+					if (lockValues[i] == null)
+					{
+						continue;
+					}
+					_regionStrategies[i].Unlock(key, lockValues[i]);
 				}
 				throw;
 			}
@@ -106,7 +110,8 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		{
 			foreach (var strategy in _regionStrategies)
 			{
-				strategy.Unlock(key);
+				// TODO: use the lockValue when upgrading to NH 5.2
+				strategy.Unlock(key, null);
 			}
 		}
 

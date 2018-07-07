@@ -80,8 +80,8 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		{
 			TestOperation("Lock/Unlock", true, (cache, key, _) =>
 			{
-				cache.Lock(key);
-				cache.Unlock(key);
+				var value = cache.Lock(key);
+				cache.Unlock(key, value);
 			});
 		}
 

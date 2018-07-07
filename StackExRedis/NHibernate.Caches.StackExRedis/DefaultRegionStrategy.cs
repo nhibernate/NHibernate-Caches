@@ -259,11 +259,11 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public override bool Unlock(object key)
+		public override bool Unlock(object key, string lockValue)
 		{
 			try
 			{
-				return base.Unlock(key);
+				return base.Unlock(key, lockValue);
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
