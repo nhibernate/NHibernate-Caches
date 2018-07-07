@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using NHibernate.Cache;
 using StackExchange.Redis;
 using static NHibernate.Caches.StackExRedis.ConfigurationHelper;
@@ -65,8 +66,8 @@ namespace NHibernate.Caches.StackExRedis
 			_usePubSub = GetBoolean("cache.region_strategy.default.use_pubsub", properties, true);
 			Log.Debug("Use pubsub for region {0}: {1}", RegionName, _usePubSub);
 
-			_regionKeyArray = new RedisKey[] { RegionKey };
-			_maxVersionNumber = new RedisValue[] { maxVersion };
+			_regionKeyArray = new RedisKey[] {RegionKey};
+			_maxVersionNumber = new RedisValue[] {maxVersion};
 			InitializeVersion();
 
 			if (_usePubSub)
@@ -122,7 +123,12 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
+				if (Log.IsDebugEnabled())
+				{
+					Log.Debug("Retry to fetch the object with key: '{0}'", CurrentVersion, GetCacheKey(key));
+				}
 				return base.Get(key);
 			}
 		}
@@ -136,7 +142,14 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
+				if (Log.IsDebugEnabled())
+				{
+					Log.Debug("Retry to fetch objects with keys: {0}",
+						CurrentVersion,
+						string.Join(",", keys.Select(o => $"'{GetCacheKey(o)}'")));
+				}
 				return base.GetMany(keys);
 			}
 		}
@@ -150,7 +163,12 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
+				if (Log.IsDebugEnabled())
+				{
+					Log.Debug("Retry to lock the object with key: '{0}'", CurrentVersion, GetCacheKey(key));
+				}
 				return base.Lock(key);
 			}
 		}
@@ -164,7 +182,14 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
+				if (Log.IsDebugEnabled())
+				{
+					Log.Debug("Retry to lock objects with keys: {0}",
+						CurrentVersion,
+						string.Join(",", keys.Select(o => $"'{GetCacheKey(o)}'")));
+				}
 				return base.LockMany(keys);
 			}
 		}
@@ -178,6 +203,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
 				// Here we don't know if the operation was executed after as successful lock, so
 				// the easiest solution is to skip the operation
@@ -193,6 +219,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
 				// Here we don't know if the operation was executed after as successful lock, so
 				// the easiest solution is to skip the operation
@@ -208,6 +235,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
 				// There is no point removing the key in the new version.
 				return false;
@@ -223,6 +251,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
 				// There is no point removing the keys in the new version.
 				return 0L;
@@ -238,6 +267,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
 				// If the lock was acquired in the old version we are unable to unlock the key.
 				return false;
@@ -253,6 +283,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
+				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
 				// If the lock was acquired in the old version we are unable to unlock the keys.
 				return 0;
@@ -262,6 +293,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <inheritdoc />
 		public override void Clear()
 		{
+			Log.Debug("Clearing region: '{0}'.", RegionKey);
 			var results = (RedisValue[]) Database.ScriptEvaluate(UpdateVersionLuaScript,
 				_regionKeyArray, _maxVersionNumber);
 			var version = results[0];
@@ -310,6 +342,7 @@ namespace NHibernate.Caches.StackExRedis
 
 		private void UpdateVersion(RedisValue version)
 		{
+			Log.Debug("Updating version from '{0}' to '{1}'.", CurrentVersion, version);
 			_currentVersion = version;
 			_currentVersionArray = new[] {version};
 		}

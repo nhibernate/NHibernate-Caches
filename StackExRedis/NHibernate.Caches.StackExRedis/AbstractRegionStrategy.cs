@@ -171,7 +171,9 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return null;
 			}
+
 			var cacheKey = GetCacheKey(key);
+			Log.Debug("Fetching object with key: '{0}'.", cacheKey);
 			RedisValue result;
 			if (string.IsNullOrEmpty(GetScript))
 			{
@@ -179,7 +181,7 @@ namespace NHibernate.Caches.StackExRedis
 			}
 			else
 			{
-				var keys = AppendAdditionalKeys(new RedisKey[] { cacheKey });
+				var keys = AppendAdditionalKeys(new RedisKey[] {cacheKey});
 				var values = AppendAdditionalValues(new RedisValue[]
 				{
 					UseSlidingExpiration && ExpirationEnabled,
@@ -188,6 +190,7 @@ namespace NHibernate.Caches.StackExRedis
 				var results = (RedisValue[]) Database.ScriptEvaluate(GetScript, keys, values);
 				result = results[0];
 			}
+
 			return result.IsNullOrEmpty ? null : Serializer.Deserialize(result);
 		}
 
@@ -202,11 +205,15 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return null;
 			}
+
 			var cacheKeys = new RedisKey[keys.Length];
+			Log.Debug("Fetching {0} objects...", keys.Length);
 			for (var i = 0; i < keys.Length; i++)
 			{
 				cacheKeys[i] = GetCacheKey(keys[i]);
+				Log.Debug("Fetching object with key: '{0}'.", cacheKeys[i]);
 			}
+
 			RedisValue[] results;
 			if (string.IsNullOrEmpty(GetManyScript))
 			{
@@ -232,6 +239,7 @@ namespace NHibernate.Caches.StackExRedis
 					objects[i] = Serializer.Deserialize(result);
 				}
 			}
+
 			return objects;
 		}
 
@@ -246,11 +254,14 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(key));
 			}
+
 			if (value == null)
 			{
 				throw new ArgumentNullException(nameof(value));
 			}
+
 			var cacheKey = GetCacheKey(key);
+			Log.Debug("Putting object with key: '{0}'.", cacheKey);
 			RedisValue serializedValue = Serializer.Serialize(value);
 
 			if (string.IsNullOrEmpty(PutScript))
@@ -264,7 +275,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				serializedValue,
 				ExpirationEnabled,
-				(long)Expiration.TotalMilliseconds
+				(long) Expiration.TotalMilliseconds
 			});
 			Database.ScriptEvaluate(PutScript, keys, values);
 		}
@@ -280,29 +291,36 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(keys));
 			}
+
 			if (values == null)
 			{
 				throw new ArgumentNullException(nameof(values));
 			}
+
 			if (keys.Length != values.Length)
 			{
 				throw new ArgumentException($"Length of {nameof(keys)} array does not match with {nameof(values)} array.");
 			}
+
+			Log.Debug("Putting {0} objects...", keys.Length);
 			if (string.IsNullOrEmpty(PutManyScript))
 			{
 				if (ExpirationEnabled)
 				{
-					throw new NotSupportedException($"{nameof(PutMany)} operation is not supported.");
+					throw new NotSupportedException($"{nameof(PutMany)} operation with expiration is not supported.");
 				}
-				var pairs = new KeyValuePair<RedisKey,RedisValue>[keys.Length];
+
+				var pairs = new KeyValuePair<RedisKey, RedisValue>[keys.Length];
 				for (var i = 0; i < keys.Length; i++)
 				{
 					pairs[i] = new KeyValuePair<RedisKey, RedisValue>(GetCacheKey(keys[i]), Serializer.Serialize(values[i]));
+					Log.Debug("Putting object with key: '{0}'.", pairs[i].Key);
 				}
+
 				Database.StringSet(pairs);
 				return;
 			}
-			
+
 
 			var cacheKeys = new RedisKey[keys.Length];
 			var cacheValues = new RedisValue[keys.Length + 2];
@@ -310,7 +328,9 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				cacheKeys[i] = GetCacheKey(keys[i]);
 				cacheValues[i] = Serializer.Serialize(values[i]);
+				Log.Debug("Putting object with key: '{0}'.", cacheKeys[i]);
 			}
+
 			cacheKeys = AppendAdditionalKeys(cacheKeys);
 			cacheValues[keys.Length] = ExpirationEnabled;
 			cacheValues[keys.Length + 1] = (long) Expiration.TotalMilliseconds;
@@ -330,11 +350,13 @@ namespace NHibernate.Caches.StackExRedis
 			}
 
 			var cacheKey = GetCacheKey(key);
+			Log.Debug("Removing object with key: '{0}'.", cacheKey);
 			if (string.IsNullOrEmpty(RemoveScript))
 			{
 				return Database.KeyDelete(cacheKey);
 			}
-			var keys = AppendAdditionalKeys(new RedisKey[] { cacheKey });
+
+			var keys = AppendAdditionalKeys(new RedisKey[] {cacheKey});
 			var values = GetAdditionalValues();
 			var results = (RedisValue[]) Database.ScriptEvaluate(RemoveScript, keys, values);
 			return (bool) results[0];
@@ -350,15 +372,20 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(keys));
 			}
+
+			Log.Debug("Removing {0} objects...", keys.Length);
 			var cacheKeys = new RedisKey[keys.Length];
 			for (var i = 0; i < keys.Length; i++)
 			{
 				cacheKeys[i] = GetCacheKey(keys[i]);
+				Log.Debug("Removing object with key: '{0}'.", cacheKeys[i]);
 			}
+
 			if (string.IsNullOrEmpty(RemoveManyScript))
 			{
 				return Database.KeyDelete(cacheKeys);
 			}
+
 			cacheKeys = AppendAdditionalKeys(cacheKeys);
 			var results = (RedisValue[]) Database.ScriptEvaluate(RemoveManyScript, cacheKeys, GetAdditionalValues());
 			return (long) results[0];
@@ -375,7 +402,9 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(key));
 			}
+
 			var cacheKey = GetCacheKey(key);
+			Log.Debug("Locking object with key: '{0}'.", cacheKey);
 			var lockValue = _keyLocker.Lock(cacheKey, LockScript, GetAdditionalKeys(), GetAdditionalValues());
 
 			_acquiredKeyLocks.AddOrUpdate(cacheKey, _ => lockValue, (_, currValue) =>
@@ -400,15 +429,20 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(keys));
 			}
+
 			if (string.IsNullOrEmpty(LockManyScript))
 			{
 				throw new NotSupportedException($"{nameof(LockMany)} operation is not supported.");
 			}
+
+			Log.Debug("Locking {0} objects...", keys.Length);
 			var cacheKeys = new string[keys.Length];
 			for (var i = 0; i < keys.Length; i++)
 			{
 				cacheKeys[i] = GetCacheKey(keys[i]);
+				Log.Debug("Locking object with key: '{0}'.", cacheKeys[i]);
 			}
+
 			return _keyLocker.LockMany(cacheKeys, LockManyScript, GetAdditionalKeys(), GetAdditionalValues());
 		}
 
@@ -423,7 +457,9 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(key));
 			}
+
 			var cacheKey = GetCacheKey(key);
+			Log.Debug("Unlocking object with key: '{0}'.", cacheKey);
 
 			if (!_acquiredKeyLocks.TryRemove(cacheKey, out var lockValue))
 			{
@@ -431,7 +467,10 @@ namespace NHibernate.Caches.StackExRedis
 					$"Calling {nameof(Unlock)} method for key:'{cacheKey}' that was not locked with {nameof(Lock)} method before.");
 				return false;
 			}
-			return _keyLocker.Unlock(cacheKey, lockValue, UnlockScript, GetAdditionalKeys(), GetAdditionalValues());
+
+			var unlocked = _keyLocker.Unlock(cacheKey, lockValue, UnlockScript, GetAdditionalKeys(), GetAdditionalValues());
+			Log.Debug("Unlock key '{0}' result: {1}", cacheKey, unlocked);
+			return unlocked;
 		}
 
 		/// <summary>
@@ -446,17 +485,29 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				throw new ArgumentNullException(nameof(keys));
 			}
+
 			if (string.IsNullOrEmpty(UnlockManyScript))
 			{
 				throw new NotSupportedException($"{nameof(UnlockMany)} operation is not supported.");
 			}
+
+			Log.Debug("Unlocking {0} objects...", keys.Length);
 			var cacheKeys = new string[keys.Length];
 			for (var i = 0; i < keys.Length; i++)
 			{
-				var cacheKey = GetCacheKey(keys[i]);
-				cacheKeys[i] = cacheKey;
+				cacheKeys[i] = GetCacheKey(keys[i]);
+				Log.Debug("Unlocking object with key: '{0}'.", cacheKeys[i]);
 			}
-			return _keyLocker.UnlockMany(cacheKeys, lockValue, UnlockManyScript, GetAdditionalKeys(), GetAdditionalValues());
+
+			var unlockedKeys =
+				_keyLocker.UnlockMany(cacheKeys, lockValue, UnlockManyScript, GetAdditionalKeys(), GetAdditionalValues());
+			if (Log.IsDebugEnabled())
+			{
+				Log.Debug("Number of unlocked objects with keys ({0}): {1}", string.Join(",", cacheKeys.Select(o => $"'{o}'")),
+					unlockedKeys);
+			}
+
+			return unlockedKeys;
 		}
 
 		/// <summary>
@@ -513,11 +564,13 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return GetAdditionalValues();
 			}
+
 			var additionalValues = GetAdditionalValues();
 			if (additionalValues == null)
 			{
 				return values;
 			}
+
 			var combinedValues = new RedisValue[values.Length + additionalValues.Length];
 			values.CopyTo(combinedValues, 0);
 			additionalValues.CopyTo(combinedValues, values.Length);
@@ -535,11 +588,13 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return GetAdditionalKeys();
 			}
+
 			var additionalKeys = GetAdditionalKeys();
 			if (additionalKeys == null)
 			{
 				return keys;
 			}
+
 			var combinedKeys = new RedisKey[keys.Length + additionalKeys.Length];
 			keys.CopyTo(combinedKeys, 0);
 			additionalKeys.CopyTo(combinedKeys, keys.Length);
