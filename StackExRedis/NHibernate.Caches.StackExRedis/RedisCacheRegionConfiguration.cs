@@ -79,6 +79,11 @@ namespace NHibernate.Caches.StackExRedis
 		public IRedisSerializer Serializer { get; set; }
 
 		/// <summary>
+		/// The <see cref="IDatabaseProvider"/> instance.
+		/// </summary>
+		public IDatabaseProvider DatabaseProvider { get; set; } = new DefaultDatabaseProvider();
+
+		/// <summary>
 		/// The configuration for locking keys.
 		/// </summary>
 		public RedisCacheLockConfiguration LockConfiguration { get; set; }
@@ -96,6 +101,7 @@ namespace NHibernate.Caches.StackExRedis
 			sb.AppendFormat("AppendHashcode={0}", AppendHashcode);
 			sb.AppendFormat("RegionStrategy={0}", RegionStrategy);
 			sb.AppendFormat("Serializer={0}", Serializer);
+			sb.AppendFormat("DatabaseProvider={0}", DatabaseProvider);
 			sb.AppendFormat("LockConfiguration=({0})", LockConfiguration);
 			return sb.ToString();
 		}

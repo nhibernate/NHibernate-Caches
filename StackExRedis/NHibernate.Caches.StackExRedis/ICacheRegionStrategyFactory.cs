@@ -15,7 +15,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <param name="configuration">The region configuration.</param>
 		/// <param name="properties">The properties from NHibernate configuration.</param>
 		/// <returns></returns>
-		AbstractRegionStrategy Create(ConnectionMultiplexer connectionMultiplexer,
+		AbstractRegionStrategy Create(IConnectionMultiplexer connectionMultiplexer,
 			RedisCacheRegionConfiguration configuration, IDictionary<string, string> properties);
 	}
 }

@@ -8,7 +8,7 @@ namespace NHibernate.Caches.StackExRedis
 	public class DefaultCacheRegionStrategyFactory : ICacheRegionStrategyFactory
 	{
 		/// <inheritdoc />
-		public AbstractRegionStrategy Create(ConnectionMultiplexer connectionMultiplexer,
+		public AbstractRegionStrategy Create(IConnectionMultiplexer connectionMultiplexer,
 			RedisCacheRegionConfiguration configuration, IDictionary<string, string> properties)
 		{
 			return (AbstractRegionStrategy) Activator.CreateInstance(configuration.RegionStrategy, connectionMultiplexer,

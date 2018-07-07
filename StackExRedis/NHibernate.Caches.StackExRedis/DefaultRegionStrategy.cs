@@ -56,7 +56,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public DefaultRegionStrategy(ConnectionMultiplexer connectionMultiplexer,
+		public DefaultRegionStrategy(IConnectionMultiplexer connectionMultiplexer,
 			RedisCacheRegionConfiguration configuration, IDictionary<string, string> properties)
 			: base(connectionMultiplexer, configuration, properties)
 		{

@@ -20,7 +20,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// The Redis connection.
 		/// </summary>
-		protected readonly ConnectionMultiplexer ConnectionMultiplexer;
+		protected readonly IConnectionMultiplexer ConnectionMultiplexer;
 
 		/// <summary>
 		/// The Redis database where the keys are stored.
@@ -40,7 +40,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <param name="connectionMultiplexer">The Redis connection.</param>
 		/// <param name="configuration">The region configuration.</param>
 		/// <param name="properties">The NHibernate configuration properties.</param>
-		protected AbstractRegionStrategy(ConnectionMultiplexer connectionMultiplexer,
+		protected AbstractRegionStrategy(IConnectionMultiplexer connectionMultiplexer,
 			RedisCacheRegionConfiguration configuration, IDictionary<string, string> properties)
 		{
 			Log = NHibernateLogger.For(GetType());
@@ -50,7 +50,7 @@ namespace NHibernate.Caches.StackExRedis
 			AppendHashcode = configuration.AppendHashcode;
 			RegionKey = configuration.RegionKey;
 			ConnectionMultiplexer = connectionMultiplexer;
-			Database = connectionMultiplexer.GetDatabase(configuration.Database);
+			Database = configuration.DatabaseProvider.Get(connectionMultiplexer, configuration.Database);
 			Serializer = configuration.Serializer;
 			LockTimeout = configuration.LockConfiguration.KeyTimeout;
 			_keyLocker = new RedisKeyLocker(RegionName, Database, configuration.LockConfiguration);

@@ -60,6 +60,16 @@ namespace NHibernate.Caches.StackExRedis
 		public ICacheRegionStrategyFactory RegionStrategyFactory { get; set; } = new DefaultCacheRegionStrategyFactory();
 
 		/// <summary>
+		/// The <see cref="IConnectionMultiplexerProvider"/> instance.
+		/// </summary>
+		public IConnectionMultiplexerProvider ConnectionMultiplexerProvider { get; set; } = new DefaultConnectionMultiplexerProvider();
+
+		/// <summary>
+		/// The <see cref="IDatabaseProvider"/> instance.
+		/// </summary>
+		public IDatabaseProvider DatabaseProvider { get; set; } = new DefaultDatabaseProvider();
+
+		/// <summary>
 		/// The default <see cref="AbstractRegionStrategy"/> type.
 		/// </summary>
 		public System.Type DefaultRegionStrategy { get; set; } = typeof(DefaultRegionStrategy);

@@ -39,6 +39,16 @@ namespace NHibernate.Caches.StackExRedis
 		public const string RegionStrategyFactory = "cache.region_strategy_factory";
 
 		/// <summary>
+		/// The assembly qualified name of the connection multiplexer provider.
+		/// </summary>
+		public const string ConnectionMultiplexerProvider = "cache.connection_multiplexer_provider";
+
+		/// <summary>
+		/// The assembly qualified name of the database provider.
+		/// </summary>
+		public const string DatabaseProvider = "cache.database_provider";
+
+		/// <summary>
 		/// Whether the expiration delay should be sliding.
 		/// </summary>
 		public const string UseSlidingExpiration = "cache.use_sliding_expiration";

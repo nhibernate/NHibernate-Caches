@@ -1,12 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using NHibernate.Cache;
-using NHibernate.Util;
 using StackExchange.Redis;
 using static NHibernate.Caches.StackExRedis.ConfigurationHelper;
 
@@ -21,8 +16,7 @@ namespace NHibernate.Caches.StackExRedis
 		private static readonly Dictionary<string, RegionConfig> ConfiguredCacheRegions;
 		private static readonly CacheConfig ConfiguredCache;
 
-		private ConnectionMultiplexer _connectionMultiplexer;
-		private RedisCacheConfiguration _defaultCacheConfiguration;
+		private IConnectionMultiplexer _connectionMultiplexer;
 
 		static RedisCacheProvider()
 		{
@@ -39,6 +33,11 @@ namespace NHibernate.Caches.StackExRedis
 			}
 		}
 
+		/// <summary>
+		/// The Redis cache configuration that is populated by the NHibernate configuration.
+		/// </summary>
+		public RedisCacheConfiguration CacheConfiguration { get; } = new RedisCacheConfiguration();
+
 		/// <inheritdoc />
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
 		{
@@ -47,13 +46,11 @@ namespace NHibernate.Caches.StackExRedis
 				regionName = string.Empty;
 			}
 
-			var regionConfiguration = ConfiguredCacheRegions.TryGetValue(regionName, out var regionConfig) 
-				? BuildRegionConfiguration(regionConfig, properties) 
+			var regionConfiguration = ConfiguredCacheRegions.TryGetValue(regionName, out var regionConfig)
+				? BuildRegionConfiguration(regionConfig, properties)
 				: BuildRegionConfiguration(regionName, properties);
-
 			Log.Debug("Building cache: {0}", regionConfiguration.ToString());
-
-			return BuildCache(_defaultCacheConfiguration, regionConfiguration, properties);
+			return BuildCache(regionConfiguration, properties);
 		}
 
 		/// <inheritdoc />
@@ -72,13 +69,8 @@ namespace NHibernate.Caches.StackExRedis
 			}
 
 			Log.Debug("Starting with configuration string: {0}", configurationString);
-
-			_defaultCacheConfiguration = BuildDefaultConfiguration(properties);
-
-			Log.Debug("Default configuration: {0}", _defaultCacheConfiguration);
-
-			TextWriter textWriter = Log.IsDebugEnabled() ? new NHibernateTextWriter(Log) : null;
-			Start(configurationString, properties, textWriter);
+			BuildDefaultConfiguration(properties);
+			Start(configurationString, properties);
 		}
 
 		/// <inheritdoc />
@@ -90,6 +82,7 @@ namespace NHibernate.Caches.StackExRedis
 				{
 					Log.Debug("Releasing connection.");
 				}
+
 				_connectionMultiplexer.Dispose();
 				_connectionMultiplexer = null;
 			}
@@ -103,28 +96,23 @@ namespace NHibernate.Caches.StackExRedis
 		/// Callback to perform any necessary initialization of the underlying cache implementation
 		/// during ISessionFactory construction.
 		/// </summary>
-		/// <param name="configurationString">The Redis configuration string.</param>
+		/// <param name="configurationString">The StackExchange.Redis configuration string.</param>
 		/// <param name="properties">NHibernate configuration settings.</param>
-		/// <param name="textWriter">The text writer.</param>
-		protected virtual void Start(string configurationString, IDictionary<string, string> properties, TextWriter textWriter)
+		protected virtual void Start(string configurationString, IDictionary<string, string> properties)
 		{
-			var configuration = ConfigurationOptions.Parse(configurationString);
-			_connectionMultiplexer = ConnectionMultiplexer.Connect(configuration, textWriter);
-			_connectionMultiplexer.PreserveAsyncOrder = false; // Recommended setting
+			_connectionMultiplexer = CacheConfiguration.ConnectionMultiplexerProvider.Get(configurationString);
 		}
 
 		/// <summary>
 		/// Builds the cache.
 		/// </summary>
-		/// <param name="defaultConfiguration">The default cache configuration.</param>
 		/// <param name="regionConfiguration">The region cache configuration.</param>
 		/// <param name="properties">NHibernate configuration settings.</param>
 		/// <returns>The builded cache.</returns>
-		protected virtual ICache BuildCache(RedisCacheConfiguration defaultConfiguration,
-			RedisCacheRegionConfiguration regionConfiguration, IDictionary<string, string> properties)
+		protected virtual ICache BuildCache(RedisCacheRegionConfiguration regionConfiguration, IDictionary<string, string> properties)
 		{
 			var regionStrategy =
-				defaultConfiguration.RegionStrategyFactory.Create(_connectionMultiplexer, regionConfiguration, properties);
+				CacheConfiguration.RegionStrategyFactory.Create(_connectionMultiplexer, regionConfiguration, properties);
 
 			regionStrategy.Validate();
 
@@ -139,44 +127,45 @@ namespace NHibernate.Caches.StackExRedis
 		{
 			var config = new RedisCacheRegionConfiguration(regionConfig.Region)
 			{
-				LockConfiguration = _defaultCacheConfiguration.LockConfiguration,
-				RegionPrefix = _defaultCacheConfiguration.RegionPrefix,
-				Serializer = _defaultCacheConfiguration.Serializer,
-				EnvironmentName = _defaultCacheConfiguration.EnvironmentName,
-				CacheKeyPrefix = _defaultCacheConfiguration.CacheKeyPrefix
+				LockConfiguration = CacheConfiguration.LockConfiguration,
+				RegionPrefix = CacheConfiguration.RegionPrefix,
+				Serializer = CacheConfiguration.Serializer,
+				EnvironmentName = CacheConfiguration.EnvironmentName,
+				CacheKeyPrefix = CacheConfiguration.CacheKeyPrefix,
+				DatabaseProvider = CacheConfiguration.DatabaseProvider
 			};
 
 			config.Database = GetInteger("database", properties,
 				regionConfig.Database ?? GetInteger(RedisEnvironment.Database, properties,
-					_defaultCacheConfiguration.DefaultDatabase));
+					CacheConfiguration.DefaultDatabase));
 			Log.Debug("Database for region {0}: {1}", regionConfig.Region, config.Database);
 
 			config.Expiration = GetTimeSpanFromSeconds("expiration", properties,
 				regionConfig.Expiration ?? GetTimeSpanFromSeconds(Cfg.Environment.CacheDefaultExpiration, properties,
-					_defaultCacheConfiguration.DefaultExpiration));
+					CacheConfiguration.DefaultExpiration));
 			Log.Debug("Expiration for region {0}: {1} seconds", regionConfig.Region, config.Expiration.TotalSeconds);
 
 			config.RegionStrategy = GetSystemType("strategy", properties,
 				regionConfig.RegionStrategy ?? GetSystemType(RedisEnvironment.RegionStrategy, properties,
-					_defaultCacheConfiguration.DefaultRegionStrategy));
+					CacheConfiguration.DefaultRegionStrategy));
 			Log.Debug("Region strategy for region {0}: {1}", regionConfig.Region, config.RegionStrategy);
 
 			config.UseSlidingExpiration = GetBoolean("sliding", properties,
 				regionConfig.UseSlidingExpiration ?? GetBoolean(RedisEnvironment.UseSlidingExpiration, properties,
-					_defaultCacheConfiguration.DefaultUseSlidingExpiration));
+					CacheConfiguration.DefaultUseSlidingExpiration));
 
 			config.AppendHashcode = GetBoolean("append-hashcode", properties,
 				regionConfig.AppendHashcode ?? GetBoolean(RedisEnvironment.AppendHashcode, properties,
-					_defaultCacheConfiguration.DefaultAppendHashcode));
+					CacheConfiguration.DefaultAppendHashcode));
 
 			Log.Debug("Use sliding expiration for region {0}: {1}", regionConfig.Region, config.UseSlidingExpiration);
 
 			return config;
 		}
 
-		private RedisCacheConfiguration BuildDefaultConfiguration(IDictionary<string, string> properties)
+		private void BuildDefaultConfiguration(IDictionary<string, string> properties)
 		{
-			var config = new RedisCacheConfiguration();
+			var config = CacheConfiguration;
 
 			config.CacheKeyPrefix = GetString(RedisEnvironment.KeyPrefix, properties, config.CacheKeyPrefix);
 			Log.Debug("Cache key prefix: {0}", config.CacheKeyPrefix);
@@ -187,11 +176,17 @@ namespace NHibernate.Caches.StackExRedis
 			config.RegionPrefix = GetString(Cfg.Environment.CacheRegionPrefix, properties, config.RegionPrefix);
 			Log.Debug("Region prefix: {0}", config.RegionPrefix);
 
-			config.Serializer = GetInstanceOfType(RedisEnvironment.Serializer, properties, config.Serializer);
+			config.Serializer = GetInstanceOfType(RedisEnvironment.Serializer, properties, config.Serializer, Log);
 			Log.Debug("Serializer: {0}", config.Serializer);
 
-			config.RegionStrategyFactory = GetInstanceOfType(RedisEnvironment.RegionStrategyFactory, properties, config.RegionStrategyFactory);
+			config.RegionStrategyFactory = GetInstanceOfType(RedisEnvironment.RegionStrategyFactory, properties, config.RegionStrategyFactory, Log);
 			Log.Debug("Region strategy factory: {0}", config.RegionStrategyFactory);
+
+			config.ConnectionMultiplexerProvider = GetInstanceOfType(RedisEnvironment.ConnectionMultiplexerProvider, properties, config.ConnectionMultiplexerProvider, Log);
+			Log.Debug("Connection multiplexer provider: {0}", config.ConnectionMultiplexerProvider);
+
+			config.DatabaseProvider = GetInstanceOfType(RedisEnvironment.DatabaseProvider, properties, config.DatabaseProvider, Log);
+			Log.Debug("Database provider: {0}", config.DatabaseProvider);
 
 			config.DefaultExpiration = GetTimeSpanFromSeconds(Cfg.Environment.CacheDefaultExpiration, properties, config.DefaultExpiration);
 			Log.Debug("Default expiration: {0} seconds", config.DefaultExpiration.TotalSeconds);
@@ -226,16 +221,14 @@ namespace NHibernate.Caches.StackExRedis
 			lockConfig.MinRetryDelay = GetTimeSpanFromMilliseconds(RedisEnvironment.LockMinRetryDelay, properties, lockConfig.MinRetryDelay);
 			Log.Debug("Lock min retry delay: {0} milliseconds", lockConfig.MinRetryDelay.TotalMilliseconds);
 
-			lockConfig.ValueProvider = GetInstanceOfType(RedisEnvironment.LockValueProvider, properties, lockConfig.ValueProvider);
+			lockConfig.ValueProvider = GetInstanceOfType(RedisEnvironment.LockValueProvider, properties, lockConfig.ValueProvider, Log);
 			Log.Debug("Lock value provider: {0}", lockConfig.ValueProvider);
 
-			lockConfig.RetryDelayProvider = GetInstanceOfType(RedisEnvironment.LockRetryDelayProvider, properties, lockConfig.RetryDelayProvider);
+			lockConfig.RetryDelayProvider = GetInstanceOfType(RedisEnvironment.LockRetryDelayProvider, properties, lockConfig.RetryDelayProvider, Log);
 			Log.Debug("Lock retry delay provider: {0}", lockConfig.RetryDelayProvider);
 
 			lockConfig.KeySuffix = GetString(RedisEnvironment.LockKeySuffix, properties, lockConfig.KeySuffix);
 			Log.Debug("Lock key suffix: {0}", lockConfig.KeySuffix);
-
-			return config;
 		}
 	}
 }

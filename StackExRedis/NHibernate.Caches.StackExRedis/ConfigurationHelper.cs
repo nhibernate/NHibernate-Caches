@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using NHibernate.Bytecode;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.StackExRedis
@@ -15,6 +16,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return defaultValue;
 			}
+
 			return properties.TryGetValue(key, out var value) ? value : defaultValue;
 		}
 
@@ -24,6 +26,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return defaultValue;
 			}
+
 			return properties.TryGetValue(key, out var value) ? Convert.ToBoolean(value) : defaultValue;
 		}
 
@@ -42,6 +45,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return defaultValue;
 			}
+
 			var seconds = properties.TryGetValue(key, out var value)
 				? Convert.ToInt64(value)
 				: (long) defaultValue.TotalSeconds;
@@ -54,6 +58,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return defaultValue;
 			}
+
 			var milliseconds = properties.TryGetValue(key, out var value)
 				? Convert.ToInt64(value)
 				: (long) defaultValue.TotalMilliseconds;
@@ -67,6 +72,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return defaultValue;
 			}
+
 			try
 			{
 				return System.Type.GetType(typeName, true);
@@ -77,19 +83,38 @@ namespace NHibernate.Caches.StackExRedis
 			}
 		}
 
-		public static TType GetInstanceOfType<TType>(string key, IDictionary<string, string> properties, TType defaultValue)
+		public static TType GetInstanceOfType<TType>(string key, IDictionary<string, string> properties, TType defaultValue,
+			INHibernateLogger logger)
 		{
+			var objectsFactory = Cfg.Environment.BytecodeProvider.ObjectsFactory;
 			var type = GetSystemType(key, properties, null);
 			if (type == null)
 			{
+				// Try to get the instance from the base type if the user provided a custom IObjectsFactory
+				if (!(objectsFactory is ActivatorObjectsFactory))
+				{
+					try
+					{
+						return (TType) objectsFactory.CreateInstance(typeof(TType));
+					}
+					catch (Exception e)
+					{
+						// The user most likely did not register the TType
+						logger.Debug(
+							"Failed to create an instance of type '{0}' by using IObjectsFactory, most probably was not registered. Exception: {1}",
+							typeof(TType), e);
+					}
+				}
 				return defaultValue;
 			}
+
 			if (!typeof(TType).IsAssignableFrom(type))
 			{
-				throw new CacheException($"Type '{type}' from the configuration property '{key}' is not assignable to '{typeof(TType)}'");
+				throw new CacheException(
+					$"Type '{type}' from the configuration property '{key}' is not assignable to '{typeof(TType)}'");
 			}
 
-			return (TType) Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(type);
+			return (TType) objectsFactory.CreateInstance(type);
 		}
 	}
 }

@@ -34,7 +34,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public FastRegionStrategy(ConnectionMultiplexer connectionMultiplexer,
+		public FastRegionStrategy(IConnectionMultiplexer connectionMultiplexer,
 			RedisCacheRegionConfiguration configuration, IDictionary<string, string> properties)
 			: base(connectionMultiplexer, configuration, properties)
 		{

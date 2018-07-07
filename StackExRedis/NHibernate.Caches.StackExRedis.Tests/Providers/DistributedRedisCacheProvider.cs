@@ -15,29 +15,26 @@ namespace NHibernate.Caches.StackExRedis.Tests.Providers
 	/// </summary>
 	public class DistributedRedisCacheProvider : RedisCacheProvider
 	{
-		private readonly List<ConnectionMultiplexer> _connectionMultiplexers = new List<ConnectionMultiplexer>();
+		private readonly List<IConnectionMultiplexer> _connectionMultiplexers = new List<IConnectionMultiplexer>();
 
 		/// <inheritdoc />
-		protected override void Start(string configurationString, IDictionary<string, string> properties, TextWriter textWriter)
+		protected override void Start(string configurationString, IDictionary<string, string> properties)
 		{
 			foreach (var instanceConfiguration in configurationString.Split(';'))
 			{
-				var configuration = ConfigurationOptions.Parse(instanceConfiguration);
-				var connectionMultiplexer = ConnectionMultiplexer.Connect(configuration, textWriter);
-				connectionMultiplexer.PreserveAsyncOrder = false; // Recommended setting
+				var connectionMultiplexer = CacheConfiguration.ConnectionMultiplexerProvider.Get(instanceConfiguration);
 				_connectionMultiplexers.Add(connectionMultiplexer);
 			}
 		}
 
 		/// <inheritdoc />
-		protected override ICache BuildCache(RedisCacheConfiguration defaultConfiguration, RedisCacheRegionConfiguration regionConfiguration,
-			IDictionary<string, string> properties)
+		protected override ICache BuildCache(RedisCacheRegionConfiguration regionConfiguration, IDictionary<string, string> properties)
 		{
 			var strategies = new List<AbstractRegionStrategy>();
 			foreach (var connectionMultiplexer in _connectionMultiplexers)
 			{
 				var regionStrategy =
-					defaultConfiguration.RegionStrategyFactory.Create(connectionMultiplexer, regionConfiguration, properties);
+					CacheConfiguration.RegionStrategyFactory.Create(connectionMultiplexer, regionConfiguration, properties);
 				regionStrategy.Validate();
 				strategies.Add(regionStrategy);
 			}
