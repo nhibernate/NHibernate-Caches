@@ -5,6 +5,7 @@ namespace NHibernate.Caches.StackExRedis
 	/// <summary>
 	/// Defines methods for serializing and deserializing objects that will be stored/retrieved for Redis.
 	/// </summary>
+	// TODO: Remove and use CacheSerializeBase
 	public interface IRedisSerializer
 	{
 		/// <summary>
@@ -12,13 +13,13 @@ namespace NHibernate.Caches.StackExRedis
 		/// </summary>
 		/// <param name="value">The object to serialize.</param>
 		/// <returns>A serialized <see cref="RedisValue"/> that can be stored into Redis.</returns>
-		RedisValue Serialize(object value);
+		byte[] Serialize(object value);
 
 		/// <summary>
 		/// Deserialize the <see cref="RedisValue"/> that was retrieved from Redis.
 		/// </summary>
 		/// <param name="value">The value to deserialize.</param>
 		/// <returns>The object that was serialized.</returns>
-		object Deserialize(RedisValue value);
+		object Deserialize(byte[] value);
 	}
 }

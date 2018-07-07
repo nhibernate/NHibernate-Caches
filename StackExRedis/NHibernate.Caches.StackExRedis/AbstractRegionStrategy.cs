@@ -251,7 +251,7 @@ namespace NHibernate.Caches.StackExRedis
 				throw new ArgumentNullException(nameof(value));
 			}
 			var cacheKey = GetCacheKey(key);
-			var serializedValue = Serializer.Serialize(value);
+			RedisValue serializedValue = Serializer.Serialize(value);
 
 			if (string.IsNullOrEmpty(PutScript))
 			{

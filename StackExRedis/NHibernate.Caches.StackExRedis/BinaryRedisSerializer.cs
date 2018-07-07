@@ -10,7 +10,7 @@ namespace NHibernate.Caches.StackExRedis
 	public class BinaryRedisSerializer : IRedisSerializer
 	{
 		/// <inheritdoc />
-		public RedisValue Serialize(object value)
+		public byte[] Serialize(object value)
 		{
 			var serializer = new BinaryFormatter();
 			using (var stream = new MemoryStream())
@@ -21,13 +21,8 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public object Deserialize(RedisValue value)
+		public object Deserialize(byte[] value)
 		{
-			if (value.IsNull)
-			{
-				return null;
-			}
-
 			var serializer = new BinaryFormatter();
 			using (var stream = new MemoryStream(value))
 			{
