@@ -71,7 +71,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// Whether the hash code of the key should be added to the cache key.
 		/// </summary>
-		public bool UseHashCode { get; set; }
+		public bool AppendHashcode { get; set; }
 
 		/// <summary>
 		/// The <see cref="IRedisSerializer"/> to be used.
@@ -93,7 +93,7 @@ namespace NHibernate.Caches.StackExRedis
 			sb.AppendFormat("Expiration={0}s", Expiration.TotalSeconds);
 			sb.AppendFormat("Database={0}", Database);
 			sb.AppendFormat("UseSlidingExpiration={0}", UseSlidingExpiration);
-			sb.AppendFormat("UseHashCode={0}", UseHashCode);
+			sb.AppendFormat("AppendHashcode={0}", AppendHashcode);
 			sb.AppendFormat("RegionStrategy={0}", RegionStrategy);
 			sb.AppendFormat("Serializer={0}", Serializer);
 			sb.AppendFormat("LockConfiguration=({0})", LockConfiguration);

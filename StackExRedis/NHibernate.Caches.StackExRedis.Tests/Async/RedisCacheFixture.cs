@@ -283,7 +283,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			var props = GetDefaultProperties();
 			var cacheProvider = ProviderBuilder();
-			props[RedisEnvironment.UseHashCode] = "true";
+			props[RedisEnvironment.AppendHashcode] = "true";
 			cacheProvider.Start(props);
 			var cache = cacheProvider.BuildCache(DefaultRegion, props);
 
@@ -303,7 +303,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			var props = GetDefaultProperties();
 			var cacheProvider = ProviderBuilder();
 			cacheProvider.Start(props);
-			props["hashcode"] = "true";
+			props["append-hashcode"] = "true";
 			var cache = cacheProvider.BuildCache(DefaultRegion, props);
 
 			await (cache.PutAsync(obj1, value, CancellationToken.None));
@@ -336,7 +336,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			var props = GetDefaultProperties();
 			var cacheProvider = ProviderBuilder();
-			props[RedisEnvironment.UseHashCode] = "true";
+			props[RedisEnvironment.AppendHashcode] = "true";
 			cacheProvider.Start(props);
 			var cache = cacheProvider.BuildCache(DefaultRegion, props);
 

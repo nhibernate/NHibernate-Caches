@@ -46,7 +46,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// Whether the hash code of the key should be added to the cache key.
 		/// </summary>
-		public const string UseHashCode = "cache.use_hash_code";
+		public const string AppendHashcode = "cache.append_hashcode";
 
 		/// <summary>
 		/// The prefix that will be prepended before each cache key in order to avoid having collisions when multiple clients

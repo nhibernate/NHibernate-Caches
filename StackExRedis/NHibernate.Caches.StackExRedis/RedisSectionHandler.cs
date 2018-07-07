@@ -33,7 +33,7 @@ namespace NHibernate.Caches.StackExRedis
 						GetBoolean(node, "sliding"),
 						GetInteger(node, "database"),
 						GetType(node, "strategy"),
-						GetBoolean(node, "hashcode")
+						GetBoolean(node, "append-hashcode")
 					));
 				}
 				else

@@ -42,7 +42,7 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// Whether the hash code of the key should be added to the cache key.
 		/// </summary>
-		public bool DefaultUseHashCode { get; set; }
+		public bool DefaultAppendHashcode { get; set; }
 
 		/// <summary>
 		/// The default expiration time for the keys to expire.

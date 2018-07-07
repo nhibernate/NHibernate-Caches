@@ -27,16 +27,16 @@ namespace NHibernate.Caches.StackExRedis
 		/// <param name="useSlidingExpiration">Whether the expiration should be sliding or not.</param>
 		/// <param name="database">The database for the region.</param>
 		/// <param name="regionStrategy">The strategy for the region.</param>
-		/// <param name="useHashCode">Whether the hash code of the key should be added to the cache key.</param>
+		/// <param name="appendHashcode">Whether the hash code of the key should be added to the cache key.</param>
 		public RegionConfig(string region, TimeSpan? expiration, bool? useSlidingExpiration, int? database, System.Type regionStrategy,
-			bool? useHashCode)
+			bool? appendHashcode)
 		{
 			Region = region;
 			Expiration = expiration;
 			UseSlidingExpiration = useSlidingExpiration;
 			Database = database;
 			RegionStrategy = regionStrategy;
-			UseHashCode = useHashCode;
+			AppendHashcode = appendHashcode;
 		}
 
 		/// <summary>
@@ -67,6 +67,6 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// Whether the hash code of the key should be added to the cache key.
 		/// </summary>
-		public bool? UseHashCode { get; }
+		public bool? AppendHashcode { get; }
 	}
 }
