@@ -35,58 +35,58 @@ namespace NHibernate.Caches.StackExRedis
 		/// The name of the environment that will be prepended before each cache key in order to allow having
 		/// multiple environments on the same Redis database.
 		/// </summary>
-		public string EnvironmentName { get; set; }
+		public string EnvironmentName { get; internal set; }
 
 		/// <summary>
 		/// The prefix that will be prepended before each cache key in order to avoid having collisions when multiple clients
 		/// uses the same Redis database.
 		/// </summary>
-		public string CacheKeyPrefix { get; set; }
+		public string CacheKeyPrefix { get; internal set; }
 
 		/// <summary>
 		/// The expiration time for the keys to expire.
 		/// </summary>
-		public TimeSpan Expiration { get; set; }
+		public TimeSpan Expiration { get; internal set; }
 
 		/// <summary>
 		/// The prefix that will be prepended before the region name when building a cache key.
 		/// </summary>
-		public string RegionPrefix { get; set; }
+		public string RegionPrefix { get; internal set; }
 
 		/// <summary>
 		/// The Redis database index.
 		/// </summary>
-		public int Database { get; set; }
+		public int Database { get; internal set; }
 
 		/// <summary>
 		/// Whether the expiration is sliding or not.
 		/// </summary>
-		public bool UseSlidingExpiration { get; set; }
+		public bool UseSlidingExpiration { get; internal set; }
 
 		/// <summary>
 		/// The <see cref="AbstractRegionStrategy"/> type.
 		/// </summary>
-		public System.Type RegionStrategy { get; set; }
+		public System.Type RegionStrategy { get; internal set; }
 
 		/// <summary>
 		/// Whether the hash code of the key should be added to the cache key.
 		/// </summary>
-		public bool AppendHashcode { get; set; }
+		public bool AppendHashcode { get; internal set; }
 
 		/// <summary>
 		/// The <see cref="IRedisSerializer"/> to be used.
 		/// </summary>
-		public IRedisSerializer Serializer { get; set; }
+		public IRedisSerializer Serializer { get; internal set; }
 
 		/// <summary>
 		/// The <see cref="IDatabaseProvider"/> instance.
 		/// </summary>
-		public IDatabaseProvider DatabaseProvider { get; set; } = new DefaultDatabaseProvider();
+		public IDatabaseProvider DatabaseProvider { get; internal set; }
 
 		/// <summary>
 		/// The configuration for locking keys.
 		/// </summary>
-		public RedisCacheLockConfiguration LockConfiguration { get; set; }
+		public RedisCacheLockConfiguration LockConfiguration { get; internal set; }
 
 		/// <inheritdoc />
 		public override string ToString()

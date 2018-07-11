@@ -15,8 +15,18 @@ namespace NHibernate.Caches.StackExRedis
 		private static readonly INHibernateLogger Log;
 		private static readonly Dictionary<string, RegionConfig> ConfiguredCacheRegions;
 		private static readonly CacheConfig ConfiguredCache;
+		private static RedisCacheConfiguration _defaultCacheConfiguration = new RedisCacheConfiguration();
 
 		private IConnectionMultiplexer _connectionMultiplexer;
+
+		/// <summary>
+		/// The default configuration that will be used for creating the <see cref="CacheConfiguration"/>.
+		/// </summary>
+		public static RedisCacheConfiguration DefaultCacheConfiguration
+		{
+			get => _defaultCacheConfiguration;
+			set => _defaultCacheConfiguration = value ?? new RedisCacheConfiguration();
+		}
 
 		static RedisCacheProvider()
 		{
@@ -33,10 +43,42 @@ namespace NHibernate.Caches.StackExRedis
 			}
 		}
 
+		private static RedisCacheConfiguration CreateCacheConfiguration()
+		{
+			var defaultConfiguration = DefaultCacheConfiguration;
+			var defaultLockConfiguration = defaultConfiguration.LockConfiguration;
+			return new RedisCacheConfiguration
+			{
+				DefaultRegionStrategy = defaultConfiguration.DefaultRegionStrategy,
+				DatabaseProvider = defaultConfiguration.DatabaseProvider,
+				ConnectionMultiplexerProvider = defaultConfiguration.ConnectionMultiplexerProvider,
+				RegionPrefix = defaultConfiguration.RegionPrefix,
+				LockConfiguration =
+				{
+					RetryTimes = defaultLockConfiguration.RetryTimes,
+					RetryDelayProvider = defaultLockConfiguration.RetryDelayProvider,
+					MaxRetryDelay = defaultLockConfiguration.MaxRetryDelay,
+					ValueProvider = defaultLockConfiguration.ValueProvider,
+					KeyTimeout = defaultLockConfiguration.KeyTimeout,
+					AcquireTimeout = defaultLockConfiguration.AcquireTimeout,
+					KeySuffix = defaultLockConfiguration.KeySuffix,
+					MinRetryDelay = defaultLockConfiguration.MinRetryDelay
+				},
+				Serializer = defaultConfiguration.Serializer,
+				RegionStrategyFactory = defaultConfiguration.RegionStrategyFactory,
+				CacheKeyPrefix = defaultConfiguration.CacheKeyPrefix,
+				DefaultUseSlidingExpiration = defaultConfiguration.DefaultUseSlidingExpiration,
+				DefaultExpiration = defaultConfiguration.DefaultExpiration,
+				DefaultDatabase = defaultConfiguration.DefaultDatabase,
+				DefaultAppendHashcode = defaultConfiguration.DefaultAppendHashcode,
+				EnvironmentName = defaultConfiguration.EnvironmentName
+			};
+		}
+
 		/// <summary>
 		/// The Redis cache configuration that is populated by the NHibernate configuration.
 		/// </summary>
-		public RedisCacheConfiguration CacheConfiguration { get; } = new RedisCacheConfiguration();
+		public RedisCacheConfiguration CacheConfiguration { get; } = CreateCacheConfiguration();
 
 		/// <inheritdoc />
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)

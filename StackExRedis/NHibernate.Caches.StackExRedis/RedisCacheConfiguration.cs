@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace NHibernate.Caches.StackExRedis
 {
@@ -11,10 +7,26 @@ namespace NHibernate.Caches.StackExRedis
 	/// </summary>
 	public class RedisCacheConfiguration
 	{
+		private static readonly IRedisSerializer DefaultSerializer = new BinaryRedisSerializer();
+		private static readonly ICacheRegionStrategyFactory DefaultRegionStrategyFactory = new DefaultCacheRegionStrategyFactory();
+		private static readonly IConnectionMultiplexerProvider DefaultConnectionMultiplexerProvider = new DefaultConnectionMultiplexerProvider();
+		private static readonly IDatabaseProvider DefaultDatabaseProvider = new DefaultDatabaseProvider();
+		private static readonly System.Type DefaultRegionStrategyType = typeof(DefaultRegionStrategy);
+
+		private IRedisSerializer _serializer;
+		private ICacheRegionStrategyFactory _regionStrategyFactory;
+		private IConnectionMultiplexerProvider _connectionMultiplexerProvider;
+		private IDatabaseProvider _databaseProvider;
+		private System.Type _defaultRegionStrategy;
+
 		/// <summary>
 		/// The <see cref="IRedisSerializer"/> instance.
 		/// </summary>
-		public IRedisSerializer Serializer { get; set; } = new BinaryRedisSerializer();
+		public IRedisSerializer Serializer
+		{
+			get => _serializer ?? DefaultSerializer;
+			set => _serializer = value;
+		}
 
 		/// <summary>
 		/// The prefix that will be prepended before each cache key in order to avoid having collisions when multiple clients
@@ -57,22 +69,38 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// The <see cref="ICacheRegionStrategyFactory"/> instance.
 		/// </summary>
-		public ICacheRegionStrategyFactory RegionStrategyFactory { get; set; } = new DefaultCacheRegionStrategyFactory();
+		public ICacheRegionStrategyFactory RegionStrategyFactory
+		{
+			get => _regionStrategyFactory ?? DefaultRegionStrategyFactory;
+			set => _regionStrategyFactory = value;
+		}
 
 		/// <summary>
 		/// The <see cref="IConnectionMultiplexerProvider"/> instance.
 		/// </summary>
-		public IConnectionMultiplexerProvider ConnectionMultiplexerProvider { get; set; } = new DefaultConnectionMultiplexerProvider();
+		public IConnectionMultiplexerProvider ConnectionMultiplexerProvider
+		{
+			get => _connectionMultiplexerProvider ?? DefaultConnectionMultiplexerProvider;
+			set => _connectionMultiplexerProvider = value;
+		}
 
 		/// <summary>
 		/// The <see cref="IDatabaseProvider"/> instance.
 		/// </summary>
-		public IDatabaseProvider DatabaseProvider { get; set; } = new DefaultDatabaseProvider();
+		public IDatabaseProvider DatabaseProvider
+		{
+			get => _databaseProvider ?? DefaultDatabaseProvider;
+			set => _databaseProvider = value;
+		}
 
 		/// <summary>
 		/// The default <see cref="AbstractRegionStrategy"/> type.
 		/// </summary>
-		public System.Type DefaultRegionStrategy { get; set; } = typeof(DefaultRegionStrategy);
+		public System.Type DefaultRegionStrategy
+		{
+			get => _defaultRegionStrategy ?? DefaultRegionStrategyType;
+			set => _defaultRegionStrategy = value;
+		}
 
 		/// <summary>
 		/// The configuration for locking keys.

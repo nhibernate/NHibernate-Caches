@@ -8,6 +8,12 @@ namespace NHibernate.Caches.StackExRedis
 	/// </summary>
 	public class RedisCacheLockConfiguration
 	{
+		private static readonly ICacheLockValueProvider DefaultValueProvider = new DefaultCacheLockValueProvider();
+		private static readonly ICacheLockRetryDelayProvider DefaultRetryDelayProvider = new DefaultCacheLockRetryDelayProvider();
+
+		private ICacheLockValueProvider _valueProvider;
+		private ICacheLockRetryDelayProvider _retryDelayProvider;
+
 		/// <summary>
 		/// The timeout for a lock key to expire.
 		/// </summary>
@@ -41,12 +47,20 @@ namespace NHibernate.Caches.StackExRedis
 		/// <summary>
 		/// The <see cref="ICacheLockValueProvider"/> instance.
 		/// </summary>
-		public ICacheLockValueProvider ValueProvider { get; set; } = new DefaultCacheLockValueProvider();
+		public ICacheLockValueProvider ValueProvider
+		{
+			get => _valueProvider ?? DefaultValueProvider;
+			set => _valueProvider = value;
+		}
 
 		/// <summary>
 		/// The <see cref="ICacheLockRetryDelayProvider"/> instance.
 		/// </summary>
-		public ICacheLockRetryDelayProvider RetryDelayProvider { get; set; } = new DefaultCacheLockRetryDelayProvider();
+		public ICacheLockRetryDelayProvider RetryDelayProvider
+		{
+			get => _retryDelayProvider ?? DefaultRetryDelayProvider;
+			set => _retryDelayProvider = value;
+		}
 
 		/// <inheritdoc />
 		public override string ToString()
