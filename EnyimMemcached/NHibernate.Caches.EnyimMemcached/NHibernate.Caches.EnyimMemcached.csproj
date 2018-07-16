@@ -8,12 +8,15 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Task
-    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
+    <PackageReleaseNotes>* Improvement
+    * #52 - Cease using cryptographic hashes</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
     <None Include="..\default.build" Link="default.build" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\CommonInternals\Hasher.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EnyimMemcached" Version="2.12.0" />

@@ -13,9 +13,8 @@ using NHibernate.Cache;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Extensions.Caching.Distributed;
+using NHibernate.Caches.Util;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.CoreDistributedCache

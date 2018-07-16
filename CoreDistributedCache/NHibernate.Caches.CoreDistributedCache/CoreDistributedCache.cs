@@ -25,9 +25,8 @@ using NHibernate.Cache;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Security.Cryptography;
-using System.Text;
 using Microsoft.Extensions.Caching.Distributed;
+using NHibernate.Caches.Util;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.CoreDistributedCache
@@ -175,24 +174,18 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 		private string GetCacheKey(object key)
 		{
+			var baseKey = _cacheKeyPrefix + _fullRegion + ":" + key;
 			var keyAsString = AppendHashcodeToKey
-				? string.Concat(_cacheKeyPrefix, _fullRegion, ":", key.ToString(), "@", key.GetHashCode())
-				: string.Concat(_cacheKeyPrefix, _fullRegion, ":", key.ToString());
+				? baseKey + "@" + key.GetHashCode()
+				: baseKey;
 
 			if (_maxKeySize < keyAsString.Length)
 			{
-				Log.Info(
-					"Computing a hashed key for too long key '{0}'. This may cause collisions resulting into additional cache misses.",
-					key);
 				// Hash it for respecting max key size. Collisions will be avoided by storing the actual key along
 				// the object and comparing it on retrieval.
-				using (var hasher = new SHA256Managed())
+				var hash = Hasher.HashToString(keyAsString);
+				if (hash.Length > _maxKeySize)
 				{
-					var bytes = Encoding.UTF8.GetBytes(keyAsString);
-					var computedHash = Convert.ToBase64String(hasher.ComputeHash(bytes));
-					if (computedHash.Length <= _maxKeySize)
-						return computedHash;
-
 					if (!_hasWarnedOnHashLength)
 					{
 						// No lock for this field, some redundant logs will be less harm than locking.
@@ -201,14 +194,29 @@ namespace NHibernate.Caches.CoreDistributedCache
 							"Hash computed for too long keys are themselves too long. They will be truncated, further " +
 							"increasing the risk of collision resulting into additional cache misses. Consider using a " +
 							"cache supporting longer keys. Hash length: {0}; max key size: {1}",
-							computedHash.Length, _maxKeySize);
+							hash.Length, _maxKeySize);
 					}
 
-					keyAsString = computedHash.Substring(0, _maxKeySize.Value);
+					hash = hash.Substring(0, _maxKeySize.Value);
 				}
+
+				var toLongKey = keyAsString;
+				keyAsString = keyAsString.Substring(0, _maxKeySize.Value - hash.Length) + hash;
+				Log.Info(
+					"Computed the hashed key '{0}' for too long cache key '{1}' (object key '{2}'). This may cause" +
+					"collisions resulting into additional cache misses.",
+					keyAsString, toLongKey, key);
 			}
 
-			return _keySanitizer != null ? _keySanitizer(keyAsString) : keyAsString;
+			if (_keySanitizer != null)
+			{
+				Log.Debug("Sanitizing cache key '{0}'.", keyAsString);
+				keyAsString = _keySanitizer(keyAsString);
+			}
+
+			Log.Debug("Using cache key '{0}' for object key '{1}'.", keyAsString, key);
+
+			return keyAsString;
 		}
 
 		/// <inheritdoc />

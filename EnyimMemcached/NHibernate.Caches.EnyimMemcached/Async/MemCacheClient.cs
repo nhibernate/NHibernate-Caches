@@ -11,11 +11,10 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using Enyim.Caching;
 using Enyim.Caching.Memcached;
 using NHibernate.Cache;
+using NHibernate.Caches.Util;
 using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Caches.EnyimMemcached
