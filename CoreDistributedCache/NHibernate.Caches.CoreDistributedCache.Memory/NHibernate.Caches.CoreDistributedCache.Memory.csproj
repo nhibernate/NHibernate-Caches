@@ -10,11 +10,8 @@ Meant for testing purpose, consider NHibernate.Caches.CoreMemoryCache for other 
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* New feature
-    * #47 - Add an option for appending hashcode to key
-
-* Task
-    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
+    <PackageReleaseNotes>* Improvement
+    * #52 - Cease using cryptographic hashes</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>

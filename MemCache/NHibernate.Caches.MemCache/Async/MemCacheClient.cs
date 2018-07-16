@@ -11,10 +11,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using Memcached.ClientLibrary;
 using NHibernate.Cache;
+using NHibernate.Caches.Util;
 
 namespace NHibernate.Caches.MemCache
 {

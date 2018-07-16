@@ -16,6 +16,9 @@
     <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\..\CommonInternals\Hasher.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Memcached.ClientLibrary" Version="1.0" />
     <PackageReference Include="NHibernate" Version="5.1.0" />
   </ItemGroup>

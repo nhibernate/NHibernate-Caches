@@ -27,10 +27,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using System.Text;
 using Memcached.ClientLibrary;
 using NHibernate.Cache;
+using NHibernate.Caches.Util;
 
 namespace NHibernate.Caches.MemCache
 {
@@ -41,15 +40,15 @@ namespace NHibernate.Caches.MemCache
 	{
 		internal const string PoolName = "nhibernate";
 		private static readonly INHibernateLogger log;
-		[ThreadStatic] private static HashAlgorithm hasher;
 
-		[ThreadStatic] private static MD5 md5;
 		private readonly MemcachedClient client;
 		private readonly int expiry;
 
 		private readonly string region;
 		private readonly string regionPrefix = "";
 		private readonly bool noLingeringDelete;
+
+		private const int _maxKeySize = 249;
 
 		static MemCacheClient()
 		{
@@ -126,30 +125,6 @@ namespace NHibernate.Caches.MemCache
 			return result;
 		}
 
-		private static HashAlgorithm Hasher
-		{
-			get
-			{
-				if (hasher == null)
-				{
-					hasher = HashAlgorithm.Create();
-				}
-				return hasher;
-			}
-		}
-
-		private static MD5 Md5
-		{
-			get
-			{
-				if (md5 == null)
-				{
-					md5 = MD5.Create();
-				}
-				return md5;
-			}
-		}
-
 		#region ICache Members
 
 		/// <inheritdoc />
@@ -169,8 +144,7 @@ namespace NHibernate.Caches.MemCache
 			//the reason is that for long keys, we hash the value, and this mean that we may get
 			//hash collisions. The chance is very low, but it is better to be safe
 			var de = (DictionaryEntry) maybeObj;
-			string checkKeyHash = GetAlternateKeyHash(key);
-			if (checkKeyHash.Equals(de.Key))
+			if (key.ToString().Equals(de.Key))
 			{
 				return de.Value;
 			}
@@ -193,7 +167,7 @@ namespace NHibernate.Caches.MemCache
 			}
 
 			log.Debug("setting value for item {0}", key);
-			bool returnOk = client.Set(KeyAsString(key), new DictionaryEntry(GetAlternateKeyHash(key), value),
+			bool returnOk = client.Set(KeyAsString(key), new DictionaryEntry(key.ToString(), value),
 				DateTime.Now.AddSeconds(expiry));
 			if (!returnOk)
 			{
@@ -262,19 +236,22 @@ namespace NHibernate.Caches.MemCache
 
 		/// <summary>
 		/// Turn the key obj into a string, preperably using human readable
-		/// string, and if the string is too long (>=250) it will be hashed
+		/// string, and if the string is too long (>_maxKeySize) it will be hashed
 		/// </summary>
 		private string KeyAsString(object key)
 		{
 			string fullKey = FullKeyAsString(key);
-			if (fullKey.Length >= 250) //max key size for memcache
+			if (fullKey.Length > _maxKeySize)
 			{
-				return ComputeHash(fullKey, Hasher);
+				var toLongKey = fullKey;
+				fullKey = ComputeHash(fullKey);
+
+				log.Info(
+					"Computed the hashed key '{0}' for too long cache key '{1}' (object key '{2}'). This may cause" +
+					"collisions resulting into additional cache misses.",
+					fullKey, toLongKey, key);
 			}
-			else
-			{
-				return fullKey.Replace(' ', '-');
-			}
+			return fullKey.Replace(' ', '-');
 		}
 
 		/// <summary>
@@ -291,32 +268,14 @@ namespace NHibernate.Caches.MemCache
 		/// Compute the hash of the full key string using the given hash algorithm
 		/// </summary>
 		/// <param name="fullKeyString">The full key return by call FullKeyAsString</param>
-		/// <param name="hashAlgorithm">The hash algorithm used to hash the key</param>
 		/// <returns>The hashed key as a string</returns>
-		private static string ComputeHash(string fullKeyString, HashAlgorithm hashAlgorithm)
+		private static string ComputeHash(string fullKeyString)
 		{
-			byte[] bytes = Encoding.UTF8.GetBytes(fullKeyString);
-			byte[] computedHash = hashAlgorithm.ComputeHash(bytes);
-			return Convert.ToBase64String(computedHash);
-		}
+			// Hash it for respecting max key size. Collisions will be avoided by storing the actual key along
+			// the object and comparing it on retrieval.
+			var hash = Hasher.HashToString(fullKeyString);
 
-		/// <summary>
-		/// Compute an alternate key hash; used as a check that the looked-up value is 
-		/// in fact what has been put there in the first place.
-		/// </summary>
-		/// <param name="key"></param>
-		/// <returns>The alternate key hash (using the MD5 algorithm)</returns>
-		private string GetAlternateKeyHash(object key)
-		{
-			string fullKey = FullKeyAsString(key);
-			if (fullKey.Length >= 250)
-			{
-				return ComputeHash(fullKey, Md5);
-			}
-			else
-			{
-				return fullKey.Replace(' ', '-');
-			}
+			return fullKeyString.Substring(0, _maxKeySize - hash.Length) + hash;
 		}
 	}
 }
