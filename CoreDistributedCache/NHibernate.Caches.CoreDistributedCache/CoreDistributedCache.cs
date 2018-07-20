@@ -44,6 +44,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 		private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
 		private const bool _defaultUseSlidingExpiration = false;
+		private const bool _defaultAppendHashcodeToKey = false;
 		private static readonly string DefaultRegionPrefix = string.Empty;
 		private const string _cacheKeyPrefix = "NHibernate-Cache:";
 
@@ -96,11 +97,20 @@ namespace NHibernate.Caches.CoreDistributedCache
 		public bool UseSlidingExpiration { get; private set; }
 
 		/// <summary>Should the keys be appended with their hashcode?</summary>
-		/// <remarks>This option is a workaround for distinguishing composite-id missing an
+		/// <remarks>
+		/// <para>
+		/// This option is a workaround for distinguishing composite-id missing an
 		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
-		/// between processes running different runtimes. Configure it through
-		/// <see cref="CoreDistributedCacheProvider.AppendHashcodeToKey"/>.</remarks>
-		public bool AppendHashcodeToKey { get; internal set; }
+		/// between processes running another runtime than .Net Framework, or with future versions
+		/// of .Net Framework: the hascode is not guaranteed to be stable.
+		/// </para>
+		/// <para>
+		/// The value of this property can be set with the attribute <c>append-hashcode</c> of the
+		/// region configuration node, or globally through
+		/// <see cref="CoreDistributedCacheProvider.AppendHashcodeToKey"/>.
+		/// </para>
+		/// </remarks>
+		public bool AppendHashcodeToKey { get; private set; }
 
 		private void Configure(IDictionary<string, string> props)
 		{
@@ -110,12 +120,14 @@ namespace NHibernate.Caches.CoreDistributedCache
 				Log.Warn("Configuring cache with default values");
 				Expiration = DefaultExpiration;
 				UseSlidingExpiration = _defaultUseSlidingExpiration;
+				AppendHashcodeToKey = _defaultAppendHashcodeToKey;
 			}
 			else
 			{
 				Expiration = GetExpiration(props);
 				UseSlidingExpiration = GetUseSlidingExpiration(props);
 				regionPrefix = GetRegionPrefix(props);
+				AppendHashcodeToKey = GetAppendHashcodeToKey(props);
 			}
 
 			_fullRegion = regionPrefix + RegionName;
@@ -170,6 +182,13 @@ namespace NHibernate.Caches.CoreDistributedCache
 			var sliding = PropertiesHelper.GetBoolean("cache.use_sliding_expiration", props, _defaultUseSlidingExpiration);
 			Log.Debug("Use sliding expiration value: {0}", sliding);
 			return sliding;
+		}
+
+		private static bool GetAppendHashcodeToKey(IDictionary<string, string> props)
+		{
+			var append = PropertiesHelper.GetBoolean("cache.append_hashcode_to_key", props, _defaultAppendHashcodeToKey);
+			Log.Debug("Use append hashcode to key value: {0}", append);
+			return append;
 		}
 
 		private string GetCacheKey(object key)
