@@ -51,14 +51,18 @@ namespace NHibernate.Caches.CoreDistributedCache
 		public static IDistributedCacheFactory CacheFactory { get; set; }
 
 		/// <summary>Should the keys be appended with their hashcode?</summary>
-		/// <value><see langword="true" /> by default.</value>
+		/// <value>By defauly <see langword="true" /> for the .Net Framework build,
+		/// <see langword="false" /> otherwise. This setting will be <c>false</c> by default
+		/// for all runtime in the next major release (6.0).</value>
 		/// <remarks>
 		/// <para>This option is a workaround for distinguishing composite-id missing an
 		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
-		/// between processes running different runtimes.
+		/// between processes running another runtime than .Net Framework, or with future versions
+		/// of .Net Framework: the hascode is not guaranteed to be stable.
 		/// </para>
 		/// <para>
-		/// Changes to this property affect only caches built after the change.
+		/// Changes to this property affect only caches built after the change, and whose configuration node
+		/// does not define their own <c>append-hashcode</c> attribute.
 		/// </para>
 		/// <para>
 		/// The value of this property can be set with the attribute <c>append-hashcode</c> of the
@@ -120,28 +124,22 @@ namespace NHibernate.Caches.CoreDistributedCache
 				regionName = string.Empty;
 			}
 
+			properties = properties != null
+				// Duplicate it for not altering the global configuration
+				? new Dictionary<string, string>(properties)
+				: new Dictionary<string, string>();
+
+			properties["cache.append_hashcode_to_key"] = AppendHashcodeToKey.ToString();
+
 			if (ConfiguredCachesProperties.TryGetValue(regionName, out var configuredProperties) && configuredProperties.Count > 0)
 			{
-				if (properties != null)
+				foreach (var prop in configuredProperties)
 				{
-					// Duplicate it for not altering the global configuration
-					properties = new Dictionary<string, string>(properties);
-					foreach (var prop in configuredProperties)
-					{
-						properties[prop.Key] = prop.Value;
-					}
-				}
-				else
-				{
-					properties = configuredProperties;
+					properties[prop.Key] = prop.Value;
 				}
 			}
 
 			// create cache
-			if (properties == null)
-			{
-				properties = new Dictionary<string, string>(1);
-			}
 
 			if (Log.IsDebugEnabled())
 			{
@@ -159,10 +157,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 				Log.Debug("building cache with region: {0}, properties: {1}, factory: {2}" , regionName, sb.ToString(), CacheFactory.GetType().FullName);
 			}
 			return
-				new CoreDistributedCache(CacheFactory.BuildCache(), CacheFactory.Constraints, regionName, properties)
-				{
-					AppendHashcodeToKey = AppendHashcodeToKey
-				};
+				new CoreDistributedCache(CacheFactory.BuildCache(), CacheFactory.Constraints, regionName, properties);
 		}
 
 		/// <inheritdoc />

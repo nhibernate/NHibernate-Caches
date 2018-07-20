@@ -46,8 +46,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 		/// <summary>Should the keys be appended with their hashcode?</summary>
 		/// <remarks>This option is a workaround for distinguishing composite-id missing an
-		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
-		/// between processes running different runtimes.</remarks>
+		/// <see cref="object.ToString"/> override.</remarks>
 		public bool AppendHashcodeToKey { get; }
 
 		/// <summary>The configured cache regions.</summary>
@@ -68,7 +67,20 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <param name="region">The configured cache region.</param>
 		/// <param name="expiration">The expiration for the region.</param>
 		/// <param name="sliding">Whether the expiration should be sliding or not.</param>
-		public RegionConfig(string region, string expiration, string sliding)
+		// Since 5.5
+		[Obsolete("Use overload with appendHashcodeToKey additional parameter")]
+		public RegionConfig(string region, string expiration, string sliding) : this(region, expiration, sliding, null)
+		{
+		}
+
+		/// <summary>
+		/// Build a cache region configuration.
+		/// </summary>
+		/// <param name="region">The configured cache region.</param>
+		/// <param name="expiration">The expiration for the region.</param>
+		/// <param name="sliding">Whether the expiration should be sliding or not.</param>
+		/// <param name="appendHashcodeToKey">Should the keys be appended with their hashcode?</param>
+		public RegionConfig(string region, string expiration, string sliding, string appendHashcodeToKey)
 		{
 			Region = region;
 			Properties = new Dictionary<string, string>();
@@ -76,6 +88,8 @@ namespace NHibernate.Caches.CoreDistributedCache
 				Properties["expiration"] = expiration;
 			if (!string.IsNullOrEmpty(sliding))
 				Properties["cache.use_sliding_expiration"] = sliding;
+			if (!string.IsNullOrEmpty(appendHashcodeToKey))
+				Properties["cache.append_hashcode_to_key"] = appendHashcodeToKey;
 		}
 
 		/// <summary>The region name.</summary>

@@ -68,6 +68,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 		[Test]
 		public void TestAppendHashcodeToKey()
 		{
+#if NETFX
 			Assert.That(CoreDistributedCacheProvider.AppendHashcodeToKey, Is.True, "Default is not true");
 
 			var cache = DefaultProvider.BuildCache("foo", null) as CoreDistributedCache;
@@ -83,6 +84,23 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			{
 				CoreDistributedCacheProvider.AppendHashcodeToKey = true;
 			}
+#else
+			Assert.That(CoreDistributedCacheProvider.AppendHashcodeToKey, Is.False, "Default is not false");
+
+			var cache = DefaultProvider.BuildCache("foo", null) as CoreDistributedCache;
+			Assert.That(cache.AppendHashcodeToKey, Is.False, "First built cache not correctly set");
+
+			CoreDistributedCacheProvider.AppendHashcodeToKey = true;
+			try
+			{
+				cache = DefaultProvider.BuildCache("foo", null) as CoreDistributedCache;
+				Assert.That(cache.AppendHashcodeToKey, Is.True, "Second built cache not correctly set");
+			}
+			finally
+			{
+				CoreDistributedCacheProvider.AppendHashcodeToKey = false;
+			}
+#endif
 		}
 	}
 }

@@ -26,9 +26,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 				var region = node.Attributes["region"]?.Value;
 				var expiration = node.Attributes["expiration"]?.Value;
 				var sliding = node.Attributes["sliding"]?.Value;
+				var appendHashcode = node.Attributes["append-hashcode"]?.Value;
 				if (region != null)
 				{
-					caches.Add(new RegionConfig(region, expiration, sliding));
+					caches.Add(new RegionConfig(region, expiration, sliding, appendHashcode));
 				}
 				else
 				{
@@ -53,8 +54,16 @@ namespace NHibernate.Caches.CoreDistributedCache
 						node.OuterXml);
 				}
 			}
-			var appendHashcodeToKey = !StringComparer.OrdinalIgnoreCase.Equals(
-				section.Attributes?["append-hashcode"]?.Value, "false");
+
+			var appendHashcodeToKey =
+// 6.0 TODO: disable for all cases by default (so keep only the else code)
+#if NETFX
+				!StringComparer.OrdinalIgnoreCase.Equals(
+					section.Attributes?["append-hashcode"]?.Value, "false");
+#else
+				StringComparer.OrdinalIgnoreCase.Equals(
+					section.Attributes?["append-hashcode"]?.Value, "true");
+#endif
 
 			return new CacheConfig(factoryClass, properties, caches.ToArray(), appendHashcodeToKey);
 		}
