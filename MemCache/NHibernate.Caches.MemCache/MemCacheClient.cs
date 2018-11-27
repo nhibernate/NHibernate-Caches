@@ -27,16 +27,116 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using Memcached.ClientLibrary;
 using NHibernate.Cache;
 using NHibernate.Caches.Util;
 
 namespace NHibernate.Caches.MemCache
 {
+	// 6.0 TODO: replace that class by its base
 	/// <summary>
 	/// Pluggable cache implementation using Memcached.
 	/// </summary>
-	public class MemCacheClient : CacheBase
+	public class MemCacheClient : MemCacheClientBase,
+#pragma warning disable 618
+		ICache
+#pragma warning restore 618
+	{
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public MemCacheClient()
+		{
+		}
+
+		/// <summary>
+		/// Constructor with no properties.
+		/// </summary>
+		/// <param name="regionName">The region of the cache.</param>
+		public MemCacheClient(string regionName)
+			: base(regionName)
+		{
+		}
+
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
+		/// <param name="properties">The configuration properties.</param>
+		public MemCacheClient(string regionName, IDictionary<string, string> properties)
+			: base(regionName, properties)
+		{
+		}
+
+		/// <inheritdoc />
+		public new Task<object> GetAsync(object key, CancellationToken cancellationToken)
+			=> base.GetAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task PutAsync(object key, object value, CancellationToken cancellationToken)
+			=> base.PutAsync(key, value, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task RemoveAsync(object key, CancellationToken cancellationToken)
+			=> base.RemoveAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task ClearAsync(CancellationToken cancellationToken)
+			=> base.ClearAsync(cancellationToken);
+
+		/// <inheritdoc />
+		public new Task LockAsync(object key, CancellationToken cancellationToken)
+			=> base.LockAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+			=> base.UnlockAsync(key, null, cancellationToken);
+
+		/// <inheritdoc />
+		public new string RegionName => base.RegionName;
+
+		/// <inheritdoc />
+		public new object Get(object key)
+			=> base.Get(key);
+
+		/// <inheritdoc />
+		public new void Put(object key, object value)
+			=> base.Put(key, value);
+
+		/// <inheritdoc />
+		public new void Remove(object key)
+			=> base.Remove(key);
+
+		/// <inheritdoc />
+		public new void Clear()
+			=> base.Clear();
+
+		/// <inheritdoc />
+		public new void Destroy()
+			=> base.Destroy();
+
+		/// <inheritdoc />
+		public new void Lock(object key)
+			=> base.Lock(key);
+
+		/// <inheritdoc />
+		public void Unlock(object key)
+			=> base.Unlock(key, null);
+
+		/// <inheritdoc />
+		public new long NextTimestamp()
+			=> base.NextTimestamp();
+
+		/// <inheritdoc />
+		public new int Timeout => base.Timeout;
+	}
+
+	/// <summary>
+	/// Pluggable cache implementation using Memcached.
+	/// </summary>
+	public abstract class MemCacheClientBase : CacheBase
 	{
 		internal const string PoolName = "nhibernate";
 		private static readonly INHibernateLogger log;
@@ -50,7 +150,7 @@ namespace NHibernate.Caches.MemCache
 
 		private const int _maxKeySize = 249;
 
-		static MemCacheClient()
+		static MemCacheClientBase()
 		{
 			log = NHibernateLogger.For(typeof(MemCacheClient));
 		}
@@ -58,15 +158,15 @@ namespace NHibernate.Caches.MemCache
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public MemCacheClient() : this("nhibernate", null)
+		public MemCacheClientBase() : this("nhibernate", null)
 		{
 		}
 
 		/// <summary>
-		/// Contructor with no properties.
+		/// Constructor with no properties.
 		/// </summary>
 		/// <param name="regionName">The cache region name.</param>
-		public MemCacheClient(string regionName) : this(regionName, null)
+		public MemCacheClientBase(string regionName) : this(regionName, null)
 		{
 		}
 
@@ -75,7 +175,7 @@ namespace NHibernate.Caches.MemCache
 		/// </summary>
 		/// <param name="regionName">The cache region name.</param>
 		/// <param name="properties">The configuration properties.</param>
-		public MemCacheClient(string regionName, IDictionary<string, string> properties)
+		public MemCacheClientBase(string regionName, IDictionary<string, string> properties)
 		{
 			region = regionName;
 			client = new MemcachedClient { PoolName = PoolName };
@@ -236,7 +336,7 @@ namespace NHibernate.Caches.MemCache
 		#endregion
 
 		/// <summary>
-		/// Turn the key obj into a string, preperably using human readable
+		/// Turn the key obj into a string, preferably using human readable
 		/// string, and if the string is too long (>_maxKeySize) it will be hashed
 		/// </summary>
 		private string KeyAsString(object key)

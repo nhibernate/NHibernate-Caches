@@ -13,15 +13,16 @@ using NHibernate.Cache;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using NHibernate.Caches.Util;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.CoreDistributedCache
 {
-	using System.Threading.Tasks;
-	using System.Threading;
-	public partial class CoreDistributedCache : CacheBase
+
+	public abstract partial class CoreDistributedCacheBase : CacheBase
 	{
 
 		/// <inheritdoc />

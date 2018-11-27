@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Caching;
 using NHibernate.Cache;
@@ -10,10 +12,112 @@ using Environment = NHibernate.Cfg.Environment;
 
 namespace NHibernate.Caches.SysCache2
 {
+	// 6.0 TODO: replace that class by its base
 	/// <summary>
 	/// Pluggable cache implementation using the System.Web.Caching classes and handling SQL dependencies.
 	/// </summary>
-	public class SysCacheRegion : CacheBase
+	public class SysCacheRegion : SysCacheRegionBase,
+#pragma warning disable 618
+		ICache
+#pragma warning restore 618
+	{
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public SysCacheRegion()
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SysCacheRegion"/> class with the default configuration
+		/// properties.
+		/// </summary>
+		/// <param name="name">The name of the region.</param>
+		/// <param name="additionalProperties">Additional NHibernate configuration properties.</param>
+		public SysCacheRegion(string name, IDictionary<string, string> additionalProperties)
+			: base(name, additionalProperties)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="SysCacheRegion"/> class.
+		/// </summary>
+		/// <param name="name">The name of the region.</param>
+		/// <param name="settings">The configuration settings for the cache region.</param>
+		/// <param name="additionalProperties">Additional NHibernate configuration properties.</param>
+		public SysCacheRegion(string name, CacheRegionElement settings,
+			IDictionary<string, string> additionalProperties)
+			: base(name, settings, additionalProperties)
+		{
+		}
+
+		/// <inheritdoc />
+		public new Task<object> GetAsync(object key, CancellationToken cancellationToken)
+			=> base.GetAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task PutAsync(object key, object value, CancellationToken cancellationToken)
+			=> base.PutAsync(key, value, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task RemoveAsync(object key, CancellationToken cancellationToken)
+			=> base.RemoveAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task ClearAsync(CancellationToken cancellationToken)
+			=> base.ClearAsync(cancellationToken);
+
+		/// <inheritdoc />
+		public new Task LockAsync(object key, CancellationToken cancellationToken)
+			=> base.LockAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+			=> base.UnlockAsync(key, null, cancellationToken);
+
+		/// <inheritdoc />
+		public new string RegionName => base.RegionName;
+
+		/// <inheritdoc />
+		public new object Get(object key)
+			=> base.Get(key);
+
+		/// <inheritdoc />
+		public new void Put(object key, object value)
+			=> base.Put(key, value);
+
+		/// <inheritdoc />
+		public new void Remove(object key)
+			=> base.Remove(key);
+
+		/// <inheritdoc />
+		public new void Clear()
+			=> base.Clear();
+
+		/// <inheritdoc />
+		public new void Destroy()
+			=> base.Destroy();
+
+		/// <inheritdoc />
+		public new void Lock(object key)
+			=> base.Lock(key);
+
+		/// <inheritdoc />
+		public void Unlock(object key)
+			=> base.Unlock(key, null);
+
+		/// <inheritdoc />
+		public new long NextTimestamp()
+			=> base.NextTimestamp();
+
+		/// <inheritdoc />
+		public new int Timeout => base.Timeout;
+	}
+
+	/// <summary>
+	/// Pluggable cache implementation using the System.Web.Caching classes and handling SQL dependencies.
+	/// </summary>
+	public abstract class SysCacheRegionBase : CacheBase
 	{
 		/// <summary>The name of the cache prefix to differentiate the nhibernate cache elements from
 		/// other items in the cache.</summary>
@@ -57,7 +161,7 @@ namespace NHibernate.Caches.SysCache2
 		/// Initializes a new instance of the <see cref="SysCacheRegion"/> class with
 		/// the default region name and configuration properties.
 		/// </summary>
-		public SysCacheRegion() : this(null, null, null) {}
+		public SysCacheRegionBase() : this(null, null, null) {}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="SysCacheRegion"/> class with the default configuration
@@ -65,7 +169,7 @@ namespace NHibernate.Caches.SysCache2
 		/// </summary>
 		/// <param name="name">The name of the region.</param>
 		/// <param name="additionalProperties">Additional NHibernate configuration properties.</param>
-		public SysCacheRegion(string name, IDictionary<string, string> additionalProperties)
+		public SysCacheRegionBase(string name, IDictionary<string, string> additionalProperties)
 			: this(name, null, additionalProperties) {}
 
 		/// <summary>
@@ -74,7 +178,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <param name="name">The name of the region.</param>
 		/// <param name="settings">The configuration settings for the cache region.</param>
 		/// <param name="additionalProperties">Additional NHibernate configuration properties.</param>
-		public SysCacheRegion(string name, CacheRegionElement settings, IDictionary<string, string> additionalProperties)
+		public SysCacheRegionBase(string name, CacheRegionElement settings, IDictionary<string, string> additionalProperties)
 		{
 			//validate the params
 			if (string.IsNullOrEmpty(name))
@@ -485,7 +589,7 @@ namespace NHibernate.Caches.SysCache2
 		/// <summary>
 		/// Called when the root cache item has been removed from the cache.
 		/// </summary>
-		/// <param name="key">The key of the cache item that wwas removed.</param>
+		/// <param name="key">The key of the cache item that was removed.</param>
 		/// <param name="value">The value of the cache item that was removed.</param>
 		/// <param name="reason">The <see cref="CacheItemRemovedReason"/> for the removal of the
 		/// item from the cache.</param>

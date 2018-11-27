@@ -53,10 +53,10 @@ namespace NHibernate.Caches.SysCache2.Tests
 		}
 
 		private static readonly FieldInfo RelativeExpirationField =
-			typeof(SysCacheRegion).GetField("_relativeExpiration", BindingFlags.NonPublic | BindingFlags.Instance);
+			typeof(SysCacheRegionBase).GetField("_relativeExpiration", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		private static readonly FieldInfo UseSlidingExpirationField =
-			typeof(SysCacheRegion).GetField("_useSlidingExpiration", BindingFlags.NonPublic | BindingFlags.Instance);
+			typeof(SysCacheRegionBase).GetField("_useSlidingExpiration", BindingFlags.NonPublic | BindingFlags.Instance);
 
 		[Test]
 		public void TestExpiration()

@@ -1,13 +1,113 @@
 using System;
 using System.Collections;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.Prevalence
 {
+	// 6.0 TODO: replace that class by its base
 	/// <summary>
 	/// Pluggable cache implementation using Bamboo Prevalence.
 	/// </summary>
-	public class PrevalenceCache : CacheBase
+	public class PrevalenceCache : PrevalenceCacheBase,
+#pragma warning disable 618
+		ICache
+#pragma warning restore 618
+	{
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public PrevalenceCache()
+		{
+		}
+
+		/// <summary>
+		/// Constructor with no properties.
+		/// </summary>
+		/// <param name="region">The region of the cache.</param>
+		public PrevalenceCache(string region)
+			: base(region)
+		{
+		}
+
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="region">The cache region name.</param>
+		/// <param name="system">The Prevalance container class.</param>
+		public PrevalenceCache(string region, CacheSystem system)
+			: base(region, system)
+		{
+		}
+
+		/// <inheritdoc />
+		public new Task<object> GetAsync(object key, CancellationToken cancellationToken)
+			=> base.GetAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task PutAsync(object key, object value, CancellationToken cancellationToken)
+			=> base.PutAsync(key, value, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task RemoveAsync(object key, CancellationToken cancellationToken)
+			=> base.RemoveAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task ClearAsync(CancellationToken cancellationToken)
+			=> base.ClearAsync(cancellationToken);
+
+		/// <inheritdoc />
+		public new Task LockAsync(object key, CancellationToken cancellationToken)
+			=> base.LockAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+			=> base.UnlockAsync(key, null, cancellationToken);
+
+		/// <inheritdoc />
+		public new string RegionName => base.RegionName;
+
+		/// <inheritdoc />
+		public new object Get(object key)
+			=> base.Get(key);
+
+		/// <inheritdoc />
+		public new void Put(object key, object value)
+			=> base.Put(key, value);
+
+		/// <inheritdoc />
+		public new void Remove(object key)
+			=> base.Remove(key);
+
+		/// <inheritdoc />
+		public new void Clear()
+			=> base.Clear();
+
+		/// <inheritdoc />
+		public new void Destroy()
+			=> base.Destroy();
+
+		/// <inheritdoc />
+		public new void Lock(object key)
+			=> base.Lock(key);
+
+		/// <inheritdoc />
+		public void Unlock(object key)
+			=> base.Unlock(key, null);
+
+		/// <inheritdoc />
+		public new long NextTimestamp()
+			=> base.NextTimestamp();
+
+		/// <inheritdoc />
+		public new int Timeout => base.Timeout;
+	}
+
+	/// <summary>
+	/// Pluggable cache implementation using Bamboo Prevalence.
+	/// </summary>
+	public abstract class PrevalenceCacheBase : CacheBase
 	{
 		private const string CacheKeyPrefix = "NHibernate-Cache:";
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PrevalenceCache));
@@ -17,20 +117,20 @@ namespace NHibernate.Caches.Prevalence
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public PrevalenceCache() : this("nhibernate", null) {}
+		public PrevalenceCacheBase() : this("nhibernate", null) {}
 
 		/// <summary>
-		/// Contructor with no properties.
+		/// Constructor with no properties.
 		/// </summary>
 		/// <param name="region">The cache region name.</param>
-		public PrevalenceCache(string region) : this(region, null) {}
+		public PrevalenceCacheBase(string region) : this(region, null) {}
 
 		/// <summary>
 		/// Full constructor.
 		/// </summary>
 		/// <param name="region">The cache region name.</param>
 		/// <param name="system">The Prevalance container class.</param>
-		public PrevalenceCache(string region, CacheSystem system)
+		public PrevalenceCacheBase(string region, CacheSystem system)
 		{
 			this.region = region;
 			this.system = system ?? new CacheSystem();

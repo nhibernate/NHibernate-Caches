@@ -58,7 +58,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <para>This option is a workaround for distinguishing composite-id missing an
 		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
 		/// between processes running another runtime than .Net Framework, or with future versions
-		/// of .Net Framework: the hascode is not guaranteed to be stable.
+		/// of .Net Framework: the hashcode is not guaranteed to be stable.
 		/// </para>
 		/// <para>
 		/// Changes to this property affect only caches built after the change, and whose configuration node
