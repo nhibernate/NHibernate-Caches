@@ -88,7 +88,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 					CacheFactory = (IDistributedCacheFactory) (ctorWithProperties != null ?
 						ctorWithProperties.Invoke(new object[] { config.Properties }):
-						Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(factoryClass));
+						Cfg.Environment.ObjectsFactory.CreateInstance(factoryClass));
 				}
 				catch (Exception e)
 				{
@@ -111,7 +111,9 @@ namespace NHibernate.Caches.CoreDistributedCache
 		#region ICacheProvider Members
 
 		/// <inheritdoc />
+#pragma warning disable 618
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+#pragma warning restore 618
 		{
 			if (CacheFactory == null)
 				throw new InvalidOperationException(

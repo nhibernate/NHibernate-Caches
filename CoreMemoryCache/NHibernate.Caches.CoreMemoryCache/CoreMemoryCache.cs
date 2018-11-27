@@ -36,10 +36,10 @@ namespace NHibernate.Caches.CoreMemoryCache
 	/// <remarks>
 	/// Priority is not configurable because it is un-usable: the compaction on memory pressure feature has been
 	/// removed from MemoryCache, only explicit compaction or size limit compaction may use priorities. But
-	/// <see cref="ICache" /> API does not have a suitable method for triggering compaction, and size of each
-	/// cached entry has to be user provided, which <see cref="ICache" /> API does not support.
+	/// <see cref="CacheBase" /> API does not have a suitable method for triggering compaction, and size of each
+	/// cached entry has to be user provided, which <see cref="CacheBase" /> API does not support.
 	/// </remarks>
-	public partial class CoreMemoryCache : ICache
+	public class CoreMemoryCache : CacheBase
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CoreMemoryCache));
 
@@ -108,7 +108,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public string RegionName { get; }
+		public override string RegionName { get; }
 
 		/// <summary>
 		/// The expiration delay applied to cached items.
@@ -197,7 +197,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -211,7 +211,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -244,7 +244,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -257,7 +257,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			_clearTokenLock.EnterWriteLock();
 			try
@@ -273,7 +273,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 			_clearTokenLock.Dispose();
@@ -281,24 +281,25 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// Do nothing
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// Do nothing
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
-		{
-			// Do nothing
-		}
-
-		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout => Timestamper.OneMs * 60000;
+		public override int Timeout => Timestamper.OneMs * 60000;
 	}
 }

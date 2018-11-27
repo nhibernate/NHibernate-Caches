@@ -34,7 +34,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 	/// <summary>
 	/// Pluggable cache implementation using <see cref="IDistributedCache"/> implementations.
 	/// </summary>
-	public partial class CoreDistributedCache : ICache
+	public partial class CoreDistributedCache : CacheBase
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CoreDistributedCache));
 
@@ -83,7 +83,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public string RegionName { get; }
+		public override string RegionName { get; }
 
 		/// <summary>
 		/// The expiration delay applied to cached items.
@@ -239,7 +239,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -262,7 +262,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -295,7 +295,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -308,7 +308,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			// Like IMemoryCache, it does not support Clear. Unlike it, it does neither provides a dependency
 			// mechanism which would allow to implement it.
@@ -316,29 +316,30 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// Do nothing
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// Do nothing
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
-		{
-			// Do nothing
-		}
-
-		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout => Timestamper.OneMs * 60000;
+		public override int Timeout => Timestamper.OneMs * 60000;
 	}
 }

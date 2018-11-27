@@ -7,7 +7,7 @@ namespace NHibernate.Caches.Prevalence
 	/// <summary>
 	/// Pluggable cache implementation using Bamboo Prevalence.
 	/// </summary>
-	public partial class PrevalenceCache : ICache
+	public class PrevalenceCache : CacheBase
 	{
 		private const string CacheKeyPrefix = "NHibernate-Cache:";
 		private static readonly INHibernateLogger log = NHibernateLogger.For(typeof(PrevalenceCache));
@@ -36,10 +36,10 @@ namespace NHibernate.Caches.Prevalence
 			this.system = system ?? new CacheSystem();
 		}
 
-		#region ICache Members
+		#region CacheBase Members
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -67,7 +67,7 @@ namespace NHibernate.Caches.Prevalence
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -85,7 +85,7 @@ namespace NHibernate.Caches.Prevalence
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -98,45 +98,46 @@ namespace NHibernate.Caches.Prevalence
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			log.Info("clearing all objects from system");
 			system.Clear();
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			log.Info("'Destroy' was called");
 			Clear();
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// Do nothing
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// Do nothing
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
-		{
-			// Do nothing
-		}
-
-		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout
+		public override int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
 		/// <inheritdoc />
-		public string RegionName
+		public override string RegionName
 		{
 			get { return region; }
 		}

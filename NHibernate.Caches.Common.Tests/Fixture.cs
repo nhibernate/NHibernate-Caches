@@ -62,9 +62,9 @@ namespace NHibernate.Caches.Common.Tests
 			return provider;
 		}
 
-		protected ICache GetDefaultCache()
+		protected CacheBase GetDefaultCache()
 		{
-			var cache = DefaultProvider.BuildCache(DefaultRegion, GetDefaultProperties());
+			var cache = (CacheBase) DefaultProvider.BuildCache(DefaultRegion, GetDefaultProperties());
 			Assert.That(cache, Is.Not.Null, "No default cache returned");
 			return cache;
 		}

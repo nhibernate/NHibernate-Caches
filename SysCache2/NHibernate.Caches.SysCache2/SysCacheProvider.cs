@@ -11,7 +11,8 @@ namespace NHibernate.Caches.SysCache2
 	public class SysCacheProvider : ICacheProvider
 	{
 		/// <summary>Pre-configured cache region settings.</summary>
-		private static readonly ConcurrentDictionary<string, Lazy<ICache>> CacheRegions = new ConcurrentDictionary<string, Lazy<ICache>>();
+		private static readonly ConcurrentDictionary<string, Lazy<CacheBase>> CacheRegions =
+			new ConcurrentDictionary<string, Lazy<CacheBase>>();
 
 		/// <summary>List of pre configured already built cache regions.</summary>
 		private static readonly Dictionary<string, CacheRegionElement> CacheRegionSettings;
@@ -52,7 +53,9 @@ namespace NHibernate.Caches.SysCache2
 		#region ICacheProvider Members
 
 		/// <inheritdoc />
+#pragma warning disable 618
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+#pragma warning restore 618
 		{
 			// Return a configured cache region if we have one for the region already.
 			// This may happen if there is a query cache specified for a region that is configured,
@@ -70,7 +73,7 @@ namespace NHibernate.Caches.SysCache2
 				// value after having obtained it, and it will not do that concurrently.
 				// https://stackoverflow.com/a/31637510/1178314
 				var cache = CacheRegions.GetOrAdd(regionName,
-					r => new Lazy<ICache>(() => BuildCache(r, properties, regionSettings)));
+					r => new Lazy<CacheBase>(() => BuildCache(r, properties, regionSettings)));
 				return cache.Value;
 			}
 
@@ -79,7 +82,7 @@ namespace NHibernate.Caches.SysCache2
 			return BuildCache(regionName, properties, null);
 		}
 
-		private ICache BuildCache(string regionName, IDictionary<string, string> properties, CacheRegionElement settings)
+		private CacheBase BuildCache(string regionName, IDictionary<string, string> properties, CacheRegionElement settings)
 		{
 			Log.Debug(
 				settings != null

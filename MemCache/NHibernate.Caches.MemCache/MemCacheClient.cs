@@ -36,7 +36,7 @@ namespace NHibernate.Caches.MemCache
 	/// <summary>
 	/// Pluggable cache implementation using Memcached.
 	/// </summary>
-	public partial class MemCacheClient : ICache
+	public class MemCacheClient : CacheBase
 	{
 		internal const string PoolName = "nhibernate";
 		private static readonly INHibernateLogger log;
@@ -125,10 +125,10 @@ namespace NHibernate.Caches.MemCache
 			return result;
 		}
 
-		#region ICache Members
+		#region CacheBase Members
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -155,7 +155,7 @@ namespace NHibernate.Caches.MemCache
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -176,7 +176,7 @@ namespace NHibernate.Caches.MemCache
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -191,43 +191,44 @@ namespace NHibernate.Caches.MemCache
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			client.FlushAll();
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// do nothing
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// do nothing
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
-		{
-			// do nothing
-		}
-
-		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout
+		public override int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; }
 		}
 
 		/// <inheritdoc />
-		public string RegionName
+		public override string RegionName
 		{
 			get { return region; }
 		}

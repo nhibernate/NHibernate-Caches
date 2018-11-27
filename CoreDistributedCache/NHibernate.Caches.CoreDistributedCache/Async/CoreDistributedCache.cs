@@ -21,11 +21,11 @@ namespace NHibernate.Caches.CoreDistributedCache
 {
 	using System.Threading.Tasks;
 	using System.Threading;
-	public partial class CoreDistributedCache : ICache
+	public partial class CoreDistributedCache : CacheBase
 	{
 
 		/// <inheritdoc />
-		public async Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		public override async Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			if (key == null)
@@ -49,7 +49,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
+		public override Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (key == null)
 			{
@@ -93,7 +93,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public Task RemoveAsync(object key, CancellationToken cancellationToken)
+		public override Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (key == null)
 			{
@@ -117,7 +117,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public Task ClearAsync(CancellationToken cancellationToken)
+		public override Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -135,7 +135,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public Task LockAsync(object key, CancellationToken cancellationToken)
+		public override Task<object> LockAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -143,8 +143,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 			}
 			try
 			{
-				Lock(key);
-				return Task.CompletedTask;
+				return Task.FromResult<object>(Lock(key));
 			}
 			catch (Exception ex)
 			{
@@ -153,7 +152,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+		public override Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -161,7 +160,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 			}
 			try
 			{
-				Unlock(key);
+				Unlock(key, lockValue);
 				return Task.CompletedTask;
 			}
 			catch (Exception ex)

@@ -32,7 +32,7 @@ namespace NHibernate.Caches.RtMemoryCache
 	/// <summary>
 	/// Pluggable cache implementation using the System.Runtime.Caching classes.
 	/// </summary>
-	public partial class RtMemoryCache : ICache
+	public class RtMemoryCache : CacheBase
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(RtMemoryCache));
 		private string _regionPrefix;
@@ -183,7 +183,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -203,7 +203,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -237,7 +237,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -249,7 +249,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			RemoveRootCacheKey();
 			StoreRootCacheKey();
@@ -289,33 +289,34 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// Do nothing
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// Do nothing
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
-		{
-			// Do nothing
-		}
-
-		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout => Timestamper.OneMs * 60000;
+		public override int Timeout => Timestamper.OneMs * 60000;
 
 		/// <inheritdoc />
-		public string RegionName => Region;
+		public override string RegionName => Region;
 	}
 }

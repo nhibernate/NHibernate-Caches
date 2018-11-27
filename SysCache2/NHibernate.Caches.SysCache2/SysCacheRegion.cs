@@ -13,7 +13,7 @@ namespace NHibernate.Caches.SysCache2
 	/// <summary>
 	/// Pluggable cache implementation using the System.Web.Caching classes and handling SQL dependencies.
 	/// </summary>
-	public partial class SysCacheRegion : ICache
+	public class SysCacheRegion : CacheBase
 	{
 		/// <summary>The name of the cache prefix to differentiate the nhibernate cache elements from
 		/// other items in the cache.</summary>
@@ -94,10 +94,10 @@ namespace NHibernate.Caches.SysCache2
 			_rootCacheKey = GenerateRootCacheKey();
 		}
 
-		#region ICache Members
+		#region CacheBase Members
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			//remove the root cache item, this will cause all of the individual items to be removed from the cache
 			_webCache.Remove(_rootCacheKey);
@@ -107,13 +107,13 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 		}
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null || _isRootItemCached == false)
 			{
@@ -137,20 +137,21 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
 		{
 			//nothing to do here
+			return null;
 		}
 
 		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
 		[SuppressMessage("Microsoft.Reliability", "CA2000:DisposeObjectsBeforeLosingScope")]
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			//validate the params
 			if (key == null)
@@ -207,10 +208,10 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <inheritdoc />
-		public string RegionName => _name;
+		public override string RegionName => _name;
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -226,10 +227,10 @@ namespace NHibernate.Caches.SysCache2
 		}
 
 		/// <inheritdoc />
-		public int Timeout => Timestamper.OneMs * 60000;
+		public override int Timeout => Timestamper.OneMs * 60000;
 
 		/// <inheritdoc />
-		public void Unlock(object key)
+		public override void Unlock(object key, object lockValue)
 		{
 			//nothing to do since we arent locking
 		}

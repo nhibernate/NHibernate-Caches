@@ -10,7 +10,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="NHibernate" Version="5.1.0" />
+    <PackageReference Include="NHibernate" Version="5.2.0" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MergeSystem.Indexus.WinServiceCommon">

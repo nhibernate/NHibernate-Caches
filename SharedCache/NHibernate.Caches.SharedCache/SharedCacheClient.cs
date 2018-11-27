@@ -33,7 +33,7 @@ namespace NHibernate.Caches.SharedCache
 	/// <summary>
 	/// Pluggable cache implementation using indeXus.Net Shared Cache.
 	/// </summary>
-	public partial class SharedCacheClient : ICache
+	public class SharedCacheClient : CacheBase
 	{
 		private static readonly INHibernateLogger log;
 		private readonly string region;
@@ -67,7 +67,7 @@ namespace NHibernate.Caches.SharedCache
 		}
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -79,7 +79,7 @@ namespace NHibernate.Caches.SharedCache
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -96,7 +96,7 @@ namespace NHibernate.Caches.SharedCache
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -108,37 +108,37 @@ namespace NHibernate.Caches.SharedCache
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			IndexusDistributionCache.SharedCache.Clear();
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key) {}
+		public override object Lock(object key) => null;
 
 		/// <inheritdoc />
-		public void Unlock(object key) {}
+		public override void Unlock(object key, object lockValue) {}
 
 		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout
+		public override int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
 		/// <inheritdoc />
-		public string RegionName
+		public override string RegionName
 		{
 			get { return region; }
 		}

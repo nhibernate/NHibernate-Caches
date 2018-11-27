@@ -46,7 +46,7 @@ namespace NHibernate.Caches.Velocity
 	/// <summary>
 	/// Pluggable cache implementation using the Velocity cache.
 	/// </summary>
-	public partial class VelocityClient : ICache
+	public class VelocityClient : CacheBase
 	{
 		private const string CacheName = "nhibernate";
 		private static readonly INHibernateLogger log;
@@ -86,10 +86,10 @@ namespace NHibernate.Caches.Velocity
 			catch (CacheException) {}
 		}
 
-		#region ICache Members
+		#region CacheBase Members
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -102,7 +102,7 @@ namespace NHibernate.Caches.Velocity
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -119,7 +119,7 @@ namespace NHibernate.Caches.Velocity
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -134,19 +134,19 @@ namespace NHibernate.Caches.Velocity
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			cache.ClearRegion(region);
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
 		{
 			var lockHandle = new LockHandle();
 			if (Get(key.ToString()) != null)
@@ -157,12 +157,14 @@ namespace NHibernate.Caches.Velocity
 				}
 				catch (CacheException) {}
 			}
+
+			return lockHandle;
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
+		public override void Unlock(object key, object lockValue)
 		{
-			var lockHandle = new LockHandle();
+			var lockHandle = lockValue as LockHandle? ?? new LockHandle();
 			if (Get(key.ToString()) != null)
 			{
 				try
@@ -174,19 +176,19 @@ namespace NHibernate.Caches.Velocity
 		}
 
 		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout
+		public override int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
 		/// <inheritdoc />
-		public string RegionName
+		public override string RegionName
 		{
 			get { return region; }
 		}

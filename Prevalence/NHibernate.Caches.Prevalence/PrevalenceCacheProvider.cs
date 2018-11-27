@@ -27,7 +27,9 @@ namespace NHibernate.Caches.Prevalence
 		/// the directory on the file system where the Prevalence engine will save data.
 		/// It can be relative to the current directory or a full path. If the directory
 		/// doesn't exist, it will be created.</remarks>
+#pragma warning disable 618
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+#pragma warning restore 618
 		{
 			if (regionName == null)
 			{

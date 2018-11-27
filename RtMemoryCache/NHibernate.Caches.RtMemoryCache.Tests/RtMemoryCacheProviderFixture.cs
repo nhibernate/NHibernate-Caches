@@ -40,7 +40,7 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		[Test]
 		public void TestBuildCacheFromConfig()
 		{
-			ICache cache = DefaultProvider.BuildCache("foo", null);
+			var cache = DefaultProvider.BuildCache("foo", null);
 			Assert.That(cache, Is.Not.Null, "pre-configured cache not found");
 		}
 

@@ -319,10 +319,10 @@ namespace NHibernate.Caches.Common.Tests
 			return props;
 		}
 
-		protected ICache GetCacheForExpiration(string cacheRegion, string expirationSetting, int expirySeconds)
+		protected CacheBase GetCacheForExpiration(string cacheRegion, string expirationSetting, int expirySeconds)
 		{
 			var props = GetPropertiesForExpiration(expirationSetting, expirySeconds.ToString());
-			var cache = DefaultProvider.BuildCache(cacheRegion, props);
+			var cache = (CacheBase) DefaultProvider.BuildCache(cacheRegion, props);
 			return cache;
 		}
 	}
