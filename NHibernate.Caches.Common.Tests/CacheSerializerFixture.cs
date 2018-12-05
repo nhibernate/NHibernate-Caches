@@ -6,6 +6,7 @@ using System.ComponentModel.Design.Serialization;
 using System.Globalization;
 using System.Linq;
 using System.Xml;
+using System.Xml.Linq;
 using NHibernate.Cache;
 using NHibernate.Cache.Entry;
 using NHibernate.Engine;
@@ -124,6 +125,150 @@ namespace NHibernate.Caches.Common.Tests
 			AssertEqual(original, copy);
 		}
 
+		[Test]
+		public void TestCacheEntry()
+		{
+			var original = CreateCacheEntry();
+			var data = DefaultSerializer.Serialize(original);
+			var copy = (CacheEntry) DefaultSerializer.Deserialize(data);
+			AssertEqual(original, copy);
+		}
+
+		[Test]
+		public void TestCollectionCacheEntry()
+		{
+			var original = CreateCollectionCacheEntry();
+			var data = DefaultSerializer.Serialize(original);
+			var copy = (CollectionCacheEntry) DefaultSerializer.Deserialize(data);
+			AssertEqual(original, copy);
+		}
+
+		[Test]
+		public void TestCacheLock()
+		{
+			var original = CreateCacheLock();
+			var data = DefaultSerializer.Serialize(original);
+			var copy = (CacheLock) DefaultSerializer.Deserialize(data);
+			AssertEqual(original, copy);
+		}
+
+		[Test]
+		public void TestCachedItem()
+		{
+			// CacheEntry
+			var original = CreateCachedItem(CreateCacheEntry());
+			var data = DefaultSerializer.Serialize(original);
+			var copy = (CachedItem) DefaultSerializer.Deserialize(data);
+			AssertEqual(original, copy);
+
+			// CollectionCacheEntry
+			original = CreateCachedItem(CreateCollectionCacheEntry());
+			data = DefaultSerializer.Serialize(original);
+			copy = (CachedItem) DefaultSerializer.Deserialize(data);
+			AssertEqual(original, copy);
+		}
+
+		[Test]
+		public void TestAnyTypeObjectTypeCacheEntry()
+		{
+			var original = CreateObjectTypeCacheEntry();
+			var data = DefaultSerializer.Serialize(original);
+			var copy = (AnyType.ObjectTypeCacheEntry) DefaultSerializer.Deserialize(data);
+			AssertEqual(original, copy);
+		}
+
+		protected void AssertEqual(CacheEntry original, CacheEntry copy)
+		{
+			Assert.That(copy.Version, Is.EqualTo(original.Version));
+			Assert.That(copy.Version, Is.TypeOf(original.Version.GetType()));
+			Assert.That(copy.Subclass, Is.EqualTo(original.Subclass));
+			Assert.That(copy.AreLazyPropertiesUnfetched, Is.EqualTo(original.AreLazyPropertiesUnfetched));
+			for (var i = 0; i < copy.DisassembledState.Length; i++)
+			{
+				if (original.DisassembledState[i] == null)
+				{
+					Assert.That(copy.DisassembledState[i], Is.Null);
+					continue;
+				}
+
+				Assert.That(copy.DisassembledState[i], Is.TypeOf(original.DisassembledState[i].GetType()));
+				if (original.DisassembledState[i] is AnyType.ObjectTypeCacheEntry originalAnyType)
+				{
+					var copyAnyType = (AnyType.ObjectTypeCacheEntry) copy.DisassembledState[i];
+					AssertEqual(originalAnyType, copyAnyType);
+				}
+				else
+				{
+					Assert.That(copy.DisassembledState[i], Is.EqualTo(original.DisassembledState[i]));
+				}
+			}
+		}
+
+		protected void AssertEqual(CachedItem original, CachedItem copy)
+		{
+			Assert.That(copy.Version, Is.EqualTo(original.Version));
+			Assert.That(copy.Version, Is.TypeOf(original.Version.GetType()));
+			Assert.That(copy.Value, Is.TypeOf(original.Value.GetType()));
+			switch (original.Value)
+			{
+				case CacheEntry cacheEntry:
+					AssertEqual(cacheEntry, (CacheEntry) copy.Value);
+					break;
+				case CollectionCacheEntry colleectionCacheEntry:
+					AssertEqual(colleectionCacheEntry, (CollectionCacheEntry) copy.Value);
+					break;
+				default:
+					Assert.That(copy.Value, Is.EqualTo(original.Value));
+					break;
+			}
+			Assert.That(copy.FreshTimestamp, Is.EqualTo(original.FreshTimestamp));
+		}
+
+		protected void AssertEqual(CollectionCacheEntry original, CollectionCacheEntry copy)
+		{
+			Assert.That(copy.State, Is.TypeOf(original.State.GetType()));
+
+			var originalArray = original.State;
+			var copyArray = copy.State;
+
+			for (var i = 0; i < copyArray.Length; i++)
+			{
+				if (originalArray[i] == null)
+				{
+					Assert.That(copyArray[i], Is.Null);
+					continue;
+				}
+
+				Assert.That(copyArray[i], Is.TypeOf(originalArray[i].GetType()));
+				if (originalArray[i] is AnyType.ObjectTypeCacheEntry originalAnyType)
+				{
+					var copyAnyType = (AnyType.ObjectTypeCacheEntry) copyArray[i];
+					AssertEqual(originalAnyType, copyAnyType);
+				}
+				else
+				{
+					Assert.That(copyArray[i], Is.EqualTo(originalArray[i]));
+				}
+			}
+		}
+
+		protected void AssertEqual(CacheLock original, CacheLock copy)
+		{
+			Assert.That(copy.Version, Is.EqualTo(original.Version));
+			Assert.That(copy.Version, Is.TypeOf(original.Version.GetType()));
+			Assert.That(copy.Id, Is.EqualTo(original.Id));
+			Assert.That(copy.Multiplicity, Is.EqualTo(original.Multiplicity));
+			Assert.That(copy.Timeout, Is.EqualTo(original.Timeout));
+			Assert.That(copy.UnlockTimestamp, Is.EqualTo(original.UnlockTimestamp));
+			Assert.That(copy.WasLockedConcurrently, Is.EqualTo(original.WasLockedConcurrently));
+		}
+
+		protected void AssertEqual(AnyType.ObjectTypeCacheEntry original, AnyType.ObjectTypeCacheEntry copy)
+		{
+			Assert.That(copy.Id, Is.EqualTo(original.Id));
+			Assert.That(copy.EntityName, Is.EqualTo(original.EntityName));
+		}
+
 		protected void AssertEqual(Hashtable original, Hashtable copy)
 		{
 			Assert.That(copy, Has.Count.EqualTo(original.Count));
@@ -159,6 +304,14 @@ namespace NHibernate.Caches.Common.Tests
 				Assert.That(copy, Is.Null);
 				return;
 			}
+
+			if (original is AnyType.ObjectTypeCacheEntry anyCacheEntry)
+			{
+				Assert.That(copy, Is.TypeOf<AnyType.ObjectTypeCacheEntry>());
+				AssertEqual(anyCacheEntry, (AnyType.ObjectTypeCacheEntry) copy);
+				return;
+			}
+
 			Assert.That(copy, Is.TypeOf(original.GetType()));
 			Assert.That(copy, Is.EqualTo(original));
 		}
@@ -180,20 +333,25 @@ namespace NHibernate.Caches.Common.Tests
 			return GetAllNHibernateTypeValues().ToList();
 		}
 
-		// TODO: make tests after upgraded to NHiberante 5.2
 		protected CacheEntry CreateCacheEntry()
 		{
-			var types = GetNHibernateTypes();
-			return CacheEntry.Create(types.Values.ToArray(), null, false, null, null, null);
+			return new CacheEntry
+			{
+				DisassembledState = GetAllNHibernateTypeValues(),
+				Version = 1,
+				Subclass = "TestClass",
+				AreLazyPropertiesUnfetched = true
+			};
 		}
 
-		// TODO: make tests after upgraded to NHiberante 5.2
 		protected CollectionCacheEntry CreateCollectionCacheEntry()
 		{
-			return CollectionCacheEntry.Create(null, null);
+			return new CollectionCacheEntry
+			{
+				State = GetAllNHibernateTypeValues()
+			};
 		}
 
-		// TODO: make tests after upgraded to NHiberante 5.2
 		protected CacheLock CreateCacheLock()
 		{
 			return new CacheLock
@@ -202,7 +360,6 @@ namespace NHibernate.Caches.Common.Tests
 			};
 		}
 
-		// TODO: make tests after upgraded to NHiberante 5.2
 		protected CachedItem CreateCachedItem(object data)
 		{
 			return new CachedItem
@@ -211,10 +368,13 @@ namespace NHibernate.Caches.Common.Tests
 			};
 		}
 
-		// TODO: make tests after upgraded to NHiberante 5.2
 		protected AnyType.ObjectTypeCacheEntry CreateObjectTypeCacheEntry()
 		{
-			return null;
+			return new AnyType.ObjectTypeCacheEntry
+			{
+				EntityName = "Test",
+				Id = 1
+			};
 		}
 
 		[Serializable]
@@ -236,8 +396,7 @@ namespace NHibernate.Caches.Common.Tests
 				{NHibernateUtil.Boolean, true},
 				{NHibernateUtil.Byte, (byte) 1},
 				{NHibernateUtil.Character, 'a'},
-				// TODO: enable after upgraded to NHiberante 5.2
-				//{NHibernateUtil.CultureInfo, CultureInfo.CurrentCulture},
+				{NHibernateUtil.CultureInfo, CultureInfo.CurrentCulture},
 				{NHibernateUtil.DateTime, DateTime.Now},
 				{NHibernateUtil.DateTimeNoMs, DateTime.Now},
 				{NHibernateUtil.LocalDateTime, DateTime.Now},
@@ -267,17 +426,14 @@ namespace NHibernate.Caches.Common.Tests
 				{NHibernateUtil.DbTimestamp, DateTime.Now},
 				{NHibernateUtil.TrueFalse, false},
 				{NHibernateUtil.YesNo, true},
-				// TODO: enable after upgraded to NHiberante 5.2
-				//{NHibernateUtil.Class, typeof(IType)},
+				{NHibernateUtil.Class, typeof(IType)},
 				{NHibernateUtil.MetaType, entityName},
 				{NHibernateUtil.Serializable, new CustomEntity {Id = 1}},
-				// TODO: enable after upgraded to NHiberante 5.2
-				//{NHibernateUtil.Object, new CustomEntity {Id = 10}},
+				{NHibernateUtil.Object, new CustomEntity {Id = 10}},
 				{NHibernateUtil.AnsiChar, 'a'},
-				// TODO: enable after upgraded to NHiberante 5.2
-				//{NHibernateUtil.XmlDoc, xmlDoc},
-				//{NHibernateUtil.XDoc, XDocument.Parse("<Root>XDoc</Root>")},
-				//{NHibernateUtil.Uri, new Uri("http://test.com")}
+				{NHibernateUtil.XmlDoc, xmlDoc},
+				{NHibernateUtil.XDoc, XDocument.Parse("<Root>XDoc</Root>")},
+				{NHibernateUtil.Uri, new Uri("http://test.com")}
 			};
 		}
 
