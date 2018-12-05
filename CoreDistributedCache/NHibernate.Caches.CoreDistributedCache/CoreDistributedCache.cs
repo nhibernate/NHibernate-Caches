@@ -25,16 +25,115 @@ using NHibernate.Cache;
 using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
 using NHibernate.Caches.Util;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.CoreDistributedCache
 {
+	// 6.0 TODO: replace that class by its base
 	/// <summary>
 	/// Pluggable cache implementation using <see cref="IDistributedCache"/> implementations.
 	/// </summary>
-	public partial class CoreDistributedCache : ICache
+	public class CoreDistributedCache : CoreDistributedCacheBase,
+#pragma warning disable 618
+		ICache
+#pragma warning restore 618
+	{
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		/// <param name="cache">The <see cref="IDistributedCache"/> instance to use.</param>
+		/// <param name="constraints">Optional constraints of <paramref name="cache"/>.</param>
+		/// <param name="region">The region of the cache.</param>
+		/// <param name="properties">Cache configuration properties.</param>
+		/// <remarks>
+		/// There are three (3) configurable parameters taken in <paramref name="properties"/>:
+		/// <ul>
+		///		<li>expiration (or cache.default_expiration) = number of seconds to wait before expiring each item.</li>
+		///		<li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
+		/// 	<li>regionPrefix = a string for prefixing the region name.</li>
+		/// </ul>
+		/// All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration and no prefix.
+		/// </remarks>
+		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
+		[CLSCompliant(false)]
+		public CoreDistributedCache(
+			IDistributedCache cache, CacheConstraints constraints, string region,
+			IDictionary<string, string> properties)
+			: base(cache, constraints, region, properties)
+		{
+		}
+
+		/// <inheritdoc />
+		public new Task<object> GetAsync(object key, CancellationToken cancellationToken)
+			=> base.GetAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task PutAsync(object key, object value, CancellationToken cancellationToken)
+			=> base.PutAsync(key, value, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task RemoveAsync(object key, CancellationToken cancellationToken)
+			=> base.RemoveAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task ClearAsync(CancellationToken cancellationToken)
+			=> base.ClearAsync(cancellationToken);
+
+		/// <inheritdoc />
+		public new Task LockAsync(object key, CancellationToken cancellationToken)
+			=> base.LockAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+			=> base.UnlockAsync(key, null, cancellationToken);
+
+		/// <inheritdoc />
+		public new string RegionName => base.RegionName;
+
+		/// <inheritdoc />
+		public new object Get(object key)
+			=> base.Get(key);
+
+		/// <inheritdoc />
+		public new void Put(object key, object value)
+			=> base.Put(key, value);
+
+		/// <inheritdoc />
+		public new void Remove(object key)
+			=> base.Remove(key);
+
+		/// <inheritdoc />
+		public new void Clear()
+			=> base.Clear();
+
+		/// <inheritdoc />
+		public new void Destroy()
+			=> base.Destroy();
+
+		/// <inheritdoc />
+		public new void Lock(object key)
+			=> base.Lock(key);
+
+		/// <inheritdoc />
+		public void Unlock(object key)
+			=> base.Unlock(key, null);
+
+		/// <inheritdoc />
+		public new long NextTimestamp()
+			=> base.NextTimestamp();
+
+		/// <inheritdoc />
+		public new int Timeout => base.Timeout;
+	}
+
+	/// <summary>
+	/// Pluggable cache implementation using <see cref="IDistributedCache"/> implementations.
+	/// </summary>
+	public abstract partial class CoreDistributedCacheBase : CacheBase
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CoreDistributedCache));
 
@@ -69,7 +168,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// </remarks>
 		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
 		[CLSCompliant(false)]
-		public CoreDistributedCache(
+		public CoreDistributedCacheBase(
 			IDistributedCache cache, CacheConstraints constraints, string region, IDictionary<string, string> properties)
 		{
 			if (constraints?.MaxKeySize <= 0)
@@ -83,7 +182,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public string RegionName { get; }
+		public override string RegionName { get; }
 
 		/// <summary>
 		/// The expiration delay applied to cached items.
@@ -102,7 +201,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// This option is a workaround for distinguishing composite-id missing an
 		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
 		/// between processes running another runtime than .Net Framework, or with future versions
-		/// of .Net Framework: the hascode is not guaranteed to be stable.
+		/// of .Net Framework: the hashcode is not guaranteed to be stable.
 		/// </para>
 		/// <para>
 		/// The value of this property can be set with the attribute <c>append-hashcode</c> of the
@@ -239,7 +338,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -262,7 +361,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -295,7 +394,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -308,7 +407,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			// Like IMemoryCache, it does not support Clear. Unlike it, it does neither provides a dependency
 			// mechanism which would allow to implement it.
@@ -316,29 +415,30 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// Do nothing
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// Do nothing
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
-		{
-			// Do nothing
-		}
-
-		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout => Timestamper.OneMs * 60000;
+		public override int Timeout => Timestamper.OneMs * 60000;
 	}
 }

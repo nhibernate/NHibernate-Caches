@@ -85,7 +85,9 @@ namespace NHibernate.Caches.CoreMemoryCache
 		#region ICacheProvider Members
 
 		/// <inheritdoc />
+#pragma warning disable 618
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+#pragma warning restore 618
 		{
 			if (regionName == null)
 			{

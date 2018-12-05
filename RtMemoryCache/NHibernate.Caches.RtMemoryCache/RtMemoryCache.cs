@@ -25,41 +25,34 @@ using System.Collections;
 using System.Runtime.Caching;
 using NHibernate.Cache;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.RtMemoryCache
 {
+	// 6.0 TODO: replace that class by its base
 	/// <summary>
 	/// Pluggable cache implementation using the System.Runtime.Caching classes.
 	/// </summary>
-	public partial class RtMemoryCache : ICache
+	public class RtMemoryCache : RtMemoryCacheBase,
+#pragma warning disable 618
+		ICache
+#pragma warning restore 618
 	{
-		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(RtMemoryCache));
-		private string _regionPrefix;
-		private readonly ObjectCache _cache;
-
-		// The name of the cache key used to clear the cache. All cached items depend on this key.
-		private readonly string _rootCacheKey;
-		private bool _rootCacheKeyStored;
-		private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
-		private const bool _defaultUseSlidingExpiration = false;
-		private static readonly string DefaultRegionPrefix = string.Empty;
-		private const string _cacheKeyPrefix = "NHibernate-Cache:";
-
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
 		public RtMemoryCache()
-			: this("nhibernate", null)
 		{
 		}
 
 		/// <summary>
 		/// Constructor with no properties.
 		/// </summary>
-		/// <param name="region">The cache region name.</param>
+		/// <param name="region">The region of the cache.</param>
 		public RtMemoryCache(string region)
-			: this(region, null)
+			: base(region)
 		{
 		}
 
@@ -79,6 +72,123 @@ namespace NHibernate.Caches.RtMemoryCache
 		/// </remarks>
 		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
 		public RtMemoryCache(string region, IDictionary<string, string> properties)
+			: base(region, properties)
+		{
+		}
+
+		/// <inheritdoc />
+		public new Task<object> GetAsync(object key, CancellationToken cancellationToken)
+			=> base.GetAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task PutAsync(object key, object value, CancellationToken cancellationToken)
+			=> base.PutAsync(key, value, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task RemoveAsync(object key, CancellationToken cancellationToken)
+			=> base.RemoveAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task ClearAsync(CancellationToken cancellationToken)
+			=> base.ClearAsync(cancellationToken);
+
+		/// <inheritdoc />
+		public new Task LockAsync(object key, CancellationToken cancellationToken)
+			=> base.LockAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+			=> base.UnlockAsync(key, null, cancellationToken);
+
+		/// <inheritdoc />
+		public new string RegionName => base.RegionName;
+
+		/// <inheritdoc />
+		public new object Get(object key)
+			=> base.Get(key);
+
+		/// <inheritdoc />
+		public new void Put(object key, object value)
+			=> base.Put(key, value);
+
+		/// <inheritdoc />
+		public new void Remove(object key)
+			=> base.Remove(key);
+
+		/// <inheritdoc />
+		public new void Clear()
+			=> base.Clear();
+
+		/// <inheritdoc />
+		public new void Destroy()
+			=> base.Destroy();
+
+		/// <inheritdoc />
+		public new void Lock(object key)
+			=> base.Lock(key);
+
+		/// <inheritdoc />
+		public void Unlock(object key)
+			=> base.Unlock(key, null);
+
+		/// <inheritdoc />
+		public new long NextTimestamp()
+			=> base.NextTimestamp();
+
+		/// <inheritdoc />
+		public new int Timeout => base.Timeout;
+	}
+
+	/// <summary>
+	/// Pluggable cache implementation using the System.Runtime.Caching classes.
+	/// </summary>
+	public abstract class RtMemoryCacheBase : CacheBase
+	{
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(RtMemoryCache));
+		private string _regionPrefix;
+		private readonly ObjectCache _cache;
+
+		// The name of the cache key used to clear the cache. All cached items depend on this key.
+		private readonly string _rootCacheKey;
+		private bool _rootCacheKeyStored;
+		private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
+		private const bool _defaultUseSlidingExpiration = false;
+		private static readonly string DefaultRegionPrefix = string.Empty;
+		private const string _cacheKeyPrefix = "NHibernate-Cache:";
+
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public RtMemoryCacheBase()
+			: this("nhibernate", null)
+		{
+		}
+
+		/// <summary>
+		/// Constructor with no properties.
+		/// </summary>
+		/// <param name="region">The cache region name.</param>
+		public RtMemoryCacheBase(string region)
+			: this(region, null)
+		{
+		}
+
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="region">The cache region name.</param>
+		/// <param name="properties">The cache configuration properties.</param>
+		/// <remarks>
+		/// There are three (3) configurable parameters:
+		/// <ul>
+		///		<li>expiration (or cache.default_expiration) = number of seconds to wait before expiring each item.</li>
+		///		<li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
+		///		<li>regionPrefix = a string for prefixing the region name.</li>
+		/// </ul>
+		/// All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration, no region prefix.
+		/// </remarks>
+		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
+		public RtMemoryCacheBase(string region, IDictionary<string, string> properties)
 		{
 			Region = region;
 			_cache = MemoryCache.Default;
@@ -183,7 +293,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -203,7 +313,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -237,7 +347,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -249,7 +359,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			RemoveRootCacheKey();
 			StoreRootCacheKey();
@@ -289,33 +399,34 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// Do nothing
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// Do nothing
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
-		{
-			// Do nothing
-		}
-
-		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout => Timestamper.OneMs * 60000;
+		public override int Timeout => Timestamper.OneMs * 60000;
 
 		/// <inheritdoc />
-		public string RegionName => Region;
+		public override string RegionName => Region;
 	}
 }

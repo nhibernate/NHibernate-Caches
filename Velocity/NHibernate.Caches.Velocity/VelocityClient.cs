@@ -37,23 +37,123 @@
 using System;
 using System.Collections.Generic;
 using System.Data.Caching;
+using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using CacheException=System.Data.Caching.CacheException;
 using CacheFactory=System.Data.Caching.CacheFactory;
 
 namespace NHibernate.Caches.Velocity
 {
+	// 6.0 TODO: replace that class by its base
 	/// <summary>
 	/// Pluggable cache implementation using the Velocity cache.
 	/// </summary>
-	public partial class VelocityClient : ICache
+	public class VelocityClient : VelocityClientBase,
+#pragma warning disable 618
+		ICache
+#pragma warning restore 618
+	{
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public VelocityClient()
+		{
+		}
+
+		/// <summary>
+		/// Constructor with no properties.
+		/// </summary>
+		/// <param name="regionName">The region of the cache.</param>
+		public VelocityClient(string regionName)
+			: base(regionName)
+		{
+		}
+
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="regionName">The cache region name.</param>
+		/// <param name="properties">The configuration properties.</param>
+		public VelocityClient(string regionName, IDictionary<string, string> properties)
+			: base(regionName, properties)
+		{
+		}
+
+		/// <inheritdoc />
+		public new Task<object> GetAsync(object key, CancellationToken cancellationToken)
+			=> base.GetAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task PutAsync(object key, object value, CancellationToken cancellationToken)
+			=> base.PutAsync(key, value, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task RemoveAsync(object key, CancellationToken cancellationToken)
+			=> base.RemoveAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task ClearAsync(CancellationToken cancellationToken)
+			=> base.ClearAsync(cancellationToken);
+
+		/// <inheritdoc />
+		public new Task LockAsync(object key, CancellationToken cancellationToken)
+			=> base.LockAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+			=> base.UnlockAsync(key, null, cancellationToken);
+
+		/// <inheritdoc />
+		public new string RegionName => base.RegionName;
+
+		/// <inheritdoc />
+		public new object Get(object key)
+			=> base.Get(key);
+
+		/// <inheritdoc />
+		public new void Put(object key, object value)
+			=> base.Put(key, value);
+
+		/// <inheritdoc />
+		public new void Remove(object key)
+			=> base.Remove(key);
+
+		/// <inheritdoc />
+		public new void Clear()
+			=> base.Clear();
+
+		/// <inheritdoc />
+		public new void Destroy()
+			=> base.Destroy();
+
+		/// <inheritdoc />
+		public new void Lock(object key)
+			=> base.Lock(key);
+
+		/// <inheritdoc />
+		public void Unlock(object key)
+			=> base.Unlock(key, null);
+
+		/// <inheritdoc />
+		public new long NextTimestamp()
+			=> base.NextTimestamp();
+
+		/// <inheritdoc />
+		public new int Timeout => base.Timeout;
+	}
+
+	/// <summary>
+	/// Pluggable cache implementation using the Velocity cache.
+	/// </summary>
+	public abstract class VelocityClientBase : CacheBase
 	{
 		private const string CacheName = "nhibernate";
 		private static readonly INHibernateLogger log;
 		private readonly System.Data.Caching.Cache cache;
 		private readonly string region;
 
-		static VelocityClient()
+		static VelocityClientBase()
 		{
 			log = NHibernateLogger.For(typeof(VelocityClient));
 		}
@@ -61,20 +161,20 @@ namespace NHibernate.Caches.Velocity
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
-		public VelocityClient() : this("nhibernate", null) {}
+		public VelocityClientBase() : this("nhibernate", null) {}
 
 		/// <summary>
 		/// Constructor with no properties.
 		/// </summary>
 		/// <param name="regionName">The cache region name.</param>
-		public VelocityClient(string regionName) : this(regionName, null) {}
+		public VelocityClientBase(string regionName) : this(regionName, null) {}
 
 		/// <summary>
 		/// Full constructor.
 		/// </summary>
 		/// <param name="regionName">The cache region name.</param>
 		/// <param name="properties">The cache configuration properties.</param>
-		public VelocityClient(string regionName, IDictionary<string, string> properties)
+		public VelocityClientBase(string regionName, IDictionary<string, string> properties)
 		{
 			region = regionName.GetHashCode().ToString(); //because the region name length is limited
 			var cacheCluster = new CacheFactory();
@@ -86,10 +186,10 @@ namespace NHibernate.Caches.Velocity
 			catch (CacheException) {}
 		}
 
-		#region ICache Members
+		#region CacheBase Members
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -102,7 +202,7 @@ namespace NHibernate.Caches.Velocity
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -119,7 +219,7 @@ namespace NHibernate.Caches.Velocity
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -134,19 +234,19 @@ namespace NHibernate.Caches.Velocity
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			cache.ClearRegion(region);
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
 		{
 			var lockHandle = new LockHandle();
 			if (Get(key.ToString()) != null)
@@ -157,12 +257,14 @@ namespace NHibernate.Caches.Velocity
 				}
 				catch (CacheException) {}
 			}
+
+			return lockHandle;
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
+		public override void Unlock(object key, object lockValue)
 		{
-			var lockHandle = new LockHandle();
+			var lockHandle = lockValue as LockHandle? ?? new LockHandle();
 			if (Get(key.ToString()) != null)
 			{
 				try
@@ -174,19 +276,19 @@ namespace NHibernate.Caches.Velocity
 		}
 
 		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout
+		public override int Timeout
 		{
 			get { return Timestamper.OneMs * 60000; } // 60 seconds
 		}
 
 		/// <inheritdoc />
-		public string RegionName
+		public override string RegionName
 		{
 			get { return region; }
 		}

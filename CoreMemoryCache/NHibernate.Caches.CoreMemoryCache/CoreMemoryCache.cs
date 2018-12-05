@@ -24,56 +24,32 @@ using System;
 using NHibernate.Cache;
 using System.Collections.Generic;
 using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Primitives;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.CoreMemoryCache
 {
+	// 6.0 TODO: replace that class by its base
 	/// <summary>
 	/// Pluggable cache implementation using the Microsoft.Extensions.Caching.Memory classes.
 	/// </summary>
 	/// <remarks>
 	/// Priority is not configurable because it is un-usable: the compaction on memory pressure feature has been
 	/// removed from MemoryCache, only explicit compaction or size limit compaction may use priorities. But
-	/// <see cref="ICache" /> API does not have a suitable method for triggering compaction, and size of each
-	/// cached entry has to be user provided, which <see cref="ICache" /> API does not support.
+	/// <see cref="CacheBase" /> API does not have a suitable method for triggering compaction, and size of each
+	/// cached entry has to be user provided, which <see cref="CacheBase" /> API does not support.
 	/// </remarks>
-	public partial class CoreMemoryCache : ICache
+	public class CoreMemoryCache : CoreMemoryCacheBase,
+#pragma warning disable 618
+		ICache
+#pragma warning restore 618
 	{
-		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CoreMemoryCache));
-
-		// Using one single shared memory cache: it launches background task from time to time in order
-		// to cleanup expired items. So we need to avoid running many memory cache instances, otherwise
-		// they may launch many background tasks concurrently, which could be very detrimental for some
-		// applications.
-		private static readonly IMemoryCache Cache;
-
-		private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
-		private const bool _defaultUseSlidingExpiration = false;
-		private static readonly string DefaultRegionPrefix = string.Empty;
-
-		private string _fullRegion;
-
-		private volatile CancellationTokenSource _clearToken = new CancellationTokenSource();
-		private readonly ReaderWriterLockSlim _clearTokenLock = new ReaderWriterLockSlim();
-
-		static CoreMemoryCache()
-		{
-			var cacheOption = new MemoryCacheOptions();
-			if (CoreMemoryCacheProvider.ExpirationScanFrequency.HasValue)
-			{
-				cacheOption.ExpirationScanFrequency = CoreMemoryCacheProvider.ExpirationScanFrequency.Value;
-			}
-
-			Cache = new MemoryCache(cacheOption);
-		}
-
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
 		public CoreMemoryCache()
-			: this("nhibernate", null)
 		{
 		}
 
@@ -82,7 +58,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		/// </summary>
 		/// <param name="region">The region of the cache.</param>
 		public CoreMemoryCache(string region)
-			: this(region, null)
+			: base(region)
 		{
 		}
 
@@ -102,13 +78,152 @@ namespace NHibernate.Caches.CoreMemoryCache
 		/// </remarks>
 		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
 		public CoreMemoryCache(string region, IDictionary<string, string> properties)
+			: base(region, properties)
+		{
+		}
+
+		/// <inheritdoc />
+		public new Task<object> GetAsync(object key, CancellationToken cancellationToken)
+			=> base.GetAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task PutAsync(object key, object value, CancellationToken cancellationToken)
+			=> base.PutAsync(key, value, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task RemoveAsync(object key, CancellationToken cancellationToken)
+			=> base.RemoveAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public new Task ClearAsync(CancellationToken cancellationToken)
+			=> base.ClearAsync(cancellationToken);
+
+		/// <inheritdoc />
+		public new Task LockAsync(object key, CancellationToken cancellationToken)
+			=> base.LockAsync(key, cancellationToken);
+
+		/// <inheritdoc />
+		public Task UnlockAsync(object key, CancellationToken cancellationToken)
+			=> base.UnlockAsync(key, null, cancellationToken);
+
+		/// <inheritdoc />
+		public new string RegionName => base.RegionName;
+
+		/// <inheritdoc />
+		public new object Get(object key)
+			=> base.Get(key);
+
+		/// <inheritdoc />
+		public new void Put(object key, object value)
+			=> base.Put(key, value);
+
+		/// <inheritdoc />
+		public new void Remove(object key)
+			=> base.Remove(key);
+
+		/// <inheritdoc />
+		public new void Clear()
+			=> base.Clear();
+
+		/// <inheritdoc />
+		public new void Destroy()
+			=> base.Destroy();
+
+		/// <inheritdoc />
+		public new void Lock(object key)
+			=> base.Lock(key);
+
+		/// <inheritdoc />
+		public void Unlock(object key)
+			=> base.Unlock(key, null);
+
+		/// <inheritdoc />
+		public new long NextTimestamp()
+			=> base.NextTimestamp();
+
+		/// <inheritdoc />
+		public new int Timeout => base.Timeout;
+	}
+
+	/// <summary>
+	/// Pluggable cache implementation using the Microsoft.Extensions.Caching.Memory classes.
+	/// </summary>
+	/// <remarks>
+	/// Priority is not configurable because it is un-usable: the compaction on memory pressure feature has been
+	/// removed from MemoryCache, only explicit compaction or size limit compaction may use priorities. But
+	/// <see cref="CacheBase" /> API does not have a suitable method for triggering compaction, and size of each
+	/// cached entry has to be user provided, which <see cref="CacheBase" /> API does not support.
+	/// </remarks>
+	public abstract class CoreMemoryCacheBase : CacheBase
+	{
+		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CoreMemoryCache));
+
+		// Using one single shared memory cache: it launches background task from time to time in order
+		// to cleanup expired items. So we need to avoid running many memory cache instances, otherwise
+		// they may launch many background tasks concurrently, which could be very detrimental for some
+		// applications.
+		private static readonly IMemoryCache Cache;
+
+		private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
+		private const bool _defaultUseSlidingExpiration = false;
+		private static readonly string DefaultRegionPrefix = string.Empty;
+
+		private string _fullRegion;
+
+		private volatile CancellationTokenSource _clearToken = new CancellationTokenSource();
+		private readonly ReaderWriterLockSlim _clearTokenLock = new ReaderWriterLockSlim();
+
+		static CoreMemoryCacheBase()
+		{
+			var cacheOption = new MemoryCacheOptions();
+			if (CoreMemoryCacheProvider.ExpirationScanFrequency.HasValue)
+			{
+				cacheOption.ExpirationScanFrequency = CoreMemoryCacheProvider.ExpirationScanFrequency.Value;
+			}
+
+			Cache = new MemoryCache(cacheOption);
+		}
+
+		/// <summary>
+		/// Default constructor.
+		/// </summary>
+		public CoreMemoryCacheBase()
+			: this("nhibernate", null)
+		{
+		}
+
+		/// <summary>
+		/// Constructor with no properties.
+		/// </summary>
+		/// <param name="region">The region of the cache.</param>
+		public CoreMemoryCacheBase(string region)
+			: this(region, null)
+		{
+		}
+
+		/// <summary>
+		/// Full constructor.
+		/// </summary>
+		/// <param name="region">The region of the cache.</param>
+		/// <param name="properties">Cache configuration properties.</param>
+		/// <remarks>
+		/// There are three (3) configurable parameters:
+		/// <ul>
+		///		<li>expiration (or cache.default_expiration) = number of seconds to wait before expiring each item.</li>
+		///		<li>cache.use_sliding_expiration = a boolean, true for resetting a cached item expiration each time it is accessed.</li>
+		/// 	<li>regionPrefix = a string for prefixing the region name.</li>
+		/// </ul>
+		/// All parameters are optional. The defaults are an expiration of 300 seconds, no sliding expiration and no prefix.
+		/// </remarks>
+		/// <exception cref="ArgumentException">The "expiration" property could not be parsed.</exception>
+		public CoreMemoryCacheBase(string region, IDictionary<string, string> properties)
 		{
 			RegionName = region;
 			Configure(properties);
 		}
 
 		/// <inheritdoc />
-		public string RegionName { get; }
+		public override string RegionName { get; }
 
 		/// <summary>
 		/// The expiration delay applied to cached items.
@@ -197,7 +312,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			if (key == null)
 			{
@@ -211,7 +326,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			if (key == null)
 			{
@@ -244,7 +359,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			if (key == null)
 			{
@@ -257,7 +372,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			_clearTokenLock.EnterWriteLock();
 			try
@@ -273,7 +388,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 			Clear();
 			_clearTokenLock.Dispose();
@@ -281,24 +396,25 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
+		{
+			// Do nothing
+			return null;
+		}
+
+		/// <inheritdoc />
+		public override void Unlock(object key, object lockValue)
 		{
 			// Do nothing
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
-		{
-			// Do nothing
-		}
-
-		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
 
 		/// <inheritdoc />
-		public int Timeout => Timestamper.OneMs * 60000;
+		public override int Timeout => Timestamper.OneMs * 60000;
 	}
 }

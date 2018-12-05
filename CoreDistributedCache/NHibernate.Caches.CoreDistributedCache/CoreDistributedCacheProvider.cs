@@ -58,7 +58,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <para>This option is a workaround for distinguishing composite-id missing an
 		/// <see cref="object.ToString"/> override. It may causes trouble if the cache is shared
 		/// between processes running another runtime than .Net Framework, or with future versions
-		/// of .Net Framework: the hascode is not guaranteed to be stable.
+		/// of .Net Framework: the hashcode is not guaranteed to be stable.
 		/// </para>
 		/// <para>
 		/// Changes to this property affect only caches built after the change, and whose configuration node
@@ -88,7 +88,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 					CacheFactory = (IDistributedCacheFactory) (ctorWithProperties != null ?
 						ctorWithProperties.Invoke(new object[] { config.Properties }):
-						Cfg.Environment.BytecodeProvider.ObjectsFactory.CreateInstance(factoryClass));
+						Cfg.Environment.ObjectsFactory.CreateInstance(factoryClass));
 				}
 				catch (Exception e)
 				{
@@ -111,7 +111,9 @@ namespace NHibernate.Caches.CoreDistributedCache
 		#region ICacheProvider Members
 
 		/// <inheritdoc />
+#pragma warning disable 618
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+#pragma warning restore 618
 		{
 			if (CacheFactory == null)
 				throw new InvalidOperationException(
