@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using Newtonsoft.Json.Serialization;
 using NHibernate.Caches.Common;
 using NHibernate.Caches.Common.Tests;
-using NHibernate.Intercept;
-using NHibernate.Properties;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.Util.JsonSerializer.Tests

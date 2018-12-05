@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace NHibernate.Caches.Common
+﻿namespace NHibernate.Caches.Common
 {
 	/// <summary>
 	/// Base class for serializing objects that will be stored in a distributed cache.

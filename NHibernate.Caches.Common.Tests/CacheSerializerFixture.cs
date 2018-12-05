@@ -184,25 +184,31 @@ namespace NHibernate.Caches.Common.Tests
 		protected CacheEntry CreateCacheEntry()
 		{
 			var types = GetNHibernateTypes();
-			return new CacheEntry(types.Values.ToArray(), null, false, null, null, null);
+			return CacheEntry.Create(types.Values.ToArray(), null, false, null, null, null);
 		}
 
 		// TODO: make tests after upgraded to NHiberante 5.2
 		protected CollectionCacheEntry CreateCollectionCacheEntry()
 		{
-			return new CollectionCacheEntry(null, null);
+			return CollectionCacheEntry.Create(null, null);
 		}
 
 		// TODO: make tests after upgraded to NHiberante 5.2
 		protected CacheLock CreateCacheLock()
 		{
-			return new CacheLock(1234, 1, 5);
+			return new CacheLock
+			{
+				Timeout = 1234, Id = 1, Version = 5
+			};
 		}
 
 		// TODO: make tests after upgraded to NHiberante 5.2
 		protected CachedItem CreateCachedItem(object data)
 		{
-			return new CachedItem(data, 111, 5);
+			return new CachedItem
+			{
+				Value = data, FreshTimestamp = 111, Version = 5
+			};
 		}
 
 		// TODO: make tests after upgraded to NHiberante 5.2
@@ -263,7 +269,7 @@ namespace NHibernate.Caches.Common.Tests
 				{NHibernateUtil.YesNo, true},
 				// TODO: enable after upgraded to NHiberante 5.2
 				//{NHibernateUtil.Class, typeof(IType)},
-				{NHibernateUtil.ClassMetaType, entityName},
+				{NHibernateUtil.MetaType, entityName},
 				{NHibernateUtil.Serializable, new CustomEntity {Id = 1}},
 				// TODO: enable after upgraded to NHiberante 5.2
 				//{NHibernateUtil.Object, new CustomEntity {Id = 10}},
