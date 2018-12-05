@@ -85,7 +85,7 @@ namespace NHibernate.Caches.StackExRedis
 		public const string LockMaxRetryDelay = "cache.lock.max_retry_delay";
 
 		/// <summary>
-		/// The minumum delay before retrying to acquire the lock in milliseconds.
+		/// The minimum delay before retrying to acquire the lock in milliseconds.
 		/// </summary>
 		public const string LockMinRetryDelay = "cache.lock.min_retry_delay";
 

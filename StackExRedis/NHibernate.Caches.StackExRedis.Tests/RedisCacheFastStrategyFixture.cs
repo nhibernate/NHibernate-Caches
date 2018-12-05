@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using NHibernate.Cache;
-using NHibernate.Caches.Common.Tests;
+﻿using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.StackExRedis.Tests

@@ -99,7 +99,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			});
 		}
 
-		private async Task PutCacheDataAsync(ICache cache, Dictionary<CacheKey, List<object>> cacheData, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task PutCacheDataAsync(CacheBase cache, Dictionary<CacheKey, List<object>> cacheData, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			foreach (var pair in cacheData)
 			{
@@ -107,7 +107,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			}
 		}
 
-		private async Task RemoveCacheDataAsync(ICache cache, Dictionary<CacheKey, List<object>> cacheData, CancellationToken cancellationToken = default(CancellationToken))
+		private async Task RemoveCacheDataAsync(CacheBase cache, Dictionary<CacheKey, List<object>> cacheData, CancellationToken cancellationToken = default(CancellationToken))
 		{
 			foreach (var pair in cacheData)
 			{

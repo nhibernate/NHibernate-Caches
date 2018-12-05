@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Caches.StackExRedis.Tests.Caches;
 using StackExchange.Redis;
@@ -28,7 +23,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Providers
 		}
 
 		/// <inheritdoc />
-		protected override ICache BuildCache(RedisCacheRegionConfiguration regionConfiguration, IDictionary<string, string> properties)
+		protected override CacheBase BuildCache(RedisCacheRegionConfiguration regionConfiguration, IDictionary<string, string> properties)
 		{
 			var strategies = new List<AbstractRegionStrategy>();
 			foreach (var connectionMultiplexer in _connectionMultiplexers)

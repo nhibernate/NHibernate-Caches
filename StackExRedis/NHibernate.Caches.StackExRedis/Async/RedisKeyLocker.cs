@@ -9,15 +9,14 @@
 
 
 using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using NHibernate.Cache;
 using StackExchange.Redis;
 
 namespace NHibernate.Caches.StackExRedis
 {
 	using System.Threading.Tasks;
+	using System.Threading;
 	internal partial class RedisKeyLocker
 	{
 

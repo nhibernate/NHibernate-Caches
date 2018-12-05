@@ -195,7 +195,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			}
 		}
 
-		private void PutCacheData(ICache cache, Dictionary<CacheKey, List<object>> cacheData)
+		private void PutCacheData(CacheBase cache, Dictionary<CacheKey, List<object>> cacheData)
 		{
 			foreach (var pair in cacheData)
 			{
@@ -203,7 +203,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			}
 		}
 
-		private void RemoveCacheData(ICache cache, Dictionary<CacheKey, List<object>> cacheData)
+		private void RemoveCacheData(CacheBase cache, Dictionary<CacheKey, List<object>> cacheData)
 		{
 			foreach (var pair in cacheData)
 			{

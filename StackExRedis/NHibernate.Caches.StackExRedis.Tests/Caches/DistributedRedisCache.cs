@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.StackExRedis.Tests.Caches
@@ -11,7 +8,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 	/// <summary>
 	/// Operates with multiple independent Redis instances.
 	/// </summary>
-	public partial class DistributedRedisCache : ICache
+	public partial class DistributedRedisCache : CacheBase
 	{
 		private readonly AbstractRegionStrategy[] _regionStrategies;
 		private readonly Random _random = new Random();
@@ -29,16 +26,16 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		public IEnumerable<AbstractRegionStrategy> RegionStrategies => _regionStrategies;
 
 		/// <inheritdoc />
-		public int Timeout { get; }
+		public override int Timeout { get; }
 
 		/// <inheritdoc />
-		public string RegionName { get; }
+		public override string RegionName { get; }
 
 		/// <inheritdoc />
-		public long NextTimestamp() => Timestamper.Next();
+		public override long NextTimestamp() => Timestamper.Next();
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			// Use a random strategy to get the value.
 			// A real distributed cache should use a proper load balancing.
@@ -47,7 +44,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			foreach (var strategy in _regionStrategies)
 			{
@@ -56,7 +53,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			foreach (var strategy in _regionStrategies)
 			{
@@ -65,7 +62,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			foreach (var strategy in _regionStrategies)
 			{
@@ -74,12 +71,12 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
 		}
 
 		/// <inheritdoc />
-		public void Lock(object key)
+		public override object Lock(object key)
 		{
 			// A simple locking that requires all instances to obtain the lock
 			// A real distributed cache should use something like the Redlock algorithm.
@@ -90,6 +87,8 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 				{
 					lockValues[i] = _regionStrategies[i].Lock(key);
 				}
+
+				return lockValues;
 			}
 			catch (CacheException)
 			{
@@ -106,14 +105,13 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key)
+		public override void Unlock(object key, object lockValue)
 		{
-			foreach (var strategy in _regionStrategies)
+			var lockValues = (string[]) lockValue;
+			for (var i = 0; i < _regionStrategies.Length; i++)
 			{
-				// TODO: use the lockValue when upgrading to NH 5.2
-				strategy.Unlock(key, null);
+				_regionStrategies[i].Unlock(key, lockValues[i]);
 			}
 		}
-
 	}
 }

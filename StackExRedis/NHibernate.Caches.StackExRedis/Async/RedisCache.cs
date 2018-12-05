@@ -8,21 +8,17 @@
 //------------------------------------------------------------------------------
 
 
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Cache;
-using StackExchange.Redis;
 
 namespace NHibernate.Caches.StackExRedis
 {
-	public partial class RedisCache : ICache
+	using System.Threading.Tasks;
+	using System.Threading;
+	public partial class RedisCache : CacheBase
 	{
 
 		/// <inheritdoc />
-		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		public override Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -32,7 +28,7 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public Task<object[]> GetManyAsync(object[] keys, CancellationToken cancellationToken)
+		public override Task<object[]> GetManyAsync(object[] keys, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -42,7 +38,7 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public Task PutAsync(object key, object value, CancellationToken cancellationToken)
+		public override Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -52,7 +48,7 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public Task PutManyAsync(object[] keys, object[] values, CancellationToken cancellationToken)
+		public override Task PutManyAsync(object[] keys, object[] values, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -62,7 +58,7 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public Task RemoveAsync(object key, CancellationToken cancellationToken)
+		public override Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -72,17 +68,7 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public Task RemoveManyAsync(object[] keys, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return RegionStrategy.RemoveManyAsync(keys, cancellationToken);
-		}
-
-		/// <inheritdoc />
-		public Task ClearAsync(CancellationToken cancellationToken)
+		public override Task ClearAsync(CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -92,31 +78,21 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		Task ICache.LockAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return LockAsync(key, cancellationToken);
-		}
-
-		/// <inheritdoc />
-		public async Task<object> LockAsync(object key, CancellationToken cancellationToken)
+		public override async Task<object> LockAsync(object key, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return await (RegionStrategy.LockAsync(key, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <inheritdoc />
-		public async Task<object> LockManyAsync(object[] keys, CancellationToken cancellationToken)
+		public override async Task<object> LockManyAsync(object[] keys, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			return await (RegionStrategy.LockManyAsync(keys, cancellationToken)).ConfigureAwait(false);
 		}
 
 		/// <inheritdoc />
-		public Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
+		public override Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -126,24 +102,14 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return RegionStrategy.UnlockAsync(key, (string)lockValue, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}
 		}
 
 		/// <inheritdoc />
-		Task ICache.UnlockAsync(object key, CancellationToken cancellationToken)
-		{
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<object>(cancellationToken);
-			}
-			return UnlockAsync(key, null, cancellationToken);
-		}
-
-		/// <inheritdoc />
-		public Task UnlockManyAsync(object[] keys, object lockValue, CancellationToken cancellationToken)
+		public override Task UnlockManyAsync(object[] keys, object lockValue, CancellationToken cancellationToken)
 		{
 			if (cancellationToken.IsCancellationRequested)
 			{
@@ -153,7 +119,7 @@ namespace NHibernate.Caches.StackExRedis
 			{
 				return RegionStrategy.UnlockManyAsync(keys, (string) lockValue, cancellationToken);
 			}
-			catch (Exception ex)
+			catch (System.Exception ex)
 			{
 				return Task.FromException<object>(ex);
 			}

@@ -81,7 +81,9 @@ namespace NHibernate.Caches.StackExRedis
 		public RedisCacheConfiguration CacheConfiguration { get; } = CreateCacheConfiguration();
 
 		/// <inheritdoc />
+#pragma warning disable 618
 		public ICache BuildCache(string regionName, IDictionary<string, string> properties)
+#pragma warning restore 618
 		{
 			if (regionName == null)
 			{
@@ -150,8 +152,8 @@ namespace NHibernate.Caches.StackExRedis
 		/// </summary>
 		/// <param name="regionConfiguration">The region cache configuration.</param>
 		/// <param name="properties">NHibernate configuration settings.</param>
-		/// <returns>The builded cache.</returns>
-		protected virtual ICache BuildCache(RedisCacheRegionConfiguration regionConfiguration, IDictionary<string, string> properties)
+		/// <returns>The built cache.</returns>
+		protected virtual CacheBase BuildCache(RedisCacheRegionConfiguration regionConfiguration, IDictionary<string, string> properties)
 		{
 			var regionStrategy =
 				CacheConfiguration.RegionStrategyFactory.Create(_connectionMultiplexer, regionConfiguration, properties);

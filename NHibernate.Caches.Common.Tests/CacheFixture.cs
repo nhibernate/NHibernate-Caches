@@ -76,8 +76,8 @@ namespace NHibernate.Caches.Common.Tests
 
 			for (var i = 0; i < 2; i++)
 			{
-				cache.Lock(key);
-				cache.Unlock(key);
+				var lockValue = cache.Lock(key);
+				cache.Unlock(key, lockValue);
 			}
 		}
 
@@ -97,7 +97,7 @@ namespace NHibernate.Caches.Common.Tests
 
 			// Simulate NHibernate ReadWriteCache behavior with multiple concurrent threads
 			// Thread 1
-			cache.Lock(key);
+			var lockValue = cache.Lock(key);
 
 			// Thread 2
 			try
@@ -106,7 +106,7 @@ namespace NHibernate.Caches.Common.Tests
 			}
 			finally
 			{
-				cache.Unlock(key);
+				cache.Unlock(key, lockValue);
 			}
 
 			// Thread 3
@@ -116,14 +116,14 @@ namespace NHibernate.Caches.Common.Tests
 			}
 			finally
 			{
-				cache.Unlock(key);
+				cache.Unlock(key, lockValue);
 			}
-			
-			// Thread 1
-			cache.Unlock(key);
 
-			Assert.DoesNotThrow(() => cache.Lock(key), "The key should be unlocked");
-			cache.Unlock(key);
+			// Thread 1
+			cache.Unlock(key, lockValue);
+
+			Assert.DoesNotThrow(() => lockValue = cache.Lock(key), "The key should be unlocked");
+			cache.Unlock(key, lockValue);
 
 			cache.Remove(key);
 		}

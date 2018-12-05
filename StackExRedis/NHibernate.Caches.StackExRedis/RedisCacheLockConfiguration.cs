@@ -40,7 +40,7 @@ namespace NHibernate.Caches.StackExRedis
 		public TimeSpan MaxRetryDelay { get; set; } = TimeSpan.FromMilliseconds(400);
 
 		/// <summary>
-		/// The minumum delay before retrying to acquire the lock.
+		/// The minimum delay before retrying to acquire the lock.
 		/// </summary>
 		public TimeSpan MinRetryDelay { get; set; } = TimeSpan.FromMilliseconds(10);
 

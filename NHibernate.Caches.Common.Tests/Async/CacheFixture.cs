@@ -82,8 +82,8 @@ namespace NHibernate.Caches.Common.Tests
 
 			for (var i = 0; i < 2; i++)
 			{
-				await (cache.LockAsync(key, CancellationToken.None));
-				await (cache.UnlockAsync(key, CancellationToken.None));
+				var lockValue = await (cache.LockAsync(key, CancellationToken.None));
+				await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
 			}
 		}
 
@@ -103,7 +103,7 @@ namespace NHibernate.Caches.Common.Tests
 
 			// Simulate NHibernate ReadWriteCache behavior with multiple concurrent threads
 			// Thread 1
-			await (cache.LockAsync(key, CancellationToken.None));
+			var lockValue = await (cache.LockAsync(key, CancellationToken.None));
 
 			// Thread 2
 			try
@@ -112,7 +112,7 @@ namespace NHibernate.Caches.Common.Tests
 			}
 			finally
 			{
-				await (cache.UnlockAsync(key, CancellationToken.None));
+				await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
 			}
 
 			// Thread 3
@@ -122,14 +122,14 @@ namespace NHibernate.Caches.Common.Tests
 			}
 			finally
 			{
-				await (cache.UnlockAsync(key, CancellationToken.None));
+				await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
 			}
-			
-			// Thread 1
-			await (cache.UnlockAsync(key, CancellationToken.None));
 
-			Assert.DoesNotThrowAsync(() => cache.LockAsync(key, CancellationToken.None), "The key should be unlocked");
-			await (cache.UnlockAsync(key, CancellationToken.None));
+			// Thread 1
+			await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
+
+			Assert.DoesNotThrowAsync(async () => lockValue = await (cache.LockAsync(key, CancellationToken.None)), "The key should be unlocked");
+			await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
 
 			await (cache.RemoveAsync(key, CancellationToken.None));
 		}

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -34,7 +31,7 @@ namespace NHibernate.Caches.StackExRedis
 			return this;
 		}
 
-		public RetryPolicy<TResult, TContext> OnFaliure(Action<int, long, TContext> callback)
+		public RetryPolicy<TResult, TContext> OnFailure(Action<int, long, TContext> callback)
 		{
 			_onFailureCallback = callback;
 			return this;

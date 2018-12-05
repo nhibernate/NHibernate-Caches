@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Xml;
 using System.Xml.Linq;
 using NHibernate.Cache;
@@ -61,7 +59,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			entityPersister.PropertyTypes.Returns(propertyValues.Keys.ToArray());
 
 			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, entityName, sfImpl);
-			var cacheEntry = new CacheEntry(propertyValues.Values.ToArray(), entityPersister, false, null, sessionImpl, null);
+			var cacheEntry = CacheEntry.Create(propertyValues.Values.ToArray(), entityPersister, false, null, sessionImpl, null);
 
 			Assert.That(cacheEntry.DisassembledState, Has.Length.EqualTo(1));
 			var anyObject = cacheEntry.DisassembledState[0];
@@ -129,7 +127,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 				{NHibernateUtil.TrueFalse, false},
 				{NHibernateUtil.YesNo, true},
 				{NHibernateUtil.Class, typeof(IType)},
-				{NHibernateUtil.ClassMetaType, entityName},
+				{NHibernateUtil.MetaType, entityName},
 				{NHibernateUtil.Serializable, new MyEntity {Id = 1}},
 				{NHibernateUtil.AnsiChar, 'a'},
 				{NHibernateUtil.XmlDoc, xmlDoc},
@@ -145,7 +143,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			entityPersister.PropertyTypes.Returns(propertyValues.Keys.ToArray());
 
 			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, entityName, sfImpl);
-			var cacheEntry = new CacheEntry(propertyValues.Values.ToArray(), entityPersister, false, null, sessionImpl, null);
+			var cacheEntry = CacheEntry.Create(propertyValues.Values.ToArray(), entityPersister, false, null, sessionImpl, null);
 
 			var cache = GetDefaultCache();
 			cache.Put(cacheKey, cacheEntry);
@@ -174,7 +172,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			entityPersister.PropertyTypes.Returns(propertyValues.Keys.ToArray());
 
 			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, entityName, sfImpl);
-			var cacheEntry = new CacheEntry(propertyValues.Values.ToArray(), entityPersister, true, 4, sessionImpl, null);
+			var cacheEntry = CacheEntry.Create(propertyValues.Values.ToArray(), entityPersister, true, 4, sessionImpl, null);
 
 			var cache = GetDefaultCache();
 			cache.Put(cacheKey, cacheEntry);
@@ -200,7 +198,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			collection.Disassemble(null).Returns(o => new object[] {"test"});
 
 			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, "MyCollection", sfImpl);
-			var cacheEntry = new CollectionCacheEntry(collection, null);
+			var cacheEntry = CollectionCacheEntry.Create(collection, null);
 			Assert.That(cacheEntry.State, Has.Length.EqualTo(1));
 
 			var cache = GetDefaultCache();
@@ -219,7 +217,10 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		{
 			var sfImpl = Substitute.For<ISessionFactoryImplementor>();
 			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, "CacheLock", sfImpl);
-			var cacheEntry = new CacheLock(1234, 1, 5);
+			var cacheEntry = new CacheLock
+			{
+				Timeout = 1234, Id = 1, Version = 5
+			};
 			cacheEntry.Lock(123, 2);
 
 			var cache = GetDefaultCache();
@@ -243,7 +244,10 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		{
 			var sfImpl = Substitute.For<ISessionFactoryImplementor>();
 			var cacheKey = new CacheKey(1, NHibernateUtil.Int32, "CachedItem", sfImpl);
-			var cacheEntry = new CachedItem("test", 111, 5);
+			var cacheEntry = new CachedItem
+			{
+				Value = "test", FreshTimestamp = 111, Version = 5
+			};
 			cacheEntry.Lock(123, 2);
 
 			var cache = GetDefaultCache();
@@ -412,7 +416,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			cache.Put(obj1, value);
 			Assert.That(cache.Get(obj1), Is.EqualTo(value), "Unable to retrieved cached object for key obj1");
-			Assert.That(cache.Get(obj2), Is.Null, "Unexectedly found a cache entry for key obj2 after obj1 put");
+			Assert.That(cache.Get(obj2), Is.Null, "Unexpectedly found a cache entry for key obj2 after obj1 put");
 			cache.Remove(obj1);
 		}
 
@@ -462,7 +466,8 @@ namespace NHibernate.Caches.StackExRedis.Tests
 
 			var cache = (RedisCache) GetDefaultCache();
 			// Due to async version, it may already be there.
-			cache.RemoveMany(keys);
+			foreach (var key in keys)
+				cache.Remove(key);
 
 			Assert.That(cache.GetMany(keys), Is.EquivalentTo(new object[10]), "cache returned items we didn't add !?!");
 
@@ -498,7 +503,8 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			Assert.That(items, Is.EquivalentTo(values), "items just added are not there");
 
 			// remove it
-			cache.RemoveMany(keys);
+			foreach (var key in keys)
+				cache.Remove(key);
 
 			// make sure it's not there
 			items = cache.GetMany(keys);
@@ -577,13 +583,6 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			cache.Put("keyTestNullKeyGet", "value");
 			var items = cache.GetMany(null);
 			Assert.IsNull(items);
-		}
-
-		[Test]
-		public void TestNullKeyRemoveMany()
-		{
-			var cache = (RedisCache) GetDefaultCache();
-			Assert.Throws<ArgumentNullException>(() => cache.RemoveMany(null));
 		}
 	}
 }

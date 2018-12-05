@@ -1,17 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Castle.DynamicProxy.Generators.Emitters.SimpleAST;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
 using NHibernate.Caches.Common.Tests;
 using NSubstitute;
-using NSubstitute.Extensions;
 using NUnit.Framework;
-using StackExchange.Redis;
 
 namespace NHibernate.Caches.StackExRedis.Tests
 {
@@ -63,7 +57,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			var retryDelayProvider = Substitute.For<ICacheLockRetryDelayProvider>();
 			var lockValueProvider = Substitute.For<ICacheLockValueProvider>();
 			var regionStrategyFactory = Substitute.For<ICacheRegionStrategyFactory>();
-			var serialzer = Substitute.For<IRedisSerializer>();
+			var serializer = Substitute.For<IRedisSerializer>();
 
 			var defaultConfig = RedisCacheProvider.DefaultCacheConfiguration;
 			defaultConfig.ConnectionMultiplexerProvider = connectionProvider;
@@ -71,7 +65,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			defaultConfig.LockConfiguration.ValueProvider = lockValueProvider;
 			defaultConfig.LockConfiguration.RetryDelayProvider = retryDelayProvider;
 			defaultConfig.RegionStrategyFactory = regionStrategyFactory;
-			defaultConfig.Serializer = serialzer;
+			defaultConfig.Serializer = serializer;
 
 			var provider = (RedisCacheProvider) GetNewProvider();
 			var config = provider.CacheConfiguration;
@@ -81,7 +75,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			Assert.That(config.LockConfiguration.RetryDelayProvider, Is.EqualTo(retryDelayProvider));
 			Assert.That(config.LockConfiguration.ValueProvider, Is.EqualTo(lockValueProvider));
 			Assert.That(config.RegionStrategyFactory, Is.EqualTo(regionStrategyFactory));
-			Assert.That(config.Serializer, Is.EqualTo(serialzer));
+			Assert.That(config.Serializer, Is.EqualTo(serializer));
 
 			RedisCacheProvider.DefaultCacheConfiguration = new RedisCacheConfiguration();
 		}
@@ -99,14 +93,14 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			var retryDelayProvider = Substitute.For<ICacheLockRetryDelayProvider>();
 			var lockValueProvider = Substitute.For<ICacheLockValueProvider>();
 			var regionStrategyFactory = Substitute.For<ICacheRegionStrategyFactory>();
-			var serialzer = Substitute.For<IRedisSerializer>();
+			var serializer = Substitute.For<IRedisSerializer>();
 
 			customObjectsFactory.RegisterSingleton(connectionProvider);
 			customObjectsFactory.RegisterSingleton(databaseProvider);
 			customObjectsFactory.RegisterSingleton(retryDelayProvider);
 			customObjectsFactory.RegisterSingleton(lockValueProvider);
 			customObjectsFactory.RegisterSingleton(regionStrategyFactory);
-			customObjectsFactory.RegisterSingleton(serialzer);
+			customObjectsFactory.RegisterSingleton(serializer);
 
 			field.SetValue(Cfg.Environment.BytecodeProvider, customObjectsFactory);
 
@@ -118,7 +112,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			Assert.That(config.LockConfiguration.RetryDelayProvider, Is.EqualTo(retryDelayProvider));
 			Assert.That(config.LockConfiguration.ValueProvider, Is.EqualTo(lockValueProvider));
 			Assert.That(config.RegionStrategyFactory, Is.EqualTo(regionStrategyFactory));
-			Assert.That(config.Serializer, Is.EqualTo(serialzer));
+			Assert.That(config.Serializer, Is.EqualTo(serializer));
 
 			field.SetValue(Cfg.Environment.BytecodeProvider, new ActivatorObjectsFactory());
 		}

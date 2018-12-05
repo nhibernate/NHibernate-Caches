@@ -11,18 +11,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using NHibernate.Cache;
 
 namespace NHibernate.Caches.StackExRedis.Tests.Caches
 {
-	public partial class DistributedRedisCache : ICache
+	using System.Threading.Tasks;
+	using System.Threading;
+	public partial class DistributedRedisCache : CacheBase
 	{
 
 		/// <inheritdoc />
-		public Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		public override Task<object> GetAsync(object key, CancellationToken cancellationToken)
 		{
 			// Use a random strategy to get the value.
 			// A real distributed cache should use a proper load balancing.
@@ -31,7 +30,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public async Task PutAsync(object key, object value, CancellationToken cancellationToken)
+		public override async Task PutAsync(object key, object value, CancellationToken cancellationToken)
 		{
 			foreach (var strategy in _regionStrategies)
 			{
@@ -40,7 +39,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public async Task RemoveAsync(object key, CancellationToken cancellationToken)
+		public override async Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			foreach (var strategy in _regionStrategies)
 			{
@@ -49,7 +48,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public async Task ClearAsync(CancellationToken cancellationToken)
+		public override async Task ClearAsync(CancellationToken cancellationToken)
 		{
 			foreach (var strategy in _regionStrategies)
 			{
@@ -58,7 +57,7 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public async Task LockAsync(object key, CancellationToken cancellationToken)
+		public override async Task<object> LockAsync(object key, CancellationToken cancellationToken)
 		{
 			// A simple locking that requires all instances to obtain the lock
 			// A real distributed cache should use something like the Redlock algorithm.
@@ -69,6 +68,8 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 				{
 					lockValues[i] = await (_regionStrategies[i].LockAsync(key, cancellationToken));
 				}
+
+				return lockValues;
 			}
 			catch (CacheException)
 			{
@@ -85,14 +86,13 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
-		public async Task UnlockAsync(object key, CancellationToken cancellationToken)
+		public override async Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
-			foreach (var strategy in _regionStrategies)
+			var lockValues = (string[]) lockValue;
+			for (var i = 0; i < _regionStrategies.Length; i++)
 			{
-				// TODO: use the lockValue when upgrading to NH 5.2
-				await (strategy.UnlockAsync(key, null, cancellationToken));
+				await (_regionStrategies[i].UnlockAsync(key, lockValues[i], cancellationToken));
 			}
 		}
-
 	}
 }

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Linq;
-using System.Threading;
 using NHibernate.Cache;
 using StackExchange.Redis;
 
@@ -46,7 +44,7 @@ namespace NHibernate.Caches.StackExRedis
 					() => lockRetryDelayProvider.GetValue(minRetryDelay, maxRetryDelay)
 				)
 				.ShouldRetry(s => s == null)
-				.OnFaliure((totalAttempts, elapsedMs, getKeysFn) =>
+				.OnFailure((totalAttempts, elapsedMs, getKeysFn) =>
 					throw new CacheException("Unable to acquire cache lock: " +
 					                         $"region='{regionName}', " +
 					                         $"keys='{getKeysFn()}', " +

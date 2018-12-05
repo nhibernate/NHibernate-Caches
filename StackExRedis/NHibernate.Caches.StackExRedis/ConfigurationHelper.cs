@@ -86,7 +86,7 @@ namespace NHibernate.Caches.StackExRedis
 		public static TType GetInstanceOfType<TType>(string key, IDictionary<string, string> properties, TType defaultValue,
 			INHibernateLogger logger)
 		{
-			var objectsFactory = Cfg.Environment.BytecodeProvider.ObjectsFactory;
+			var objectsFactory = Cfg.Environment.ObjectsFactory;
 			var type = GetSystemType(key, properties, null);
 			if (type == null)
 			{

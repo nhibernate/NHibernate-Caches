@@ -1,20 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
-using NHibernate.Cache;
-using StackExchange.Redis;
+﻿using NHibernate.Cache;
 
 namespace NHibernate.Caches.StackExRedis
 {
 	/// <summary>
 	/// A cache used to store objects into a Redis cache.
 	/// </summary>
-	public partial class RedisCache : ICache
+	public partial class RedisCache : CacheBase
 	{
-		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(RedisCache));
-
 		/// <summary>
 		/// Default constructor.
 		/// </summary>
@@ -26,10 +18,10 @@ namespace NHibernate.Caches.StackExRedis
 		}
 
 		/// <inheritdoc />
-		public int Timeout { get; }
+		public override int Timeout { get; }
 
 		/// <inheritdoc />
-		public string RegionName { get; }
+		public override string RegionName { get; }
 
 		/// <summary>
 		/// The region strategy used by the cache.
@@ -37,91 +29,73 @@ namespace NHibernate.Caches.StackExRedis
 		public AbstractRegionStrategy RegionStrategy { get; }
 
 		/// <inheritdoc />
-		public object Get(object key)
+		public override object Get(object key)
 		{
 			return RegionStrategy.Get(key);
 		}
 
 		/// <inheritdoc />
-		public object[] GetMany(object[] keys)
+		public override object[] GetMany(object[] keys)
 		{
 			return RegionStrategy.GetMany(keys);
 		}
 
 		/// <inheritdoc />
-		public void Put(object key, object value)
+		public override void Put(object key, object value)
 		{
 			RegionStrategy.Put(key, value);
 		}
 
 		/// <inheritdoc />
-		public void PutMany(object[] keys, object[] values)
+		public override void PutMany(object[] keys, object[] values)
 		{
 			RegionStrategy.PutMany(keys, values);
 		}
 
 		/// <inheritdoc />
-		public void Remove(object key)
+		public override void Remove(object key)
 		{
 			RegionStrategy.Remove(key);
 		}
 
 		/// <inheritdoc />
-		public void RemoveMany(object[] keys)
-		{
-			RegionStrategy.RemoveMany(keys);
-		}
-
-		/// <inheritdoc />
-		public void Clear()
+		public override void Clear()
 		{
 			RegionStrategy.Clear();
 		}
 
 		/// <inheritdoc />
-		public void Destroy()
+		public override void Destroy()
 		{
-			// We cannot destroy the region cache as there may be other clients using it.
+			// No resources to clean-up. 
 		}
 
 		/// <inheritdoc />
-		void ICache.Lock(object key)
-		{
-			Lock(key);
-		}
-
-		/// <inheritdoc />
-		public object Lock(object key)
+		public override object Lock(object key)
 		{
 			return RegionStrategy.Lock(key);
 		}
 
 		/// <inheritdoc />
-		public object LockMany(object[] keys)
+		public override object LockMany(object[] keys)
 		{
 			return RegionStrategy.LockMany(keys);
 		}
 
 		/// <inheritdoc />
-		public void Unlock(object key, object lockValue)
+		public override void Unlock(object key, object lockValue)
 		{
 			RegionStrategy.Unlock(key, (string)lockValue);
 		}
 
 		/// <inheritdoc />
-		void ICache.Unlock(object key)
-		{
-			Unlock(key, null);
-		}
-
-		/// <inheritdoc />
-		public void UnlockMany(object[] keys, object lockValue)
+		public override void UnlockMany(object[] keys, object lockValue)
 		{
 			RegionStrategy.UnlockMany(keys, (string) lockValue);
 		}
 
 		/// <inheritdoc />
-		public long NextTimestamp()
+		public override long NextTimestamp()
 		{
 			return Timestamper.Next();
 		}
