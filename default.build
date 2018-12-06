@@ -7,6 +7,8 @@
   <include buildfile="${root.dir}/buildcommon.xml" />
 
   <fileset id="buildfiles.all" basedir=".">
+    <include name="NHibernate.Caches.Common/default.build" />
+    <include name="Util/default.build" />
     <include name="SysCache/default.build" />
     <include name="SysCache2/default.build" />
     <include name="SharedCache/default.build" />

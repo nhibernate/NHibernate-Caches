@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<project
+    name="NHibernate.Caches.Util.JsonSerializer"
+    default="common.compile-all"
+    description="Json.NET serializer for distributed NHibernate.Caches providers."
+    xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+  <property name="root.dir" value=".." />
+  <include buildfile="${root.dir}/buildcommon.xml" />
+
+  <target name="prepare-bin-pack-specific" />
+
+  <!-- .Net Core projects are released only through NuGet -->
+  <target name="bin-pack" />
+
+  <target name="test" depends="init">
+    <property name="test.project" value="Util" />
+    <property name="test.file" value="NHibernate.Caches.Util.JsonSerializer.Tests" />
+    <call target="common.run-tests" />
+    <call target="common.run-core-tests" />
+  </target>
+
+  <target name="clean">
+    <property name="clean.project" value="Util" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.JsonSerializer/bin" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.JsonSerializer/obj" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.JsonSerializer.Tests/bin" failonerror="false" />
+    <delete dir="${root.dir}/${clean.project}/NHibernate.Caches.${clean.project}.JsonSerializer.Tests/obj" failonerror="false" />
+  </target>
+</project>
