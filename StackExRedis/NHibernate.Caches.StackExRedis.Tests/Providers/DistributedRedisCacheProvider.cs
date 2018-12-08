@@ -6,7 +6,9 @@ using StackExchange.Redis;
 namespace NHibernate.Caches.StackExRedis.Tests.Providers
 {
 	/// <summary>
-	/// Provider for building a cache capable of operating with multiple independent Redis instances.
+	/// Provider for building a cache capable of operating with multiple independent Redis instances. This provider
+	/// should not be used in a real environment as its purpose is just to demonstrate that <see cref="RedisCacheProvider"/>
+	/// can be extended for a distributed environment.
 	/// </summary>
 	public class DistributedRedisCacheProvider : RedisCacheProvider
 	{

@@ -220,16 +220,16 @@ namespace NHibernate.Caches.StackExRedis
 			config.RegionPrefix = GetString(Cfg.Environment.CacheRegionPrefix, properties, config.RegionPrefix);
 			Log.Debug("Region prefix: {0}", config.RegionPrefix);
 
-			config.Serializer = GetInstanceOfType(RedisEnvironment.Serializer, properties, config.Serializer, Log);
+			config.Serializer = GetInstance(RedisEnvironment.Serializer, properties, config.Serializer, Log);
 			Log.Debug("Serializer: {0}", config.Serializer);
 
-			config.RegionStrategyFactory = GetInstanceOfType(RedisEnvironment.RegionStrategyFactory, properties, config.RegionStrategyFactory, Log);
+			config.RegionStrategyFactory = GetInstance(RedisEnvironment.RegionStrategyFactory, properties, config.RegionStrategyFactory, Log);
 			Log.Debug("Region strategy factory: {0}", config.RegionStrategyFactory);
 
-			config.ConnectionMultiplexerProvider = GetInstanceOfType(RedisEnvironment.ConnectionMultiplexerProvider, properties, config.ConnectionMultiplexerProvider, Log);
+			config.ConnectionMultiplexerProvider = GetInstance(RedisEnvironment.ConnectionMultiplexerProvider, properties, config.ConnectionMultiplexerProvider, Log);
 			Log.Debug("Connection multiplexer provider: {0}", config.ConnectionMultiplexerProvider);
 
-			config.DatabaseProvider = GetInstanceOfType(RedisEnvironment.DatabaseProvider, properties, config.DatabaseProvider, Log);
+			config.DatabaseProvider = GetInstance(RedisEnvironment.DatabaseProvider, properties, config.DatabaseProvider, Log);
 			Log.Debug("Database provider: {0}", config.DatabaseProvider);
 
 			config.DefaultExpiration = GetTimeSpanFromSeconds(Cfg.Environment.CacheDefaultExpiration, properties, config.DefaultExpiration);
@@ -265,10 +265,10 @@ namespace NHibernate.Caches.StackExRedis
 			lockConfig.MinRetryDelay = GetTimeSpanFromMilliseconds(RedisEnvironment.LockMinRetryDelay, properties, lockConfig.MinRetryDelay);
 			Log.Debug("Lock min retry delay: {0} milliseconds", lockConfig.MinRetryDelay.TotalMilliseconds);
 
-			lockConfig.ValueProvider = GetInstanceOfType(RedisEnvironment.LockValueProvider, properties, lockConfig.ValueProvider, Log);
+			lockConfig.ValueProvider = GetInstance(RedisEnvironment.LockValueProvider, properties, lockConfig.ValueProvider, Log);
 			Log.Debug("Lock value provider: {0}", lockConfig.ValueProvider);
 
-			lockConfig.RetryDelayProvider = GetInstanceOfType(RedisEnvironment.LockRetryDelayProvider, properties, lockConfig.RetryDelayProvider, Log);
+			lockConfig.RetryDelayProvider = GetInstance(RedisEnvironment.LockRetryDelayProvider, properties, lockConfig.RetryDelayProvider, Log);
 			Log.Debug("Lock retry delay provider: {0}", lockConfig.RetryDelayProvider);
 
 			lockConfig.KeySuffix = GetString(RedisEnvironment.LockKeySuffix, properties, lockConfig.KeySuffix);

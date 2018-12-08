@@ -39,6 +39,15 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
+		public override async Task PutManyAsync(object[] keys, object[] values, CancellationToken cancellationToken)
+		{
+			foreach (var strategy in _regionStrategies)
+			{
+				await (strategy.PutManyAsync(keys, values, cancellationToken));
+			}
+		}
+
+		/// <inheritdoc />
 		public override async Task RemoveAsync(object key, CancellationToken cancellationToken)
 		{
 			foreach (var strategy in _regionStrategies)
@@ -86,12 +95,51 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
+		public override async Task<object> LockManyAsync(object[] keys, CancellationToken cancellationToken)
+		{
+			// A simple locking that requires all instances to obtain the lock
+			// A real distributed cache should use something like the Redlock algorithm.
+			var lockValues = new string[_regionStrategies.Length];
+			try
+			{
+				for (var i = 0; i < _regionStrategies.Length; i++)
+				{
+					lockValues[i] = await (_regionStrategies[i].LockManyAsync(keys, cancellationToken));
+				}
+
+				return lockValues;
+			}
+			catch (CacheException)
+			{
+				for (var i = 0; i < _regionStrategies.Length; i++)
+				{
+					if (lockValues[i] == null)
+					{
+						continue;
+					}
+					await (_regionStrategies[i].UnlockManyAsync(keys, lockValues[i], cancellationToken));
+				}
+				throw;
+			}
+		}
+
+		/// <inheritdoc />
 		public override async Task UnlockAsync(object key, object lockValue, CancellationToken cancellationToken)
 		{
 			var lockValues = (string[]) lockValue;
 			for (var i = 0; i < _regionStrategies.Length; i++)
 			{
 				await (_regionStrategies[i].UnlockAsync(key, lockValues[i], cancellationToken));
+			}
+		}
+
+		/// <inheritdoc />
+		public override async Task UnlockManyAsync(object[] keys, object lockValue, CancellationToken cancellationToken)
+		{
+			var lockValues = (string[]) lockValue;
+			for (var i = 0; i < _regionStrategies.Length; i++)
+			{
+				await (_regionStrategies[i].UnlockManyAsync(keys, lockValues[i], cancellationToken));
 			}
 		}
 	}

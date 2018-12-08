@@ -28,7 +28,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		[Test]
 		public void TestGetManyOperation()
 		{
-			TestBatchOperation("GetMany", true, (cache, keys, _) => cache.GetMany(keys));
+			TestBatchOperation("GetMany", true, (cache, keys, _) => cache.GetMany(keys), BatchSize);
 		}
 
 		[Test]
@@ -44,6 +44,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		{
 			var props = new Dictionary<string, string> {{"sliding", "true"}};
 			TestBatchOperation("GetMany", true, (cache, keys, _) => cache.GetMany(keys),
+				batchSize: BatchSize,
 				caches: new List<RedisCache> {GetDefaultRedisCache(props), GetFastRedisCache(props)});
 		}
 
@@ -60,6 +61,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		{
 			var props = new Dictionary<string, string> {{"expiration", "0"}};
 			TestBatchOperation("PutMany", false, (cache, keys, values) => cache.PutMany(keys, values),
+				batchSize: null,
 				caches: new List<RedisCache> {GetFastRedisCache(props)});
 		}
 
@@ -72,7 +74,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		[Test]
 		public void TestPutManyOperationWithExpiration()
 		{
-			TestBatchOperation("PutMany", false, (cache, keys, values) => cache.PutMany(keys, values));
+			TestBatchOperation("PutMany", false, (cache, keys, values) => cache.PutMany(keys, values), null);
 		}
 
 		[Test]
@@ -92,18 +94,18 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			{
 				var value = cache.LockMany(keys);
 				cache.UnlockMany(keys, value);
-			});
+			}, null);
 		}
 
 		private void TestBatchOperation(string operation, bool fillData,
-			Action<RedisCache, object[], object[]> keyValueAction, int? batchSize = null,
+			Action<RedisCache, object[], object[]> keyValueAction, int? batchSize,
 			int? cacheItems = null, int? repeat = null, List<RedisCache> caches = null)
 		{
 			TestOperation(operation, fillData, null, keyValueAction, batchSize, cacheItems, repeat, caches);
 		}
 
 		private Task TestBatchOperationAsync(string operation, bool fillData,
-			Func<RedisCache, object[], object[], Task> keyValueAction, int? batchSize = null,
+			Func<RedisCache, object[], object[], Task> keyValueAction, int? batchSize,
 			int? cacheItems = null, int? repeat = null, List<RedisCache> caches = null)
 		{
 			return TestOperationAsync(operation, fillData, null, keyValueAction, batchSize, cacheItems, repeat, caches);
@@ -149,7 +151,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 				}
 				else
 				{
-					repeatPolicy.BatchExecute(batchKeyValueAction, batchSize ?? BatchSize);
+					repeatPolicy.BatchExecute(batchKeyValueAction, batchSize);
 				}
 			}
 
@@ -185,7 +187,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 				}
 				else
 				{
-					await repeatPolicy.BatchExecuteAsync(batchKeyValueAction, batchSize ?? BatchSize);
+					await repeatPolicy.BatchExecuteAsync(batchKeyValueAction, batchSize);
 				}
 			}
 
@@ -272,7 +274,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			_cacheData = cacheData;
 		}
 
-		public void BatchExecute(Action<RedisCache, object[], object[]> keyValueAction, int batchSize)
+		public void BatchExecute(Action<RedisCache, object[], object[]> keyValueAction, int? batchSize)
 		{
 			var batchKeys = new List<object>();
 			var batchValues = new List<object>();
@@ -294,7 +296,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			{
 				foreach (var pair in _cacheData)
 				{
-					if (batchKeys.Count > 0 && batchKeys.Count % batchSize == 0)
+					if (batchSize.HasValue && batchKeys.Count > 0 && batchKeys.Count % batchSize == 0)
 					{
 						keyValueAction(_cache, batchKeys.ToArray(), batchValues.ToArray());
 						batchKeys.Clear();
@@ -314,7 +316,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			}
 		}
 
-		public async Task BatchExecuteAsync(Func<RedisCache, object[], object[], Task> keyValueFunc, int batchSize)
+		public async Task BatchExecuteAsync(Func<RedisCache, object[], object[], Task> keyValueFunc, int? batchSize)
 		{
 			var batchKeys = new List<object>();
 			var batchValues = new List<object>();
@@ -336,7 +338,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			{
 				foreach (var pair in _cacheData)
 				{
-					if (batchKeys.Count > 0 && batchKeys.Count % batchSize == 0)
+					if (batchSize.HasValue && batchKeys.Count > 0 && batchKeys.Count % batchSize == 0)
 					{
 						await keyValueFunc(_cache, batchKeys.ToArray(), batchValues.ToArray());
 						batchKeys.Clear();
@@ -402,7 +404,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			LogResult(result, 1);
 		}
 
-		private void LogResult(long[] result, int batchSize)
+		private void LogResult(long[] result, int? batchSize)
 		{
 			Log.Info(
 				$"{_operation} operation for {_cacheData.Count} keys with region strategy {_cache.RegionStrategy.GetType().Name}:{Environment.NewLine}" +

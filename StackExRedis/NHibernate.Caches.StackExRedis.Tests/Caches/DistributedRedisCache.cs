@@ -6,7 +6,8 @@ using NHibernate.Cache;
 namespace NHibernate.Caches.StackExRedis.Tests.Caches
 {
 	/// <summary>
-	/// Operates with multiple independent Redis instances.
+	/// Operates with multiple independent Redis instances. This cache should not be used in a real environment
+	/// as its purpose is just to demonstrate that <see cref="CacheBase"/> can be extended for a distributed environment.
 	/// </summary>
 	public partial class DistributedRedisCache : CacheBase
 	{
@@ -49,6 +50,15 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 			foreach (var strategy in _regionStrategies)
 			{
 				strategy.Put(key, value);
+			}
+		}
+
+		/// <inheritdoc />
+		public override void PutMany(object[] keys, object[] values)
+		{
+			foreach (var strategy in _regionStrategies)
+			{
+				strategy.PutMany(keys, values);
 			}
 		}
 
@@ -105,12 +115,51 @@ namespace NHibernate.Caches.StackExRedis.Tests.Caches
 		}
 
 		/// <inheritdoc />
+		public override object LockMany(object[] keys)
+		{
+			// A simple locking that requires all instances to obtain the lock
+			// A real distributed cache should use something like the Redlock algorithm.
+			var lockValues = new string[_regionStrategies.Length];
+			try
+			{
+				for (var i = 0; i < _regionStrategies.Length; i++)
+				{
+					lockValues[i] = _regionStrategies[i].LockMany(keys);
+				}
+
+				return lockValues;
+			}
+			catch (CacheException)
+			{
+				for (var i = 0; i < _regionStrategies.Length; i++)
+				{
+					if (lockValues[i] == null)
+					{
+						continue;
+					}
+					_regionStrategies[i].UnlockMany(keys, lockValues[i]);
+				}
+				throw;
+			}
+		}
+
+		/// <inheritdoc />
 		public override void Unlock(object key, object lockValue)
 		{
 			var lockValues = (string[]) lockValue;
 			for (var i = 0; i < _regionStrategies.Length; i++)
 			{
 				_regionStrategies[i].Unlock(key, lockValues[i]);
+			}
+		}
+
+		/// <inheritdoc />
+		public override void UnlockMany(object[] keys, object lockValue)
+		{
+			var lockValues = (string[]) lockValue;
+			for (var i = 0; i < _regionStrategies.Length; i++)
+			{
+				_regionStrategies[i].UnlockMany(keys, lockValues[i]);
 			}
 		}
 	}

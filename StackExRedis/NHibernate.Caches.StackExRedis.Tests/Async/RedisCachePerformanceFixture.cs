@@ -32,7 +32,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		[Test]
 		public Task TestGetManyOperationAsync()
 		{
-			return TestBatchOperationAsync("GetMany", true, (cache, keys, _) => cache.GetManyAsync(keys, CancellationToken.None));
+			return TestBatchOperationAsync("GetMany", true, (cache, keys, _) => cache.GetManyAsync(keys, CancellationToken.None), BatchSize);
 		}
 
 		[Test]
@@ -48,6 +48,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		{
 			var props = new Dictionary<string, string> {{"sliding", "true"}};
 			return TestBatchOperationAsync("GetMany", true, (cache, keys, _) => cache.GetManyAsync(keys, CancellationToken.None),
+				batchSize: BatchSize,
 				caches: new List<RedisCache> {GetDefaultRedisCache(props), GetFastRedisCache(props)});
 		}
 
@@ -64,6 +65,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		{
 			var props = new Dictionary<string, string> {{"expiration", "0"}};
 			return TestBatchOperationAsync("PutMany", false, (cache, keys, values) => cache.PutManyAsync(keys, values, CancellationToken.None),
+				batchSize: null,
 				caches: new List<RedisCache> {GetFastRedisCache(props)});
 		}
 
@@ -76,7 +78,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		[Test]
 		public Task TestPutManyOperationWithExpirationAsync()
 		{
-			return TestBatchOperationAsync("PutMany", false, (cache, keys, values) => cache.PutManyAsync(keys, values, CancellationToken.None));
+			return TestBatchOperationAsync("PutMany", false, (cache, keys, values) => cache.PutManyAsync(keys, values, CancellationToken.None), null);
 		}
 
 		[Test]
@@ -96,7 +98,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			{
 				var value = await (cache.LockManyAsync(keys, CancellationToken.None));
 				await (cache.UnlockManyAsync(keys, value, CancellationToken.None));
-			});
+			}, null);
 		}
 
 		private async Task PutCacheDataAsync(CacheBase cache, Dictionary<CacheKey, List<object>> cacheData, CancellationToken cancellationToken = default(CancellationToken))

@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache;
+using NHibernate.Caches.Common;
 using StackExchange.Redis;
 
 namespace NHibernate.Caches.StackExRedis
@@ -65,51 +66,58 @@ namespace NHibernate.Caches.StackExRedis
 		/// <param name="keys">The keys of the objects to retrieve.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>An array of objects behind the keys or <see langword="null" /> if the key was not found.</returns>
-		public virtual async Task<object[]> GetManyAsync(object[] keys, CancellationToken cancellationToken)
+		public virtual Task<object[]> GetManyAsync(object[] keys, CancellationToken cancellationToken)
 		{
-			cancellationToken.ThrowIfCancellationRequested();
 			if (keys == null)
 			{
-				return null;
+				throw new ArgumentNullException(nameof(keys));
 			}
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object[]>(cancellationToken);
+			}
+			return InternalGetManyAsync();
+			async Task<object[]> InternalGetManyAsync()
+			{
 
-			var cacheKeys = new RedisKey[keys.Length];
-			Log.Debug("Fetching {0} objects...", keys.Length);
-			for (var i = 0; i < keys.Length; i++)
-			{
-				cacheKeys[i] = GetCacheKey(keys[i]);
-				Log.Debug("Fetching object with key: '{0}'.", cacheKeys[i]);
-			}
+				var cacheKeys = new RedisKey[keys.Length];
+				Log.Debug("Fetching {0} objects...", keys.Length);
+				for (var i = 0; i < keys.Length; i++)
+				{
+					cacheKeys[i] = GetCacheKey(keys[i]);
+					Log.Debug("Fetching object with key: '{0}'.", cacheKeys[i]);
+				}
 
-			RedisValue[] results;
-			if (string.IsNullOrEmpty(GetManyScript))
-			{
-				cancellationToken.ThrowIfCancellationRequested();
-				results = await (Database.StringGetAsync(cacheKeys)).ConfigureAwait(false);
-			}
-			else
-			{
-				cacheKeys = AppendAdditionalKeys(cacheKeys);
-				var values = AppendAdditionalValues(new RedisValue[]
+				RedisValue[] results;
+				if (string.IsNullOrEmpty(GetManyScript))
+				{
+					cancellationToken.ThrowIfCancellationRequested();
+					results = await (Database.StringGetAsync(cacheKeys)).ConfigureAwait(false);
+				}
+				else
+				{
+					cacheKeys = AppendAdditionalKeys(cacheKeys);
+					var values = AppendAdditionalValues(new RedisValue[]
 				{
 					UseSlidingExpiration && ExpirationEnabled,
 					(long) Expiration.TotalMilliseconds
 				});
-				cancellationToken.ThrowIfCancellationRequested();
-				results = (RedisValue[]) await (Database.ScriptEvaluateAsync(GetManyScript, cacheKeys, values)).ConfigureAwait(false);
-			}
-
-			var objects = new object[keys.Length];
-			for (var i = 0; i < results.Length; i++)
-			{
-				var result = results[i];
-				if (!result.IsNullOrEmpty)
-				{
-					objects[i] = Serializer.Deserialize(result);
+					cancellationToken.ThrowIfCancellationRequested();
+					results = (RedisValue[]) await (Database.ScriptEvaluateAsync(GetManyScript, cacheKeys, values)).ConfigureAwait(false);
 				}
-			}
 
-			return objects;
+				var objects = new object[keys.Length];
+				for (var i = 0; i < results.Length; i++)
+				{
+					var result = results[i];
+					if (!result.IsNullOrEmpty)
+					{
+						objects[i] = Serializer.Deserialize(result);
+					}
+				}
+
+				return objects;
+			}
 		}
 
 		/// <summary>

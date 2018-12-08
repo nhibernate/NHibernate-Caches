@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using NHibernate.Caches.Common;
 
 namespace NHibernate.Caches.StackExRedis
 {
@@ -71,9 +72,9 @@ namespace NHibernate.Caches.StackExRedis
 		public bool AppendHashcode { get; internal set; }
 
 		/// <summary>
-		/// The <see cref="IRedisSerializer"/> to be used.
+		/// The <see cref="CacheSerializerBase"/> to be used.
 		/// </summary>
-		public IRedisSerializer Serializer { get; internal set; }
+		public CacheSerializerBase Serializer { get; internal set; }
 
 		/// <summary>
 		/// The <see cref="IDatabaseProvider"/> instance.

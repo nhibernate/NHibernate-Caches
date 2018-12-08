@@ -1,8 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Reflection;
-using NHibernate.Bytecode;
 using NHibernate.Cache;
+using NHibernate.Caches.Common;
 using NHibernate.Caches.Common.Tests;
 using NSubstitute;
 using NUnit.Framework;
@@ -57,7 +56,7 @@ namespace NHibernate.Caches.StackExRedis.Tests
 			var retryDelayProvider = Substitute.For<ICacheLockRetryDelayProvider>();
 			var lockValueProvider = Substitute.For<ICacheLockValueProvider>();
 			var regionStrategyFactory = Substitute.For<ICacheRegionStrategyFactory>();
-			var serializer = Substitute.For<IRedisSerializer>();
+			var serializer = Substitute.For<CacheSerializerBase>();
 
 			var defaultConfig = RedisCacheProvider.DefaultCacheConfiguration;
 			defaultConfig.ConnectionMultiplexerProvider = connectionProvider;
@@ -83,38 +82,40 @@ namespace NHibernate.Caches.StackExRedis.Tests
 		[Test]
 		public void TestUserProvidedObjectsFactory()
 		{
-			// TODO: update when upgraded to NH 5.2
-			var field = typeof(AbstractBytecodeProvider).GetField("objectsFactory",
-				BindingFlags.Instance | BindingFlags.NonPublic);
+			var originalObjectsFactory = Cfg.Environment.ObjectsFactory;
+			try
+			{
+				var customObjectsFactory = new CustomObjectsFactory();
+				Cfg.Environment.ObjectsFactory = customObjectsFactory;
 
-			var customObjectsFactory = new CustomObjectsFactory();
-			var connectionProvider = Substitute.For<IConnectionMultiplexerProvider>();
-			var databaseProvider = Substitute.For<IDatabaseProvider>();
-			var retryDelayProvider = Substitute.For<ICacheLockRetryDelayProvider>();
-			var lockValueProvider = Substitute.For<ICacheLockValueProvider>();
-			var regionStrategyFactory = Substitute.For<ICacheRegionStrategyFactory>();
-			var serializer = Substitute.For<IRedisSerializer>();
+				var connectionProvider = Substitute.For<IConnectionMultiplexerProvider>();
+				var databaseProvider = Substitute.For<IDatabaseProvider>();
+				var retryDelayProvider = Substitute.For<ICacheLockRetryDelayProvider>();
+				var lockValueProvider = Substitute.For<ICacheLockValueProvider>();
+				var regionStrategyFactory = Substitute.For<ICacheRegionStrategyFactory>();
+				var serializer = Substitute.For<CacheSerializerBase>();
 
-			customObjectsFactory.RegisterSingleton(connectionProvider);
-			customObjectsFactory.RegisterSingleton(databaseProvider);
-			customObjectsFactory.RegisterSingleton(retryDelayProvider);
-			customObjectsFactory.RegisterSingleton(lockValueProvider);
-			customObjectsFactory.RegisterSingleton(regionStrategyFactory);
-			customObjectsFactory.RegisterSingleton(serializer);
+				customObjectsFactory.RegisterSingleton(connectionProvider);
+				customObjectsFactory.RegisterSingleton(databaseProvider);
+				customObjectsFactory.RegisterSingleton(retryDelayProvider);
+				customObjectsFactory.RegisterSingleton(lockValueProvider);
+				customObjectsFactory.RegisterSingleton(regionStrategyFactory);
+				customObjectsFactory.RegisterSingleton(serializer);
 
-			field.SetValue(Cfg.Environment.BytecodeProvider, customObjectsFactory);
+				var provider = (RedisCacheProvider) GetNewProvider();
+				var config = provider.CacheConfiguration;
 
-			var provider = (RedisCacheProvider)GetNewProvider();
-			var config = provider.CacheConfiguration;
-
-			Assert.That(config.ConnectionMultiplexerProvider, Is.EqualTo(connectionProvider));
-			Assert.That(config.DatabaseProvider, Is.EqualTo(databaseProvider));
-			Assert.That(config.LockConfiguration.RetryDelayProvider, Is.EqualTo(retryDelayProvider));
-			Assert.That(config.LockConfiguration.ValueProvider, Is.EqualTo(lockValueProvider));
-			Assert.That(config.RegionStrategyFactory, Is.EqualTo(regionStrategyFactory));
-			Assert.That(config.Serializer, Is.EqualTo(serializer));
-
-			field.SetValue(Cfg.Environment.BytecodeProvider, new ActivatorObjectsFactory());
+				Assert.That(config.ConnectionMultiplexerProvider, Is.EqualTo(connectionProvider));
+				Assert.That(config.DatabaseProvider, Is.EqualTo(databaseProvider));
+				Assert.That(config.LockConfiguration.RetryDelayProvider, Is.EqualTo(retryDelayProvider));
+				Assert.That(config.LockConfiguration.ValueProvider, Is.EqualTo(lockValueProvider));
+				Assert.That(config.RegionStrategyFactory, Is.EqualTo(regionStrategyFactory));
+				Assert.That(config.Serializer, Is.EqualTo(serializer));
+			}
+			finally
+			{
+				Cfg.Environment.ObjectsFactory = originalObjectsFactory;
+			}
 		}
 
 	}

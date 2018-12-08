@@ -1,4 +1,5 @@
 ﻿using System;
+using NHibernate.Caches.Common;
 
 namespace NHibernate.Caches.StackExRedis
 {
@@ -7,22 +8,22 @@ namespace NHibernate.Caches.StackExRedis
 	/// </summary>
 	public class RedisCacheConfiguration
 	{
-		private static readonly IRedisSerializer DefaultSerializer = new BinaryRedisSerializer();
+		private static readonly CacheSerializerBase DefaultSerializer = new BinaryCacheSerializer();
 		private static readonly ICacheRegionStrategyFactory DefaultRegionStrategyFactory = new DefaultCacheRegionStrategyFactory();
 		private static readonly IConnectionMultiplexerProvider DefaultConnectionMultiplexerProvider = new DefaultConnectionMultiplexerProvider();
 		private static readonly IDatabaseProvider DefaultDatabaseProvider = new DefaultDatabaseProvider();
 		private static readonly System.Type DefaultRegionStrategyType = typeof(DefaultRegionStrategy);
 
-		private IRedisSerializer _serializer;
+		private CacheSerializerBase _serializer;
 		private ICacheRegionStrategyFactory _regionStrategyFactory;
 		private IConnectionMultiplexerProvider _connectionMultiplexerProvider;
 		private IDatabaseProvider _databaseProvider;
 		private System.Type _defaultRegionStrategy;
 
 		/// <summary>
-		/// The <see cref="IRedisSerializer"/> instance.
+		/// The <see cref="CacheSerializerBase"/> instance.
 		/// </summary>
-		public IRedisSerializer Serializer
+		public CacheSerializerBase Serializer
 		{
 			get => _serializer ?? DefaultSerializer;
 			set => _serializer = value;

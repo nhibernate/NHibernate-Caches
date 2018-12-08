@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using NHibernate.Cache;
+using NHibernate.Caches.Common;
 using StackExchange.Redis;
 
 namespace NHibernate.Caches.StackExRedis
@@ -27,9 +28,9 @@ namespace NHibernate.Caches.StackExRedis
 		protected readonly IDatabase Database;
 
 		/// <summary>
-		/// The <see cref="IRedisSerializer"/> instance.
+		/// The <see cref="CacheSerializerBase"/> instance.
 		/// </summary>
-		protected readonly IRedisSerializer Serializer;
+		protected readonly CacheSerializerBase Serializer;
 
 		private readonly RedisKeyLocker _keyLocker;
 
@@ -186,7 +187,7 @@ namespace NHibernate.Caches.StackExRedis
 		{
 			if (keys == null)
 			{
-				return null;
+				throw new ArgumentNullException(nameof(keys));
 			}
 
 			var cacheKeys = new RedisKey[keys.Length];

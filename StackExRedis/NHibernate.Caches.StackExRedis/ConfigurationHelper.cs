@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using NHibernate.Bytecode;
 using NHibernate.Cache;
+using NHibernate.Util;
 
 namespace NHibernate.Caches.StackExRedis
 {
@@ -68,28 +69,23 @@ namespace NHibernate.Caches.StackExRedis
 		public static System.Type GetSystemType(string key, IDictionary<string, string> properties, System.Type defaultValue)
 		{
 			var typeName = GetString(key, properties, null);
-			if (typeName == null)
-			{
-				return defaultValue;
-			}
-
-			try
-			{
-				return System.Type.GetType(typeName, true);
-			}
-			catch (Exception e)
-			{
-				throw new CacheException($"Unable to acquire type '{typeName}' from the configuration property '{key}'", e);
-			}
+			return typeName == null ? defaultValue : ReflectHelper.ClassForName(typeName);
 		}
 
-		public static TType GetInstanceOfType<TType>(string key, IDictionary<string, string> properties, TType defaultValue,
+		public static TType GetInstance<TType>(string key, IDictionary<string, string> properties, TType defaultValue,
 			INHibernateLogger logger)
 		{
 			var objectsFactory = Cfg.Environment.ObjectsFactory;
-			var type = GetSystemType(key, properties, null);
-			if (type == null)
+			var className = GetString(key, properties, null);
+			System.Type type = null;
+			try
 			{
+				if (className != null)
+				{
+					type = ReflectHelper.ClassForName(className);
+					return (TType) objectsFactory.CreateInstance(type);
+				}
+
 				// Try to get the instance from the base type if the user provided a custom IObjectsFactory
 				if (!(objectsFactory is ActivatorObjectsFactory))
 				{
@@ -105,16 +101,14 @@ namespace NHibernate.Caches.StackExRedis
 							typeof(TType), e);
 					}
 				}
+
 				return defaultValue;
 			}
-
-			if (!typeof(TType).IsAssignableFrom(type))
+			catch (Exception e)
 			{
-				throw new CacheException(
-					$"Type '{type}' from the configuration property '{key}' is not assignable to '{typeof(TType)}'");
+				throw new HibernateException(
+					$"Could not instantiate {typeof(TType).Name}: {type?.AssemblyQualifiedName ?? className}", e);
 			}
-
-			return (TType) objectsFactory.CreateInstance(type);
 		}
 	}
 }

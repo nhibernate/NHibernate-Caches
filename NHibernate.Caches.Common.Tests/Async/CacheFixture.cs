@@ -10,6 +10,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using NHibernate.Cache;
 using NUnit.Framework;
@@ -104,26 +105,10 @@ namespace NHibernate.Caches.Common.Tests
 			// Simulate NHibernate ReadWriteCache behavior with multiple concurrent threads
 			// Thread 1
 			var lockValue = await (cache.LockAsync(key, CancellationToken.None));
-
 			// Thread 2
-			try
-			{
-				Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None), "The key should be locked");
-			}
-			finally
-			{
-				await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
-			}
-
+			Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None), "The key should be locked");
 			// Thread 3
-			try
-			{
-				Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None), "The key should still be locked");
-			}
-			finally
-			{
-				await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
-			}
+			Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None), "The key should still be locked");
 
 			// Thread 1
 			await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
@@ -205,6 +190,137 @@ namespace NHibernate.Caches.Common.Tests
 			var get2 = await (cache2.GetAsync(key, CancellationToken.None));
 			Assert.That(get1, Is.EqualTo(s1), "Unexpected value in cache1");
 			Assert.That(get2, Is.EqualTo(s2), "Unexpected value in cache2");
+		}
+
+		[Test]
+		public async Task TestPutManyAsync()
+		{
+			var keys = new object[10];
+			var values = new object[10];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				keys[i] = $"keyTestPut{i}";
+				values[i] = $"valuePut{i}";
+			}
+
+			var cache = GetDefaultCache();
+			// Due to async version, it may already be there.
+			foreach (var key in keys)
+				await (cache.RemoveAsync(key, CancellationToken.None));
+
+			Assert.That(await (cache.GetManyAsync(keys, CancellationToken.None)), Is.EquivalentTo(new object[10]), "cache returned items we didn't add !?!");
+
+			await (cache.PutManyAsync(keys, values, CancellationToken.None));
+			var items = await (cache.GetManyAsync(keys, CancellationToken.None));
+
+			for (var i = 0; i < items.Length; i++)
+			{
+				var item = items[i];
+				Assert.That(item, Is.Not.Null, "unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(values[i]), "didn't return the item we added");
+			}
+		}
+
+		[Test]
+		public async Task TestRemoveManyAsync()
+		{
+			var keys = new object[10];
+			var values = new object[10];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				keys[i] = $"keyTestRemove{i}";
+				values[i] = $"valueRemove{i}";
+			}
+
+			var cache = GetDefaultCache();
+
+			// add the item
+			await (cache.PutManyAsync(keys, values, CancellationToken.None));
+
+			// make sure it's there
+			var items = await (cache.GetManyAsync(keys, CancellationToken.None));
+			Assert.That(items, Is.EquivalentTo(values), "items just added are not there");
+
+			// remove it
+			foreach (var key in keys)
+				await (cache.RemoveAsync(key, CancellationToken.None));
+
+			// make sure it's not there
+			items = await (cache.GetManyAsync(keys, CancellationToken.None));
+			Assert.That(items, Is.EquivalentTo(new object[10]), "items still exists in cache after remove");
+		}
+
+		[Test]
+		public async Task TestLockUnlockManyAsync()
+		{
+			if (!SupportsLocking)
+				Assert.Ignore("Test not supported by provider");
+
+			var keys = new object[10];
+			var values = new object[10];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				keys[i] = $"keyTestLock{i}";
+				values[i] = $"valueLock{i}";
+			}
+
+			var cache = GetDefaultCache();
+
+			// add the item
+			await (cache.PutManyAsync(keys, values, CancellationToken.None));
+			await (cache.LockManyAsync(keys, CancellationToken.None));
+			Assert.ThrowsAsync<CacheException>(() => cache.LockManyAsync(keys, CancellationToken.None), "all items should be locked");
+
+			await (Task.Delay(cache.Timeout / Timestamper.OneMs));
+
+			for (var i = 0; i < 2; i++)
+			{
+				Assert.DoesNotThrowAsync(async () =>
+				{
+					await (cache.UnlockManyAsync(keys, await (cache.LockManyAsync(keys, CancellationToken.None)), CancellationToken.None));
+				}, "the items should be unlocked");
+			}
+
+			// Test partial locks by locking the first 5 keys and afterwards try to lock last 6 keys.
+			var lockValue = await (cache.LockManyAsync(keys.Take(5).ToArray(), CancellationToken.None));
+
+			Assert.ThrowsAsync<CacheException>(() => cache.LockManyAsync(keys.Skip(4).ToArray(), CancellationToken.None), "the fifth key should be locked");
+
+			Assert.DoesNotThrowAsync(async () =>
+			{
+				await (cache.UnlockManyAsync(keys, await (cache.LockManyAsync(keys.Skip(5).ToArray(), CancellationToken.None)), CancellationToken.None));
+			}, "the last 5 keys should not be locked.");
+
+			// Unlock the first 5 keys
+			await (cache.UnlockManyAsync(keys, lockValue, CancellationToken.None));
+
+			Assert.DoesNotThrowAsync(async () =>
+			{
+				lockValue = await (cache.LockManyAsync(keys, CancellationToken.None));
+				await (cache.UnlockManyAsync(keys, lockValue, CancellationToken.None));
+			}, "the first 5 keys should not be locked.");
+		}
+
+		[Test]
+		public void TestNullKeyPutManyAsync()
+		{
+			var cache = GetDefaultCache();
+			Assert.ThrowsAsync<ArgumentNullException>(() => cache.PutManyAsync(null, null, CancellationToken.None));
+		}
+
+		[Test]
+		public void TestNullValuePutManyAsync()
+		{
+			var cache = GetDefaultCache();
+			Assert.ThrowsAsync<ArgumentNullException>(() => cache.PutManyAsync(new object[] { "keyTestNullValuePut" }, null, CancellationToken.None));
+		}
+
+		[Test]
+		public async Task TestNullKeyGetManyAsync()
+		{
+			var cache = GetDefaultCache();
+			await (cache.PutAsync("keyTestNullKeyGet", "value", CancellationToken.None));
+			Assert.ThrowsAsync<ArgumentNullException>(() => cache.GetManyAsync(null, CancellationToken.None));
 		}
 
 		[Test]

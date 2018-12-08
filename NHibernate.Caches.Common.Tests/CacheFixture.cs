@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using NHibernate.Cache;
 using NUnit.Framework;
@@ -98,26 +99,10 @@ namespace NHibernate.Caches.Common.Tests
 			// Simulate NHibernate ReadWriteCache behavior with multiple concurrent threads
 			// Thread 1
 			var lockValue = cache.Lock(key);
-
 			// Thread 2
-			try
-			{
-				Assert.Throws<CacheException>(() => cache.Lock(key), "The key should be locked");
-			}
-			finally
-			{
-				cache.Unlock(key, lockValue);
-			}
-
+			Assert.Throws<CacheException>(() => cache.Lock(key), "The key should be locked");
 			// Thread 3
-			try
-			{
-				Assert.Throws<CacheException>(() => cache.Lock(key), "The key should still be locked");
-			}
-			finally
-			{
-				cache.Unlock(key, lockValue);
-			}
+			Assert.Throws<CacheException>(() => cache.Lock(key), "The key should still be locked");
 
 			// Thread 1
 			cache.Unlock(key, lockValue);
@@ -206,6 +191,137 @@ namespace NHibernate.Caches.Common.Tests
 			var get2 = cache2.Get(key);
 			Assert.That(get1, Is.EqualTo(s1), "Unexpected value in cache1");
 			Assert.That(get2, Is.EqualTo(s2), "Unexpected value in cache2");
+		}
+
+		[Test]
+		public void TestPutMany()
+		{
+			var keys = new object[10];
+			var values = new object[10];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				keys[i] = $"keyTestPut{i}";
+				values[i] = $"valuePut{i}";
+			}
+
+			var cache = GetDefaultCache();
+			// Due to async version, it may already be there.
+			foreach (var key in keys)
+				cache.Remove(key);
+
+			Assert.That(cache.GetMany(keys), Is.EquivalentTo(new object[10]), "cache returned items we didn't add !?!");
+
+			cache.PutMany(keys, values);
+			var items = cache.GetMany(keys);
+
+			for (var i = 0; i < items.Length; i++)
+			{
+				var item = items[i];
+				Assert.That(item, Is.Not.Null, "unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(values[i]), "didn't return the item we added");
+			}
+		}
+
+		[Test]
+		public void TestRemoveMany()
+		{
+			var keys = new object[10];
+			var values = new object[10];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				keys[i] = $"keyTestRemove{i}";
+				values[i] = $"valueRemove{i}";
+			}
+
+			var cache = GetDefaultCache();
+
+			// add the item
+			cache.PutMany(keys, values);
+
+			// make sure it's there
+			var items = cache.GetMany(keys);
+			Assert.That(items, Is.EquivalentTo(values), "items just added are not there");
+
+			// remove it
+			foreach (var key in keys)
+				cache.Remove(key);
+
+			// make sure it's not there
+			items = cache.GetMany(keys);
+			Assert.That(items, Is.EquivalentTo(new object[10]), "items still exists in cache after remove");
+		}
+
+		[Test]
+		public void TestLockUnlockMany()
+		{
+			if (!SupportsLocking)
+				Assert.Ignore("Test not supported by provider");
+
+			var keys = new object[10];
+			var values = new object[10];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				keys[i] = $"keyTestLock{i}";
+				values[i] = $"valueLock{i}";
+			}
+
+			var cache = GetDefaultCache();
+
+			// add the item
+			cache.PutMany(keys, values);
+			cache.LockMany(keys);
+			Assert.Throws<CacheException>(() => cache.LockMany(keys), "all items should be locked");
+
+			Thread.Sleep(cache.Timeout / Timestamper.OneMs);
+
+			for (var i = 0; i < 2; i++)
+			{
+				Assert.DoesNotThrow(() =>
+				{
+					cache.UnlockMany(keys, cache.LockMany(keys));
+				}, "the items should be unlocked");
+			}
+
+			// Test partial locks by locking the first 5 keys and afterwards try to lock last 6 keys.
+			var lockValue = cache.LockMany(keys.Take(5).ToArray());
+
+			Assert.Throws<CacheException>(() => cache.LockMany(keys.Skip(4).ToArray()), "the fifth key should be locked");
+
+			Assert.DoesNotThrow(() =>
+			{
+				cache.UnlockMany(keys, cache.LockMany(keys.Skip(5).ToArray()));
+			}, "the last 5 keys should not be locked.");
+
+			// Unlock the first 5 keys
+			cache.UnlockMany(keys, lockValue);
+
+			Assert.DoesNotThrow(() =>
+			{
+				lockValue = cache.LockMany(keys);
+				cache.UnlockMany(keys, lockValue);
+			}, "the first 5 keys should not be locked.");
+		}
+
+		[Test]
+		public void TestNullKeyPutMany()
+		{
+			var cache = GetDefaultCache();
+			Assert.Throws<ArgumentNullException>(() => cache.PutMany(null, null));
+		}
+
+		[Test]
+		public void TestNullValuePutMany()
+		{
+			var cache = GetDefaultCache();
+			Assert.Throws<ArgumentNullException>(() => cache.PutMany(new object[] { "keyTestNullValuePut" }, null));
+		}
+
+		[Test]
+		public void TestNullKeyGetMany()
+		{
+			var cache = GetDefaultCache();
+			cache.Put("keyTestNullKeyGet", "value");
+			Assert.Throws<ArgumentNullException>(() => cache.GetMany(null));
 		}
 
 		[Serializable]
