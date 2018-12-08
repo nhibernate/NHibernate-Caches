@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<project
+    name="NHibernate.Caches.StackExchangeRedis"
+    default="common.compile-all"
+    description="Cache provider for NHibernate using StackExchange.Redis."
+    xmlns="http://nant.sf.net/release/0.85/nant.xsd">
+
+  <property name="root.dir" value=".." />
+  <include buildfile="${root.dir}/buildcommon.xml" />
+
+  <target name="prepare-bin-pack-specific" />
+
+  <!-- .Net Core projects are released only through NuGet -->
+  <target name="bin-pack" />
+
+  <target name="test" depends="init">
+    <property name="test.project" value="StackExchangeRedis" />
+    <property name="test.file" value="NHibernate.Caches.StackExchangeRedis.Tests" />
+    <call target="common.run-tests" />
+    <call target="common.run-core-tests" />
+  </target>
+
+  <target name="clean">
+    <property name="clean.project" value="StackExchangeRedis" />
+    <call target="common.clean" />
+  </target>
+</project>

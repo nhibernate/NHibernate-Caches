@@ -28,7 +28,7 @@
   registerPlugin:
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
-- filePath: StackExRedis\NHibernate.Caches.StackExRedis\NHibernate.Caches.StackExRedis.csproj
+- filePath: StackExchangeRedis\NHibernate.Caches.StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -46,33 +46,33 @@
       methodParameter:
       - parameter: Required
       requiresCancellationToken:
-      - containingType: NHibernate.Caches.StackExRedis.RedisCache
+      - containingType: NHibernate.Caches.StackExchangeRedis.RedisCache
         name: GetMany
-      - containingType: NHibernate.Caches.StackExRedis.RedisCache
+      - containingType: NHibernate.Caches.StackExchangeRedis.RedisCache
         name: PutMany
-      - containingType: NHibernate.Caches.StackExRedis.RedisCache
+      - containingType: NHibernate.Caches.StackExchangeRedis.RedisCache
         name: RemoveMany
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: Get
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: GetMany
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: Put
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: PutMany
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: Remove
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: RemoveMany
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: Unlock
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: UnlockMany
-      - containingType: NHibernate.Caches.StackExRedis.AbstractRegionStrategy
+      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: Clear
-      - containingType: NHibernate.Caches.StackExRedis.RedisKeyLocker
+      - containingType: NHibernate.Caches.StackExchangeRedis.RedisKeyLocker
         name: Unlock
-      - containingType: NHibernate.Caches.StackExRedis.RedisKeyLocker
+      - containingType: NHibernate.Caches.StackExchangeRedis.RedisKeyLocker
         name: UnlockMany
     scanMethodBody: true
     searchAsyncCounterpartsInInheritedTypes: true
@@ -415,7 +415,7 @@
   registerPlugin:
   - type: AsyncGenerator.Core.Plugins.NUnitAsyncCounterpartsFinder
     assemblyName: AsyncGenerator.Core
-- filePath: StackExRedis\NHibernate.Caches.StackExRedis.Tests\NHibernate.Caches.StackExRedis.Tests.csproj
+- filePath: StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.Tests\NHibernate.Caches.StackExchangeRedis.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true

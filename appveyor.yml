@@ -111,7 +111,7 @@ test_script:
 
         #netFx tests
         If ($env:TESTS -eq 'net') {
-            @('EnyimMemcached', 'Prevalence', 'RtMemoryCache', 'SysCache', 'SysCache2', 'CoreMemoryCache', 'CoreDistributedCache', 'StackExRedis') | ForEach-Object {
+            @('EnyimMemcached', 'Prevalence', 'RtMemoryCache', 'SysCache', 'SysCache2', 'CoreMemoryCache', 'CoreDistributedCache', 'StackExchangeRedis') | ForEach-Object {
                 $projects.Add($_, "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$target\NHibernate.Caches.$_.Tests.dll")
             }
             ForEach ($project in $projects.GetEnumerator()) {
@@ -124,7 +124,7 @@ test_script:
 
         #core tests
         If ($env:TESTS -eq 'core') {
-            @('CoreMemoryCache', 'CoreDistributedCache', 'RtMemoryCache', 'StackExRedis') | ForEach-Object {
+            @('CoreMemoryCache', 'CoreDistributedCache', 'RtMemoryCache', 'StackExchangeRedis') | ForEach-Object {
                 $projects.Add($_, "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$target\NHibernate.Caches.$_.Tests.dll")
             }
             ForEach ($project in $projects.GetEnumerator()) {
