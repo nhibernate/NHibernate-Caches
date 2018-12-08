@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../NHibernate.Caches.props" />
   <PropertyGroup>
     <Product>NHibernate.Caches.StackExRedis</Product>
@@ -22,7 +22,7 @@
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
     <PackageReference Include="NHibernate" Version="5.2.0" />
-    <PackageReference Include="StackExchange.Redis.StrongName" Version="1.2.6" />
+    <PackageReference Include="StackExchange.Redis" Version="2.0.495" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="../../readme.md">

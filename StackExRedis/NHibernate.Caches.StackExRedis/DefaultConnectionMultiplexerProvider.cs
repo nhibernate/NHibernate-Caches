@@ -13,7 +13,6 @@ namespace NHibernate.Caches.StackExRedis
 		{
 			TextWriter textWriter = Log.IsDebugEnabled() ? new NHibernateTextWriter(Log) : null;
 			var connectionMultiplexer = ConnectionMultiplexer.Connect(configuration, textWriter);
-			connectionMultiplexer.PreserveAsyncOrder = false; // Recommended setting
 			return connectionMultiplexer;
 		}
 	}
