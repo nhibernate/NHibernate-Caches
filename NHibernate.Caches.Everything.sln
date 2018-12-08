@@ -74,9 +74,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Util.Json
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Util.JsonSerializer.Tests", "Util\NHibernate.Caches.Util.JsonSerializer.Tests\NHibernate.Caches.Util.JsonSerializer.Tests.csproj", "{26EAA903-63F7-41B1-9197-5944CEBF00C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.StackExRedis", "StackExRedis\NHibernate.Caches.StackExRedis\NHibernate.Caches.StackExRedis.csproj", "{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.StackExchangeRedis", "StackExchangeRedis\NHibernate.Caches.StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.csproj", "{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.StackExRedis.Tests", "StackExRedis\NHibernate.Caches.StackExRedis.Tests\NHibernate.Caches.StackExRedis.Tests.csproj", "{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.StackExchangeRedis.Tests", "StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.Tests\NHibernate.Caches.StackExchangeRedis.Tests.csproj", "{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
