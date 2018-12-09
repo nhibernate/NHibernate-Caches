@@ -273,46 +273,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 		}
 
 		/// <summary>
-		/// Removes many keys from Redis at once.
-		/// </summary>
-		/// <param name="keys">The keys to remove.</param>
-		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
-		public virtual Task<long> RemoveManyAsync(object[] keys, CancellationToken cancellationToken)
-		{
-			if (keys == null)
-			{
-				throw new ArgumentNullException(nameof(keys));
-			}
-			if (cancellationToken.IsCancellationRequested)
-			{
-				return Task.FromCanceled<long>(cancellationToken);
-			}
-			return InternalRemoveManyAsync();
-			async Task<long> InternalRemoveManyAsync()
-			{
-
-				Log.Debug("Removing {0} objects...", keys.Length);
-				var cacheKeys = new RedisKey[keys.Length];
-				for (var i = 0; i < keys.Length; i++)
-				{
-					cacheKeys[i] = GetCacheKey(keys[i]);
-					Log.Debug("Removing object with key: '{0}'.", cacheKeys[i]);
-				}
-
-				if (string.IsNullOrEmpty(RemoveManyScript))
-				{
-					cancellationToken.ThrowIfCancellationRequested();
-					return await (Database.KeyDeleteAsync(cacheKeys)).ConfigureAwait(false);
-				}
-
-				cacheKeys = AppendAdditionalKeys(cacheKeys);
-				cancellationToken.ThrowIfCancellationRequested();
-				var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(RemoveManyScript, cacheKeys, GetAdditionalValues())).ConfigureAwait(false);
-				return (long) results[0];
-			}
-		}
-
-		/// <summary>
 		/// Locks the key.
 		/// </summary>
 		/// <param name="key">The key to lock.</param>

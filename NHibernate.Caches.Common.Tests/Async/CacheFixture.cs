@@ -222,35 +222,6 @@ namespace NHibernate.Caches.Common.Tests
 		}
 
 		[Test]
-		public async Task TestRemoveManyAsync()
-		{
-			var keys = new object[10];
-			var values = new object[10];
-			for (var i = 0; i < keys.Length; i++)
-			{
-				keys[i] = $"keyTestRemove{i}";
-				values[i] = $"valueRemove{i}";
-			}
-
-			var cache = GetDefaultCache();
-
-			// add the item
-			await (cache.PutManyAsync(keys, values, CancellationToken.None));
-
-			// make sure it's there
-			var items = await (cache.GetManyAsync(keys, CancellationToken.None));
-			Assert.That(items, Is.EquivalentTo(values), "items just added are not there");
-
-			// remove it
-			foreach (var key in keys)
-				await (cache.RemoveAsync(key, CancellationToken.None));
-
-			// make sure it's not there
-			items = await (cache.GetManyAsync(keys, CancellationToken.None));
-			Assert.That(items, Is.EquivalentTo(new object[10]), "items still exists in cache after remove");
-		}
-
-		[Test]
 		public async Task TestLockUnlockManyAsync()
 		{
 			if (!SupportsLocking)

@@ -223,35 +223,6 @@ namespace NHibernate.Caches.Common.Tests
 		}
 
 		[Test]
-		public void TestRemoveMany()
-		{
-			var keys = new object[10];
-			var values = new object[10];
-			for (var i = 0; i < keys.Length; i++)
-			{
-				keys[i] = $"keyTestRemove{i}";
-				values[i] = $"valueRemove{i}";
-			}
-
-			var cache = GetDefaultCache();
-
-			// add the item
-			cache.PutMany(keys, values);
-
-			// make sure it's there
-			var items = cache.GetMany(keys);
-			Assert.That(items, Is.EquivalentTo(values), "items just added are not there");
-
-			// remove it
-			foreach (var key in keys)
-				cache.Remove(key);
-
-			// make sure it's not there
-			items = cache.GetMany(keys);
-			Assert.That(items, Is.EquivalentTo(new object[10]), "items still exists in cache after remove");
-		}
-
-		[Test]
 		public void TestLockUnlockMany()
 		{
 			if (!SupportsLocking)

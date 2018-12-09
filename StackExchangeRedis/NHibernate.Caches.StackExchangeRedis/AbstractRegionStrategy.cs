@@ -82,11 +82,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 		protected virtual string RemoveScript => null;
 
 		/// <summary>
-		/// The lua script for removing many keys from the cache at once.
-		/// </summary>
-		protected virtual string RemoveManyScript => null;
-
-		/// <summary>
 		/// The lua script for locking a key.
 		/// </summary>
 		protected virtual string LockScript => null;
@@ -344,35 +339,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 			var values = GetAdditionalValues();
 			var results = (RedisValue[]) Database.ScriptEvaluate(RemoveScript, keys, values);
 			return (bool) results[0];
-		}
-
-		/// <summary>
-		/// Removes many keys from Redis at once.
-		/// </summary>
-		/// <param name="keys">The keys to remove.</param>
-		public virtual long RemoveMany(object[] keys)
-		{
-			if (keys == null)
-			{
-				throw new ArgumentNullException(nameof(keys));
-			}
-
-			Log.Debug("Removing {0} objects...", keys.Length);
-			var cacheKeys = new RedisKey[keys.Length];
-			for (var i = 0; i < keys.Length; i++)
-			{
-				cacheKeys[i] = GetCacheKey(keys[i]);
-				Log.Debug("Removing object with key: '{0}'.", cacheKeys[i]);
-			}
-
-			if (string.IsNullOrEmpty(RemoveManyScript))
-			{
-				return Database.KeyDelete(cacheKeys);
-			}
-
-			cacheKeys = AppendAdditionalKeys(cacheKeys);
-			var results = (RedisValue[]) Database.ScriptEvaluate(RemoveManyScript, cacheKeys, GetAdditionalValues());
-			return (long) results[0];
 		}
 
 		/// <summary>

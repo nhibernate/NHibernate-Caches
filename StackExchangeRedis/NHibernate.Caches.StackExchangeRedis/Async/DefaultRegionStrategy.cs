@@ -164,24 +164,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 		}
 
 		/// <inheritdoc />
-		public override async Task<long> RemoveManyAsync(object[] keys, CancellationToken cancellationToken)
-		{
-			cancellationToken.ThrowIfCancellationRequested();
-			try
-			{
-				return await (base.RemoveManyAsync(keys, cancellationToken)).ConfigureAwait(false);
-			}
-			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
-			{
-				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
-				// There is no point removing the keys in the new version.
-				return 0L;
-			}
-		}
-
-		/// <inheritdoc />
 		public override async Task<bool> UnlockAsync(object key, string lockValue, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();

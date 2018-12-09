@@ -50,8 +50,6 @@
         name: GetMany
       - containingType: NHibernate.Caches.StackExchangeRedis.RedisCache
         name: PutMany
-      - containingType: NHibernate.Caches.StackExchangeRedis.RedisCache
-        name: RemoveMany
       - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: Get
       - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
@@ -62,8 +60,6 @@
         name: PutMany
       - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: Remove
-      - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
-        name: RemoveMany
       - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy
         name: Unlock
       - containingType: NHibernate.Caches.StackExchangeRedis.AbstractRegionStrategy

@@ -22,7 +22,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 		private static readonly string PutLuaScript;
 		private static readonly string PutManyLuaScript;
 		private static readonly string RemoveLuaScript;
-		private static readonly string RemoveManyLuaScript;
 		private static readonly string LockLuaScript;
 		private static readonly string LockManyLuaScript;
 		private static readonly string UnlockLuaScript;
@@ -39,7 +38,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 			PutLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Put));
 			PutManyLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(PutMany));
 			RemoveLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Remove));
-			RemoveManyLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(RemoveMany));
 			LockLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Lock));
 			LockManyLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(LockMany));
 			UnlockLuaScript = LuaScriptProvider.GetConcatenatedScript<DefaultRegionStrategy>(checkVersion, nameof(Unlock));
@@ -98,9 +96,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 		/// <inheritdoc />
 		protected override string RemoveScript => RemoveLuaScript;
-
-		/// <inheritdoc />
-		protected override string RemoveManyScript => RemoveManyLuaScript;
 
 		/// <inheritdoc />
 		protected override string LockScript => LockLuaScript;
@@ -239,22 +234,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 				InitializeVersion();
 				// There is no point removing the key in the new version.
 				return false;
-			}
-		}
-
-		/// <inheritdoc />
-		public override long RemoveMany(object[] keys)
-		{
-			try
-			{
-				return base.RemoveMany(keys);
-			}
-			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
-			{
-				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				InitializeVersion();
-				// There is no point removing the keys in the new version.
-				return 0L;
 			}
 		}
 

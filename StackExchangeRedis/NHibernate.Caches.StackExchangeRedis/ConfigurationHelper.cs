@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHibernate.Bytecode;
-using NHibernate.Cache;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.StackExchangeRedis
