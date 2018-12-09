@@ -20,6 +20,24 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.5.0 for NHibernate 5.2.0
+
+NHibernate 5.2.0 is targeted by all cache providers.
+
+* Bug
+    * #53 - Disable append-hashcode when library is not built for netFx
+    * #32 - Key computing for Memcached leaks hashers
+
+* New feature
+    * #50 - Common cache serializer and json serializer
+    * #45 - Add Redis provider with batching support
+
+* Improvement
+    * #52 - Cease using cryptographic hashes
+
+* Task
+    * #56 - Upgrade to NH 5.2.0
+
 #### Build 5.4.0 for NHibernate 5.1.0
 
 NHibernate 5.1.0 is targeted by all cache providers.
