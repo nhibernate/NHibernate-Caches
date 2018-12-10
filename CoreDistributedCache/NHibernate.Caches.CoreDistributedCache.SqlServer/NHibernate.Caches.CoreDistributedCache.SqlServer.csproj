@@ -9,8 +9,14 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
-    * #52 - Cease using cryptographic hashes</PackageReleaseNotes>
+    <PackageReleaseNotes>* Bug
+    * #53 - Disable append-hashcode when library is not built for netFx
+
+* Improvement
+    * #52 - Cease using cryptographic hashes
+
+* Task
+    * #56 - Upgrade to NH 5.2.0</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>

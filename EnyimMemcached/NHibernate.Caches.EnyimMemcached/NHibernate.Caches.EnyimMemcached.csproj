@@ -8,8 +8,14 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
-    * #52 - Cease using cryptographic hashes</PackageReleaseNotes>
+    <PackageReleaseNotes>* Bug
+    * #32 - Key computing for Memcached leaks hashers
+
+* Improvement
+    * #52 - Cease using cryptographic hashes
+
+* Task
+    * #56 - Upgrade to NH 5.2.0</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
