@@ -20,6 +20,10 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.5.1 for NHibernate 5.2.0
+
+Re-release in order to have proper release notes in the NuGet packages.
+
 #### Build 5.5.0 for NHibernate 5.2.0
 
 NHibernate 5.2.0 is targeted by all cache providers.

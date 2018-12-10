@@ -8,14 +8,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Bug
-    * #48 - Avoid undue cache misses
-
-* New Feature
-    * #38 - Add a Core RtMemoryCache
-
-* Task
-    * #46 - Update NHibernate to 5.1.0</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #56 - Upgrade to NH 5.2.0</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />

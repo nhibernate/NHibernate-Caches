@@ -1,0 +1,10 @@
+- Check nothing is left pending in the milestone
+- Update the version number in appveyor.yml, buildcommon.xml and NHibernate.Caches.props
+- Update readme.md with the list of issues fixed in the milestone
+- Update the <PackageReleaseNotes> nodes of .csproj files published as NuGet packages
+- Commit and PR the above
+- Draft a release on GitHub
+- If the PR CI build is good, merge and wait for the master CI build
+- Download the artifacts from the release job of the master CI build
+- Push the NuGet packages
+- Add the binary zip to the GitHub release and publish it
