@@ -19,6 +19,10 @@ install:
 - curl -L -O -S -s http://downloads.northscale.com/memcached-1.4.5-amd64.zip
 - 7z x memcached-1.4.5-amd64.zip
 - ps: $MemCached = Start-Process memcached-amd64\memcached.exe -PassThru
+# redis server
+- curl -L -O -S -s https://github.com/ServiceStack/redis-windows/raw/master/downloads/redis64-2.8.17.zip
+- 7z x redis64-2.8.17.zip
+- ps: $Redis = Start-Process redis-server.exe redis.windows.conf -PassThru
 before_build:
 - which msbuild.exe
 - nuget restore NHibernate.Caches.Everything.sln
@@ -107,7 +111,7 @@ test_script:
 
         #netFx tests
         If ($env:TESTS -eq 'net') {
-            @('EnyimMemcached', 'Prevalence', 'RtMemoryCache', 'SysCache', 'SysCache2', 'CoreMemoryCache', 'CoreDistributedCache') | ForEach-Object {
+            @('EnyimMemcached', 'Prevalence', 'RtMemoryCache', 'SysCache', 'SysCache2', 'CoreMemoryCache', 'CoreDistributedCache', 'StackExchangeRedis') | ForEach-Object {
                 $projects.Add($_, "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$target\NHibernate.Caches.$_.Tests.dll")
             }
             ForEach ($project in $projects.GetEnumerator()) {
@@ -120,7 +124,7 @@ test_script:
 
         #core tests
         If ($env:TESTS -eq 'core') {
-            @('CoreMemoryCache', 'CoreDistributedCache', 'RtMemoryCache') | ForEach-Object {
+            @('CoreMemoryCache', 'CoreDistributedCache', 'RtMemoryCache', 'StackExchangeRedis') | ForEach-Object {
                 $projects.Add($_, "$_\NHibernate.Caches.$_.Tests\bin\$env:CONFIGURATION\$target\NHibernate.Caches.$_.Tests.dll")
             }
             ForEach ($project in $projects.GetEnumerator()) {
@@ -151,3 +155,4 @@ artifacts:
     name: Binaries
 on_finish:
 - ps: Stop-Process -Id $MemCached.Id
+- ps: Stop-Process -Id $Redis.Id

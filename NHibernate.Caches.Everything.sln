@@ -74,6 +74,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Util.Json
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Util.JsonSerializer.Tests", "Util\NHibernate.Caches.Util.JsonSerializer.Tests\NHibernate.Caches.Util.JsonSerializer.Tests.csproj", "{26EAA903-63F7-41B1-9197-5944CEBF00C2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.StackExchangeRedis", "StackExchangeRedis\NHibernate.Caches.StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.csproj", "{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.StackExchangeRedis.Tests", "StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.Tests\NHibernate.Caches.StackExchangeRedis.Tests.csproj", "{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -192,6 +196,14 @@ Global
 		{26EAA903-63F7-41B1-9197-5944CEBF00C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{26EAA903-63F7-41B1-9197-5944CEBF00C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{26EAA903-63F7-41B1-9197-5944CEBF00C2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -225,5 +237,7 @@ Global
 		{15C72C05-4976-4401-91CB-31EF769AADD7} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
 		{2327C330-0CE6-4F58-96A3-013BEFDFCCEB} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
 		{26EAA903-63F7-41B1-9197-5944CEBF00C2} = {55271617-8CB8-4225-B338-069033160497}
+		{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
+		{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63} = {55271617-8CB8-4225-B338-069033160497}
 	EndGlobalSection
 EndGlobal

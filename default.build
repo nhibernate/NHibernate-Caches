@@ -19,6 +19,7 @@
     <include name="RtMemoryCache/default.build" />
     <include name="CoreMemoryCache/default.build" />
     <include name="CoreDistributedCache/default.build" />
+    <include name="StackExchangeRedis/default.build" />
   </fileset>
 
   <target name="build" depends="common.compile-all"
