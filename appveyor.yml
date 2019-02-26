@@ -91,11 +91,8 @@ after_build:
         $nugetExe = Join-Path $nugetPath 'NuGet.exe'
         $wc.DownloadFile('https://dist.nuget.org/win-x86-commandline/latest/nuget.exe', $nugetExe)
         Add-Content 'NuGetPush.bat' "rem In order to use this bat you have to be sure you have executed 'nuget SetApiKey'"
-        Get-Item '*.nupkg' -exclude '*.symbols.nupkg' | ForEach-Object {
+        Get-Item '*.nupkg' | ForEach-Object {
             Add-Content 'NuGetPush.bat' "nuget push -source https://nuget.org/ $($_.Name)"
-        }
-        Get-Item '*.symbols.nupkg' | ForEach-Object {
-            Add-Content 'NuGetPush.bat' "nuget push -source https://nuget.smbsrc.net/ $($_.Name)"
         }
         cd $env:APPVEYOR_BUILD_FOLDER
         7z a "$nugetFolderName.zip" "$nugetFolderName\"
@@ -149,6 +146,7 @@ test_script:
     }
 artifacts:
   - path: 'nuget_gallery\*.nupkg'
+  - path: 'nuget_gallery\*.snupkg'
   - path: 'nuget_gallery.zip'
     name: NuGet packages
   - path: 'NHCH-*-bin.zip'
