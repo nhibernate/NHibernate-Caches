@@ -1,11 +1,11 @@
 ﻿local lockValue = ARGV[#ARGV-2]
 local expirationMs = ARGV[#ARGV-1]
-local lockedKeys = {{}}
+local lockedKeys = {}
 local lockedKeyIndex = 1
 local locked = true
 for i=1,#KEYS-1 do
 	if redis.call('set', KEYS[i], lockValue, 'nx', 'px', expirationMs) == false then
-		locked = 0
+		locked = false
 		break
 	else
 		lockedKeys[lockedKeyIndex] = KEYS[i]
