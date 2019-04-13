@@ -24,81 +24,81 @@ namespace NHibernate.Caches.StackExchangeRedis.Tests
 	{
 
 		[Test]
-		public Task TestGetOperationAsync()
+		public async Task TestGetOperationAsync()
 		{
-			return TestOperationAsync("Get", true, (cache, key, _) => cache.GetAsync(key, CancellationToken.None));
+			await (TestOperationAsync("Get", true, (cache, key, _) => cache.GetAsync(key, CancellationToken.None)));
 		}
 
 		[Test]
-		public Task TestGetManyOperationAsync()
+		public async Task TestGetManyOperationAsync()
 		{
-			return TestBatchOperationAsync("GetMany", true, (cache, keys, _) => cache.GetManyAsync(keys, CancellationToken.None), BatchSize);
+			await (TestBatchOperationAsync("GetMany", true, (cache, keys, _) => cache.GetManyAsync(keys, CancellationToken.None), BatchSize));
 		}
 
 		[Test]
-		public Task TestGetOperationWithSlidingExpirationAsync()
+		public async Task TestGetOperationWithSlidingExpirationAsync()
 		{
 			var props = new Dictionary<string, string> {{"sliding", "true"}};
-			return TestOperationAsync("Get", true, (cache, key, _) => cache.GetAsync(key, CancellationToken.None),
-				caches: new List<RedisCache> {GetDefaultRedisCache(props), GetFastRedisCache(props)});
+			await (TestOperationAsync("Get", true, (cache, key, _) => cache.GetAsync(key, CancellationToken.None),
+				caches: new List<RedisCache> {GetDefaultRedisCache(props), GetFastRedisCache(props)}));
 		}
 
 		[Test]
-		public Task TestGetManyOperationWithSlidingExpirationAsync()
+		public async Task TestGetManyOperationWithSlidingExpirationAsync()
 		{
 			var props = new Dictionary<string, string> {{"sliding", "true"}};
-			return TestBatchOperationAsync("GetMany", true, (cache, keys, _) => cache.GetManyAsync(keys, CancellationToken.None),
+			await (TestBatchOperationAsync("GetMany", true, (cache, keys, _) => cache.GetManyAsync(keys, CancellationToken.None),
 				batchSize: BatchSize,
-				caches: new List<RedisCache> {GetDefaultRedisCache(props), GetFastRedisCache(props)});
+				caches: new List<RedisCache> {GetDefaultRedisCache(props), GetFastRedisCache(props)}));
 		}
 
 		[Test]
-		public Task TestPutOperationAsync()
+		public async Task TestPutOperationAsync()
 		{
 			var props = new Dictionary<string, string> {{"expiration", "0"}};
-			return TestOperationAsync("Put", false, (cache, key, value) => cache.PutAsync(key, value, CancellationToken.None),
-				caches: new List<RedisCache> {GetFastRedisCache(props)});
+			await (TestOperationAsync("Put", false, (cache, key, value) => cache.PutAsync(key, value, CancellationToken.None),
+				caches: new List<RedisCache> {GetFastRedisCache(props)}));
 		}
 
 		[Test]
-		public Task TestPutManyOperationAsync()
+		public async Task TestPutManyOperationAsync()
 		{
 			var props = new Dictionary<string, string> {{"expiration", "0"}};
-			return TestBatchOperationAsync("PutMany", false, (cache, keys, values) => cache.PutManyAsync(keys, values, CancellationToken.None),
+			await (TestBatchOperationAsync("PutMany", false, (cache, keys, values) => cache.PutManyAsync(keys, values, CancellationToken.None),
 				batchSize: null,
-				caches: new List<RedisCache> {GetFastRedisCache(props)});
+				caches: new List<RedisCache> {GetFastRedisCache(props)}));
 		}
 
 		[Test]
-		public Task TestPutOperationWithExpirationAsync()
+		public async Task TestPutOperationWithExpirationAsync()
 		{
-			return TestOperationAsync("Put", false, (cache, key, value) => cache.PutAsync(key, value, CancellationToken.None));
+			await (TestOperationAsync("Put", false, (cache, key, value) => cache.PutAsync(key, value, CancellationToken.None)));
 		}
 
 		[Test]
-		public Task TestPutManyOperationWithExpirationAsync()
+		public async Task TestPutManyOperationWithExpirationAsync()
 		{
-			return TestBatchOperationAsync("PutMany", false, (cache, keys, values) => cache.PutManyAsync(keys, values, CancellationToken.None), null);
+			await (TestBatchOperationAsync("PutMany", false, (cache, keys, values) => cache.PutManyAsync(keys, values, CancellationToken.None), null));
 		}
 
 		[Test]
-		public Task TestLockUnlockOperationAsync()
+		public async Task TestLockUnlockOperationAsync()
 		{
-			return TestOperationAsync("Lock/Unlock", true, async (cache, key, _) =>
+			await (TestOperationAsync("Lock/Unlock", true, async (cache, key, _) =>
 			{
 				var value = await (cache.LockAsync(key, CancellationToken.None));
 				await (cache.UnlockAsync(key, value, CancellationToken.None));
-			});
+			}));
 		}
 
 		[Test]
-		public Task TestLockUnlockManyOperationAsync()
+		public async Task TestLockUnlockManyOperationAsync()
 		{
-			return TestBatchOperationAsync("LockMany/UnlockMany", true, async (cache, keys, _) =>
+			await (TestBatchOperationAsync("LockMany/UnlockMany", true, async (cache, keys, _) =>
 			{
 				var value = await (cache.LockManyAsync(keys, CancellationToken.None));
 				await (cache.UnlockManyAsync(keys, value, CancellationToken.None));
-			}, null);
+			}, null));
 		}
 
 		private async Task PutCacheDataAsync(CacheBase cache, Dictionary<CacheKey, List<object>> cacheData, CancellationToken cancellationToken = default(CancellationToken))
