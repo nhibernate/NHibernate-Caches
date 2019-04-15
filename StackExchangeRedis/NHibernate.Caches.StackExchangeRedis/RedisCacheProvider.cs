@@ -28,6 +28,16 @@ namespace NHibernate.Caches.StackExchangeRedis
 			set => _defaultCacheConfiguration = value ?? new RedisCacheConfiguration();
 		}
 
+		/// <summary>
+		/// Set the region configuration.
+		/// </summary>
+		/// <param name="regionName">The region name.</param>
+		/// <param name="configuration">The region configuration.</param>
+		public static void SetRegionConfiguration(string regionName, RegionConfig configuration)
+		{
+			ConfiguredCacheRegions[regionName] = configuration;
+		}
+
 		static RedisCacheProvider()
 		{
 			Log = NHibernateLogger.For(typeof(RedisCacheProvider));
@@ -217,7 +227,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 			config.EnvironmentName = GetString(RedisEnvironment.EnvironmentName, properties, config.EnvironmentName);
 			Log.Debug("Cache environment name: {0}", config.EnvironmentName);
 
-			config.RegionPrefix = GetString(Cfg.Environment.CacheRegionPrefix, properties, config.RegionPrefix);
 			Log.Debug("Region prefix: {0}", config.RegionPrefix);
 
 			config.Serializer = GetInstance(RedisEnvironment.Serializer, properties, config.Serializer, Log);
