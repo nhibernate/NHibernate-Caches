@@ -35,6 +35,15 @@ namespace NHibernate.Caches.RtMemoryCache
 		private static readonly Dictionary<string, IDictionary<string, string>> ConfiguredCachesProperties;
 		private static readonly INHibernateLogger Log;
 
+		/// <summary>
+		/// Set the region configuration.
+		/// </summary>
+		/// <param name="configuration">The region configuration.</param>
+		public static void SetRegionConfiguration(CacheConfig configuration)
+		{
+			ConfiguredCachesProperties[configuration.Region] = configuration.Properties;
+		}
+
 		static RtMemoryCacheProvider()
 		{
 			Log = NHibernateLogger.For(typeof(RtMemoryCacheProvider));
