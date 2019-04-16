@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using NHibernate.Cache;
 using NHibernate.Caches.StackExchangeRedis.Tests.Caches;
 using StackExchange.Redis;
@@ -13,6 +14,13 @@ namespace NHibernate.Caches.StackExchangeRedis.Tests.Providers
 	public class DistributedRedisCacheProvider : RedisCacheProvider
 	{
 		private readonly List<IConnectionMultiplexer> _connectionMultiplexers = new List<IConnectionMultiplexer>();
+
+		/// <inheritdoc />
+		protected sealed override IConnectionMultiplexer ConnectionMultiplexer
+		{
+			get => throw new NotSupportedException();
+			set => throw new NotSupportedException();
+		}
 
 		/// <inheritdoc />
 		protected override void Start(string configurationString, IDictionary<string, string> properties)

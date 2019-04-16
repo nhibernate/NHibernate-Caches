@@ -17,8 +17,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 		private static readonly CacheConfig ConfiguredCache;
 		private static RedisCacheConfiguration _defaultCacheConfiguration = new RedisCacheConfiguration();
 
-		private IConnectionMultiplexer _connectionMultiplexer;
-
 		/// <summary>
 		/// The default configuration that will be used for creating the <see cref="CacheConfiguration"/>.
 		/// </summary>
@@ -86,6 +84,11 @@ namespace NHibernate.Caches.StackExchangeRedis
 		}
 
 		/// <summary>
+		/// The Redis connection that is shared across caches.
+		/// </summary>
+		protected virtual IConnectionMultiplexer ConnectionMultiplexer { get; set; }
+
+		/// <summary>
 		/// The Redis cache configuration that is populated by the NHibernate configuration.
 		/// </summary>
 		public RedisCacheConfiguration CacheConfiguration { get; } = CreateCacheConfiguration();
@@ -137,8 +140,8 @@ namespace NHibernate.Caches.StackExchangeRedis
 					Log.Debug("Releasing connection.");
 				}
 
-				_connectionMultiplexer.Dispose();
-				_connectionMultiplexer = null;
+				ConnectionMultiplexer.Dispose();
+				ConnectionMultiplexer = null;
 			}
 			catch (Exception e)
 			{
@@ -154,7 +157,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		/// <param name="properties">NHibernate configuration settings.</param>
 		protected virtual void Start(string configurationString, IDictionary<string, string> properties)
 		{
-			_connectionMultiplexer = CacheConfiguration.ConnectionMultiplexerProvider.Get(configurationString);
+			ConnectionMultiplexer = CacheConfiguration.ConnectionMultiplexerProvider.Get(configurationString);
 		}
 
 		/// <summary>
@@ -166,7 +169,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		protected virtual CacheBase BuildCache(RedisCacheRegionConfiguration regionConfiguration, IDictionary<string, string> properties)
 		{
 			var regionStrategy =
-				CacheConfiguration.RegionStrategyFactory.Create(_connectionMultiplexer, regionConfiguration, properties);
+				CacheConfiguration.RegionStrategyFactory.Create(ConnectionMultiplexer, regionConfiguration, properties);
 
 			regionStrategy.Validate();
 
