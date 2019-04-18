@@ -23,6 +23,9 @@ namespace NHibernate.Caches.StackExchangeRedis
 		/// <inheritdoc />
 		public override string RegionName { get; }
 
+		/// <inheritdoc />
+		public override bool PreferMultipleGet => true;
+
 		/// <summary>
 		/// The region strategy used by the cache.
 		/// </summary>
