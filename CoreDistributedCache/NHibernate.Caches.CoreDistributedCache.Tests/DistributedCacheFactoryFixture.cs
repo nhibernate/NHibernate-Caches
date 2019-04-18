@@ -26,7 +26,7 @@ using System.Reflection;
 using Enyim.Caching;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
-using Microsoft.Extensions.Caching.Redis;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Microsoft.Extensions.Caching.SqlServer;
 using NHibernate.Caches.CoreDistributedCache.Memcached;
 using NHibernate.Caches.CoreDistributedCache.Memory;
