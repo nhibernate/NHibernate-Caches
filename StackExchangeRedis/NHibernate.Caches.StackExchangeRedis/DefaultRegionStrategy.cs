@@ -47,7 +47,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 		private readonly RedisKey[] _regionKeyArray;
 		private readonly RedisValue[] _maxVersionNumber;
-		private RedisValue _currentVersion;
 		private RedisValue[] _currentVersionArray;
 		private readonly bool _usePubSub;
 
@@ -80,7 +79,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		/// <summary>
 		/// The version number that is currently used to retrieve/store keys.
 		/// </summary>
-		public long CurrentVersion => (long) _currentVersion;
+		public long CurrentVersion { get; private set; }
 
 		/// <inheritdoc />
 		protected override string GetScript => GetLuaScript;
@@ -308,8 +307,13 @@ namespace NHibernate.Caches.StackExchangeRedis
 		protected override string GetCacheKey(object value)
 		{
 			return AppendHashcode
-				? string.Concat("{", RegionKey, "}-", _currentVersion, ":", value.ToString(), "@", value.GetHashCode())
-				: string.Concat("{", RegionKey, "}-", _currentVersion, ":", value.ToString());
+#if NETFX
+				? string.Concat(new object[] {"{", RegionKey, "}-", CurrentVersion, ":", value.ToString(), "@", value.GetHashCode()})
+				: string.Concat(new object[] {"{", RegionKey, "}-", CurrentVersion, ":", value.ToString()});
+#else
+				? string.Concat("{", RegionKey, "}-", CurrentVersion, ":", value.ToString(), "@", value.GetHashCode())
+				: string.Concat("{", RegionKey, "}-", CurrentVersion, ":", value.ToString());
+#endif
 		}
 
 		private void InitializeVersion()
@@ -322,7 +326,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		private void UpdateVersion(RedisValue version)
 		{
 			Log.Debug("Updating version from '{0}' to '{1}'.", CurrentVersion, version);
-			_currentVersion = version;
+			CurrentVersion = (long) version;
 			_currentVersionArray = new[] {version};
 		}
 	}
