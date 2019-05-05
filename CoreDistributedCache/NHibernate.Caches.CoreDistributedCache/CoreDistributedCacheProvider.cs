@@ -71,6 +71,15 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// </remarks>
 		public static bool AppendHashcodeToKey { get; set; }
 
+		/// <summary>
+		/// Set a region configuration.
+		/// </summary>
+		/// <param name="configuration">The region configuration.</param>
+		public static void SetRegionConfiguration(RegionConfig configuration)
+		{
+			ConfiguredCachesProperties[configuration.Region] = configuration.Properties;
+		}
+
 		static CoreDistributedCacheProvider()
 		{
 			Log = NHibernateLogger.For(typeof(CoreDistributedCacheProvider));

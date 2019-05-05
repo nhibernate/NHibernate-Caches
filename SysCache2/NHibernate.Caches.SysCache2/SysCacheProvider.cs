@@ -21,12 +21,21 @@ namespace NHibernate.Caches.SysCache2
 		private static readonly INHibernateLogger Log;
 
 		/// <summary>
+		/// Set a region configuration.
+		/// </summary>
+		/// <param name="configuration">The region configuration.</param>
+		public static void SetRegionConfiguration(CacheRegionElement configuration)
+		{
+			CacheRegionSettings[configuration.Name] = configuration;
+		}
+
+		/// <summary>
 		/// Initializes the <see cref="SysCacheProvider"/> class.
 		/// </summary>
 		static SysCacheProvider()
 		{
 			Log = NHibernateLogger.For(typeof(SysCacheProvider));
-			// We need to determine which cache regions are configured in the configuration file, but we cant create the
+			// We need to determine which cache regions are configured in the configuration file, but we can't create the
 			// cache regions at this time because there could be nhibernate configuration values
 			// that we need for the cache regions such as connection info to be used for data dependencies. But this info
 			// isn't available until build cache is called. So allocate space but only create them on demand.

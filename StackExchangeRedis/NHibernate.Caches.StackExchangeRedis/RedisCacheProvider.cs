@@ -26,6 +26,16 @@ namespace NHibernate.Caches.StackExchangeRedis
 			set => _defaultCacheConfiguration = value ?? new RedisCacheConfiguration();
 		}
 
+		/// <summary>
+		/// Set a region configuration.
+		/// </summary>
+		/// <param name="regionName">The region name.</param>
+		/// <param name="configuration">The region configuration.</param>
+		public static void SetRegionConfiguration(string regionName, RegionConfig configuration)
+		{
+			ConfiguredCacheRegions[regionName] = configuration;
+		}
+
 		static RedisCacheProvider()
 		{
 			Log = NHibernateLogger.For(typeof(RedisCacheProvider));

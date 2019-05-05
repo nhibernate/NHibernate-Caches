@@ -56,6 +56,15 @@ namespace NHibernate.Caches.CoreMemoryCache
 		/// </remarks>
 		public static TimeSpan? ExpirationScanFrequency { get; set; }
 
+		/// <summary>
+		/// Set a region configuration.
+		/// </summary>
+		/// <param name="configuration">The region configuration.</param>
+		public static void SetRegionConfiguration(RegionConfig configuration)
+		{
+			ConfiguredCachesProperties[configuration.Region] = configuration.Properties;
+		}
+
 		static CoreMemoryCacheProvider()
 		{
 			Log = NHibernateLogger.For(typeof(CoreMemoryCacheProvider));
