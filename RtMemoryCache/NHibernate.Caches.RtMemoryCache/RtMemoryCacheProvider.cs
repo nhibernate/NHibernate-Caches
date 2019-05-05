@@ -36,7 +36,7 @@ namespace NHibernate.Caches.RtMemoryCache
 		private static readonly INHibernateLogger Log;
 
 		/// <summary>
-		/// Set the region configuration.
+		/// Set a region configuration.
 		/// </summary>
 		/// <param name="configuration">The region configuration.</param>
 		public static void SetRegionConfiguration(CacheConfig configuration)

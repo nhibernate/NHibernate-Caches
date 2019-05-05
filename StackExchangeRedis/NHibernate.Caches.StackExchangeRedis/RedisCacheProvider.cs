@@ -29,7 +29,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		}
 
 		/// <summary>
-		/// Set the region configuration.
+		/// Set a region configuration.
 		/// </summary>
 		/// <param name="regionName">The region name.</param>
 		/// <param name="configuration">The region configuration.</param>

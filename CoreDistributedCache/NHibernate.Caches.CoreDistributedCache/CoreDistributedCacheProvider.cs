@@ -72,7 +72,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		public static bool AppendHashcodeToKey { get; set; }
 
 		/// <summary>
-		/// Set the region configuration.
+		/// Set a region configuration.
 		/// </summary>
 		/// <param name="configuration">The region configuration.</param>
 		public static void SetRegionConfiguration(RegionConfig configuration)

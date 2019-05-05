@@ -48,6 +48,15 @@ namespace NHibernate.Caches.SysCache
 			}
 		}
 
+		/// <summary>
+		/// Set a region configuration.
+		/// </summary>
+		/// <param name="configuration">The region configuration.</param>
+		public static void SetRegionConfiguration(CacheConfig configuration)
+		{
+			ConfiguredCachesProperties[configuration.Region] = configuration.Properties;
+		}
+
 		#region ICacheProvider Members
 
 		/// <inheritdoc />

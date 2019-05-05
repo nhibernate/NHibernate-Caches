@@ -57,7 +57,7 @@ namespace NHibernate.Caches.CoreMemoryCache
 		public static TimeSpan? ExpirationScanFrequency { get; set; }
 
 		/// <summary>
-		/// Set the region configuration.
+		/// Set a region configuration.
 		/// </summary>
 		/// <param name="configuration">The region configuration.</param>
 		public static void SetRegionConfiguration(RegionConfig configuration)
