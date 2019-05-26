@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace NHibernate.Caches.StackExchangeRedis.Tests
 {
 	[TestFixture]
-	public partial class RedisCacheDefaultStrategyFixture : RedisCacheFixture
+	public partial class RedisCacheDefaultStrategyFixture : RedisCacheFixture<DefaultRegionStrategy>
 	{
 		[Test]
 		public void TestNoExpiration()

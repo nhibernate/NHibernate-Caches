@@ -16,7 +16,7 @@ using NUnit.Framework;
 namespace NHibernate.Caches.StackExchangeRedis.Tests
 {
 	using System.Threading.Tasks;
-	public partial class RedisCacheDefaultStrategyFixture : RedisCacheFixture
+	public partial class RedisCacheDefaultStrategyFixture : RedisCacheFixture<DefaultRegionStrategy>
 	{
 
 		[Test]

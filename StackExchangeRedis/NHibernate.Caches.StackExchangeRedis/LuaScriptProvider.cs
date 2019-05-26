@@ -64,16 +64,32 @@ namespace NHibernate.Caches.StackExchangeRedis
 		/// <returns>The lua script.</returns>
 		public static string GetScript<TRegionStrategy>(string scriptName) where TRegionStrategy : AbstractRegionStrategy
 		{
-			if (!StrategyLuaScripts.TryGetValue(typeof(TRegionStrategy).Name, out var luaScripts))
+			return GetScript(scriptName, typeof(TRegionStrategy).Name);
+		}
+
+		/// <summary>
+		/// Get a common lua script.
+		/// </summary>
+		/// <param name="scriptName">The script name.</param>
+		/// <returns>The lua script.</returns>
+		public static string GetScript(string scriptName)
+		{
+			return GetScript(scriptName, "Common");
+		}
+
+		private static string GetScript(string scriptName, string folderName)
+		{
+			if (!StrategyLuaScripts.TryGetValue(folderName, out var luaScripts))
 			{
 				throw new KeyNotFoundException(
-					$"There are no embedded scripts for region strategy {typeof(TRegionStrategy).Name}.");
+					$"There are no embedded scripts for region strategy {folderName}.");
 			}
 			if (!luaScripts.TryGetValue(scriptName, out var script))
 			{
 				throw new KeyNotFoundException(
-					$"There is no embedded script with name {scriptName} for region strategy {typeof(TRegionStrategy).Name}.");
+					$"There is no embedded script with name {scriptName} for region strategy {folderName}.");
 			}
+
 			return script;
 		}
 	}

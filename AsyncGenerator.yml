@@ -40,6 +40,10 @@
       containingTypeName: AbstractRegionStrategy
     - conversion: Smart
       containingTypeName: RedisKeyLocker
+    - conversion: Ignore
+      name: OnVersionUpdate
+    - conversion: Ignore
+      name: AddAndGet
     callForwarding: true
     cancellationTokens:
       guards: true
