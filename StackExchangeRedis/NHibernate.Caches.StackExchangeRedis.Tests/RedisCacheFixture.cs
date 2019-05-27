@@ -13,6 +13,7 @@ namespace NHibernate.Caches.StackExchangeRedis.Tests
 		protected override bool SupportsSlidingExpiration => true;
 		protected override bool SupportsLocking => true;
 		protected override bool SupportsDistinguishingKeysWithSameStringRepresentationAndHashcode => false;
+		protected override bool DisposeCacheProvidersPerTest => true;
 
 		protected override Func<ICacheProvider> ProviderBuilder =>
 			() => new RedisCacheProvider();

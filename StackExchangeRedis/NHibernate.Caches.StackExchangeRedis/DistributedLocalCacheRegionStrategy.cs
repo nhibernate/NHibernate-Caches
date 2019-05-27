@@ -204,6 +204,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 					{
 						if (!LockLocal(lockKey, cacheLockValue))
 						{
+							Log.Debug("Failed to acquire lock for key '{0}' in the local cache, retrying...", lockKey);
 							return null; // Retry
 						}
 
@@ -222,17 +223,21 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 						if (subscriberCount == 0)
 						{
+							Log.Debug("Acquired lock for key '{0}', no other caches were involved.", lockKey);
 							// We are the only one subscribed
 							return cacheLockValue.Value;
 						}
 
+						Log.Debug("Waiting lock result from '{0}' other local caches.", subscriberCount);
 						IncreaseLock(cacheLockValue, subscriberCount);
-						if (!cacheLockValue.Semaphore.Wait(_lockAcquireTimeout))
+						if (!cacheLockValue.Semaphore.Wait(_lockAcquireTimeout) || cacheLockValue.Failed)
 						{
+							Log.Debug("Failed to acquire lock for key '{0}' from '{1}' other local caches, retrying...", lockKey, subscriberCount);
 							return null;
 						}
 
-						return cacheLockValue.Failed ? null : cacheLockValue.Value;
+						Log.Debug("Acquired lock for key '{0}', '{1}' other caches were involved.", lockKey, subscriberCount);
+						return cacheLockValue.Value;
 					}, Context);
 			}
 		}
@@ -261,6 +266,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 					{
 						if (!LockManyLocal(lockKeys, cacheLockValue))
 						{
+							Log.Debug("Failed to acquire lock for '{0}' keys in the local cache, retrying...", lockKeys.Length);
 							return null; // Retry
 						}
 
@@ -279,17 +285,21 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 						if (subscriberCount == 0)
 						{
+							Log.Debug("Acquired lock for '{0}' keys, no other caches were involved.", lockKeys.Length);
 							// We are the only one subscribed
 							return cacheLockValue.Value;
 						}
 
+						Log.Debug("Waiting lock result from '{0}' other local caches.", subscriberCount);
 						IncreaseLock(cacheLockValue, subscriberCount);
-						if (!cacheLockValue.Semaphore.Wait(_lockAcquireTimeout))
+						if (!cacheLockValue.Semaphore.Wait(_lockAcquireTimeout) || cacheLockValue.Failed)
 						{
+							Log.Debug("Failed to acquire lock for '{0}' keys from '{1}' other local caches, retrying...", lockKeys.Length, subscriberCount);
 							return null;
 						}
 
-						return cacheLockValue.Failed ? null : cacheLockValue.Value;
+						Log.Debug("Acquired lock for '{0}' keys, '{1}' other caches were involved.", lockKeys.Length, subscriberCount);
+						return cacheLockValue.Value;
 					}, Context);
 			}
 		}
@@ -469,10 +479,10 @@ namespace NHibernate.Caches.StackExchangeRedis
 		{
 			lock (_lockLock)
 			{
-				var value = _memoryCache.Get(lockKey);
-				if (value != null)
+				var value = (CacheLockValue) _memoryCache.Get(lockKey);
+				if (value != null && !value.Equals(lockValue))
 				{
-					return value.Equals(lockValue);
+					return false;
 				}
 
 				_memoryCache.Put(lockKey, lockValue, _lockKeyTimeout);
@@ -502,6 +512,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				}
 
 				cacheLockValue.RemainingLocks--;
+				Log.Debug("Remaining locks to acquire: '{0}'", cacheLockValue.RemainingLocks);
 				if (cacheLockValue.RemainingLocks == 0)
 				{
 					cacheLockValue.Semaphore.Release();
@@ -509,7 +520,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			}
 		}
 
-		private static void IncreaseLock(CacheLockValue cacheLockValue, long value)
+		private void IncreaseLock(CacheLockValue cacheLockValue, long value)
 		{
 			lock (cacheLockValue)
 			{
@@ -519,6 +530,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				}
 
 				cacheLockValue.RemainingLocks += value;
+				Log.Debug("Remaining locks to acquire: '{0}'", cacheLockValue.RemainingLocks);
 				if (cacheLockValue.RemainingLocks == 0)
 				{
 					cacheLockValue.Semaphore.Release();
@@ -650,7 +662,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 							"comparing the client id in order to determine who has a higher priority. ", cacheKey);
 					}
 
-					if (cacheValue.ClientId >= clientId)
+					if (cacheValue.ClientId > clientId)
 					{
 						return false;
 					}
@@ -780,7 +792,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 							"comparing the client id in order to determine who has a higher priority. ");
 					}
 
-					if (_lastClearClientId >= clientId)
+					if (_lastClearClientId > clientId)
 					{
 						return false;
 					}
