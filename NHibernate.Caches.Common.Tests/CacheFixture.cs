@@ -735,6 +735,96 @@ namespace NHibernate.Caches.Common.Tests
 			}
 		}
 
+		[Test]
+		public void TestRepeatedPut()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			const string value2 = "valuePut2";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				cache.Put(key, value);
+				cache.Put(key, value2);
+				var item = cache.Get(key);
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value2), "didn't return the item we added");
+			}
+		}
+
+		[Test]
+		public void TestRepeatedRemovePut()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				cache.Remove(key);
+				cache.Put(key, value);
+				var item = cache.Get(key);
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+			}
+		}
+
+		[Test]
+		public void TestRepeatedPutRemove()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				cache.Put(key, value);
+				cache.Remove(key);
+				var item = cache.Get(key);
+				Assert.That(item, Is.Null, "Item still exists in cache after remove");
+			}
+		}
+
+		[Test]
+		public void TestRepeatedClearPut()
+		{
+			if (!SupportsClear)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				cache.Clear();
+				cache.Put(key, value);
+				var item = cache.Get(key);
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+
+			}
+		}
+
+		[Test]
+		public void TestRepeatedPutClear()
+		{
+			if (!SupportsClear)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				cache.Put(key, value);
+				cache.Clear();
+				var item = cache.Get(key);
+				Assert.That(item, Is.Null, "Item still exists in cache after clear");
+			}
+		}
+
 		[TestCase(1000), Repeat(10), Explicit]
 		public virtual Task StressTestGetAsync(int totalKeys)
 		{
@@ -1135,16 +1225,31 @@ namespace NHibernate.Caches.Common.Tests
 
 			stopwatch.Start();
 			var cacheIndex = 0;
+			var cacheSwitch = false;
 			for (var i = 0; i < tasks.Length; i++)
 			{
 				var cache = caches[cacheIndex];
 				var random = new Random(masterRandom.Next());
 				tasks[i] = i % 2 == 0
 					? Task.Run(() => Action(random, cache))
-					//: Task.Run(() => Action(random, cache));
 					: ActionAsync(random, cache);
 
 				cacheIndex = (cacheIndex + 1) % caches.Length;
+				if (caches.Length <= 1 || cacheIndex != 0)
+				{
+					continue;
+				}
+
+				// Use async and sync action for the same cache
+				if (cacheSwitch)
+				{
+					cacheSwitch = false;
+				}
+				else
+				{
+					cacheSwitch = true;
+					cacheIndex++;
+				}
 			}
 
 			await Task.WhenAll(tasks);

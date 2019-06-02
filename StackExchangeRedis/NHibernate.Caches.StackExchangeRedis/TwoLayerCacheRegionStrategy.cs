@@ -74,18 +74,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 			_twoLayerCache.OnVersionUpdate(-1, CurrentVersion);
 		}
 
-		private void LogErrorMessage(string message)
-		{
-			if (message == InvalidVersionMessage)
-			{
-				Log.Debug("An operation was executed with an obsolete version number.");
-			}
-			else
-			{
-				Log.Error("An error occurred while executing a Redis command: {0}", message);
-			}
-		}
-
 		/// <inheritdoc />
 		protected override string PutScript => PutLuaScript;
 
@@ -150,6 +138,18 @@ namespace NHibernate.Caches.StackExchangeRedis
 		protected override void OnVersionUpdate(long oldVersion, long newVersion)
 		{
 			_twoLayerCache?.OnVersionUpdate(oldVersion, newVersion);
+		}
+
+		private void LogErrorMessage(string message)
+		{
+			if (message == InvalidVersionMessage)
+			{
+				Log.Debug("An operation was executed with an obsolete version number.");
+			}
+			else
+			{
+				Log.Error("An error occurred while executing a Redis command: {0}", message);
+			}
 		}
 	}
 }

@@ -39,7 +39,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				return value;
 			}
 
-			var timestamp = DateTime.UtcNow.Ticks;
+			var version = _version;
 			_log.Debug("Object was not found in local cache, fetching it from Redis.");
 			value = await (ExecuteGetAsync(cacheKey, cancellationToken)).ConfigureAwait(false);
 			if (value == null)
@@ -60,7 +60,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				}
 			}
 
-			return AddAndGet(cacheKey, value, timestamp, timeToLive);
+			return AddAndGet(cacheKey, value, version, timeToLive);
 		}
 
 		public async Task<object[]> GetManyAsync(RedisKey[] cacheKeys, CancellationToken cancellationToken)
@@ -104,7 +104,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				}
 			}
 
-			var timestamp = DateTime.UtcNow.Ticks;
+			var version = _version;
 			RedisValue[] timesToLive = null;
 			var redisValues = await (ExecuteGetManyAsync(missingKeys, cancellationToken)).ConfigureAwait(false);
 			if (_expirationEnabled && !_useSlidingExpiration)
@@ -133,7 +133,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 					timeToLive = TimeSpan.FromMilliseconds((long) timesToLive[i]);
 				}
 
-				values[missingCacheKeys[i].Key] = AddAndGet(missingKeys[i], redisValues[i], timestamp, timeToLive) ?? redisValues[i];
+				values[missingCacheKeys[i].Key] = AddAndGet(missingKeys[i], redisValues[i], version, timeToLive) ?? redisValues[i];
 			}
 
 			return values;
@@ -177,7 +177,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 				})
 				: null;
 
-			var timestamp = DateTime.UtcNow.Ticks;
 			var cacheValue = (CacheValue) _memoryCache.Get(cacheKey);
 			cancellationToken.ThrowIfCancellationRequested();
 			if (cacheValue == null && await (TryPutLocalAsync()).ConfigureAwait(false))
@@ -189,11 +188,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 			await (lockValue.WaitAsync(cancellationToken)).ConfigureAwait(false);
 			try
 			{
-				if (_lastClearTimestamp >= timestamp)
-				{
-					return false;
-				}
-
 				cacheValue = (CacheValue) _memoryCache.Get(cacheKey);
 				cancellationToken.ThrowIfCancellationRequested();
 
@@ -210,46 +204,32 @@ namespace NHibernate.Caches.StackExchangeRedis
 					return false;
 				}
 
-				if (publish)
-				{
-					cancellationToken.ThrowIfCancellationRequested();
-					await (ExecuteOperationAsync(cacheKey, value, invalidationMessage, remove)).ConfigureAwait(false);
-				}
-
 				if (cacheValue is RemovedCacheValue)
 				{
 					if (remove)
 					{
-						cacheValue.Timestamp = timestamp;
+						cacheValue.Version = _version;
 					}
 					else
 					{
-						cacheValue = new CacheValue(value, timestamp, cacheValue.Lock);
+						cacheValue = new CacheValue(value, _version, cacheValue.Lock);
 					}
 				}
 				else
 				{
 					if (remove)
 					{
-						cacheValue = new RemovedCacheValue(timestamp, cacheValue.Lock);
+						cacheValue = new RemovedCacheValue(_version, cacheValue.Lock);
 					}
 					else
 					{
 						cacheValue.Value = value;
-						cacheValue.Timestamp = timestamp;
+						cacheValue.Version = _version;
 					}
 				}
+				cancellationToken.ThrowIfCancellationRequested();
 
-				if (remove)
-				{
-					RemoveLocal(cacheKey, cacheValue);
-				}
-				else
-				{
-					PutLocal(cacheKey, cacheValue);
-				}
-
-				return true;
+				return await (PutAndPublishAsync()).ConfigureAwait(false);
 			}
 			finally
 			{
@@ -267,26 +247,31 @@ namespace NHibernate.Caches.StackExchangeRedis
 						return false;
 					}
 
-					if (publish)
-					{
-						await (ExecuteOperationAsync(cacheKey, value, invalidationMessage, remove)).ConfigureAwait(false);
-					}
-
-					if (remove)
-					{
-						RemoveLocal(cacheKey, new RemovedCacheValue(timestamp));
-					}
-					else
-					{
-						PutLocal(cacheKey, new CacheValue(value, timestamp));
-					}
-
-					return true;
+					return await (PutAndPublishAsync()).ConfigureAwait(false);
 				}
 				finally
 				{
 					_writeLock.Release();
 				}
+			}
+
+			async Task<bool> PutAndPublishAsync()
+			{
+				if (remove)
+				{
+					RemoveLocal(cacheKey, new RemovedCacheValue(_version));
+				}
+				else
+				{
+					PutLocal(cacheKey, new CacheValue(value, _version));
+				}
+
+				if (publish)
+				{
+					await (ExecuteOperationAsync(cacheKey, value, invalidationMessage, remove)).ConfigureAwait(false);
+				}
+
+				return true;
 			}
 		}
 

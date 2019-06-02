@@ -8,6 +8,7 @@
 //------------------------------------------------------------------------------
 
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -41,8 +42,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				if (retries >= _retryTimes)
 				{
 					Log.Warn("Unable to perform '{0}' operation due to concurrent clear operations, total retries: '{1}'.", nameof(GetAsync), retries);
@@ -78,8 +78,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				if (retries >= _retryTimes)
 				{
 					Log.Warn("Unable to perform '{0}' operation due to concurrent clear operations, total retries: '{1}'.", nameof(GetManyAsync), retries);
@@ -117,8 +116,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				if (retries >= _retryTimes)
 				{
 					throw new CacheException(
@@ -154,8 +152,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				if (retries >= _retryTimes)
 				{
 					throw new CacheException(
@@ -184,8 +181,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				// Here we don't know if the operation was executed after as successful lock, so
 				// the easiest solution is to skip the operation
 			}
@@ -202,8 +198,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				// Here we don't know if the operation was executed after as successful lock, so
 				// the easiest solution is to skip the operation
 			}
@@ -220,8 +215,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				// There is no point removing the key in the new version.
 				return false;
 			}
@@ -238,8 +232,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				// If the lock was acquired in the old version we are unable to unlock the key.
 				return false;
 			}
@@ -256,8 +249,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			catch (RedisServerException e) when (e.Message == InvalidVersionMessage)
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
-				cancellationToken.ThrowIfCancellationRequested();
-				await (InitializeVersionAsync()).ConfigureAwait(false);
+				await (InitializeVersionAsync(cancellationToken)).ConfigureAwait(false);
 				// If the lock was acquired in the old version we are unable to unlock the keys.
 				return 0;
 			}
@@ -268,23 +260,40 @@ namespace NHibernate.Caches.StackExchangeRedis
 		{
 			cancellationToken.ThrowIfCancellationRequested();
 			Log.Debug("Clearing region: '{0}'.", RegionKey);
-			cancellationToken.ThrowIfCancellationRequested();
-			var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(UpdateVersionLuaScript,
-				_regionKeyArray, _maxVersionNumber)).ConfigureAwait(false);
-			var version = results[0];
-			UpdateVersion(version);
-			if (_usePubSub)
+			await (_versionLock.WaitAsync(cancellationToken)).ConfigureAwait(false);
+			try
 			{
 				cancellationToken.ThrowIfCancellationRequested();
-				await (ConnectionMultiplexer.GetSubscriber().PublishAsync(RegionKey, version)).ConfigureAwait(false);
+				var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(UpdateVersionLuaScript,
+					_regionKeyArray, _maxVersionArray)).ConfigureAwait(false);
+				var version = (long) results[0];
+				UpdateVersion(version);
+				if (_usePubSub)
+				{
+					cancellationToken.ThrowIfCancellationRequested();
+					await (ConnectionMultiplexer.GetSubscriber().PublishAsync(RegionKey, version + ";" + _databaseIndex)).ConfigureAwait(false);
+				}
+			}
+			finally
+			{
+				_versionLock.Release();
 			}
 		}
 
-		private async Task InitializeVersionAsync()
+		private async Task InitializeVersionAsync(CancellationToken cancellationToken)
 		{
-			var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(InitializeVersionLuaScript, _regionKeyArray)).ConfigureAwait(false);
-			var version = results[0];
-			UpdateVersion(version);
+			cancellationToken.ThrowIfCancellationRequested();
+			await (_versionLock.WaitAsync(cancellationToken)).ConfigureAwait(false);
+			try
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(InitializeVersionLuaScript, _regionKeyArray)).ConfigureAwait(false);
+				UpdateVersion((long) results[0]);
+			}
+			finally
+			{
+				_versionLock.Release();
+			}
 		}
 	}
 }

@@ -349,7 +349,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			await (lockValue.WaitAsync(cancellationToken)).ConfigureAwait(false);
 			try
 			{
-				if (_lastClearTimestamp >= timestamp)
+				if (!IsActionValid(timestamp, clientId))
 				{
 					return false;
 				}
@@ -395,33 +395,35 @@ namespace NHibernate.Caches.StackExchangeRedis
 					{
 						cacheValue.Timestamp = timestamp;
 						cacheValue.ClientId = clientId;
+						cacheValue.Version = _version;
 					}
 					else
 					{
-						cacheValue = new CacheValue(value, timestamp, clientId, cacheValue.Lock);
+						cacheValue = new CacheValue(value, timestamp, clientId, _version, cacheValue.Lock);
 					}
 				}
 				else
 				{
 					if (remove)
 					{
-						cacheValue = new RemovedCacheValue(timestamp, clientId, cacheValue.Lock);
+						cacheValue = new RemovedCacheValue(timestamp, clientId, _version, cacheValue.Lock);
 					}
 					else
 					{
 						cacheValue.Value = value;
 						cacheValue.Timestamp = timestamp;
 						cacheValue.ClientId = clientId;
+						cacheValue.Version = _version;
 					}
 				}
 
 				if (remove)
 				{
-					_memoryCache.Put(cacheKey, _regionKey, cacheValue, _maxSynchronizationTime);
+					_memoryCache.Put(cacheKey, cacheValue, _maxSynchronizationTime);
 				}
 				else
 				{
-					_memoryCache.Put(cacheKey, _regionKey, cacheValue);
+					_memoryCache.Put(cacheKey, cacheValue);
 				}
 				
 				if (publish)
@@ -450,11 +452,11 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 					if (remove)
 					{
-						_memoryCache.Put(cacheKey, _regionKey, new RemovedCacheValue(timestamp, clientId), _maxSynchronizationTime);
+						_memoryCache.Put(cacheKey, new RemovedCacheValue(timestamp, clientId, _version), _maxSynchronizationTime);
 					}
 					else
 					{
-						_memoryCache.Put(cacheKey, _regionKey, new CacheValue(value, timestamp, clientId));
+						_memoryCache.Put(cacheKey, new CacheValue(value, timestamp, clientId, _version));
 					}
 
 					if (publish)
@@ -486,29 +488,17 @@ namespace NHibernate.Caches.StackExchangeRedis
 			await (_writeLock.WaitAsync(cancellationToken)).ConfigureAwait(false);
 			try
 			{
-				if (_lastClearTimestamp == timestamp)
-				{
-					if (Log.IsDebugEnabled())
-					{
-						Log.Debug(
-							"The timestamp for clearing the local cache is equal to the current one... " +
-							"comparing the client id in order to determine who has a higher priority. ");
-					}
-
-					if (_lastClearClientId > clientId)
-					{
-						return false;
-					}
-				}
-				else if (_lastClearTimestamp > timestamp)
+				if (!IsActionValid(timestamp, clientId))
 				{
 					return false;
 				}
 
 				_lastClearTimestamp = timestamp;
 				_lastClearClientId = clientId;
-				_memoryCache.Remove(_regionKey);
-				SetRegionKey();
+				_version++;
+				// Unfortunately we cannot clear the local cache as it can lead to an inconsistent
+				// state across local caches due to delays of synchronization messages.
+
 				if (publish)
 				{
 					cancellationToken.ThrowIfCancellationRequested();

@@ -39,6 +39,15 @@ namespace NHibernate.Caches.StackExchangeRedis
 			return properties.TryGetValue(key, out var value) ? Convert.ToInt32(value) : defaultValue;
 		}
 
+		public static long GetLong(string key, IDictionary<string, string> properties, int defaultValue)
+		{
+			if (properties == null)
+			{
+				return defaultValue;
+			}
+			return properties.TryGetValue(key, out var value) ? Convert.ToInt64(value) : defaultValue;
+		}
+
 		public static TimeSpan GetTimeSpanFromSeconds(string key, IDictionary<string, string> properties, TimeSpan defaultValue)
 		{
 			if (properties == null)

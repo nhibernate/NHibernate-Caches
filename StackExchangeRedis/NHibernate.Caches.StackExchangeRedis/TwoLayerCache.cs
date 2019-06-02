@@ -39,7 +39,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		private readonly TimeSpan _maxSynchronizationTime;
 		private readonly bool _usePipelining;
 		private readonly string _regionKey;
-		private long _lastClearTimestamp;
+		private long _version;
 		private string _versionKey;
 
 		public TwoLayerCache(TwoLayerCacheConfiguration configuration)
@@ -87,7 +87,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				return value;
 			}
 
-			var timestamp = DateTime.UtcNow.Ticks;
+			var version = _version;
 			_log.Debug("Object was not found in local cache, fetching it from Redis.");
 			value = ExecuteGet(cacheKey);
 			if (value == null)
@@ -107,7 +107,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				}
 			}
 
-			return AddAndGet(cacheKey, value, timestamp, timeToLive);
+			return AddAndGet(cacheKey, value, version, timeToLive);
 		}
 
 		public object[] GetMany(RedisKey[] cacheKeys)
@@ -150,7 +150,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				}
 			}
 
-			var timestamp = DateTime.UtcNow.Ticks;
+			var version = _version;
 			RedisValue[] timesToLive = null;
 			var redisValues = ExecuteGetMany(missingKeys);
 			if (_expirationEnabled && !_useSlidingExpiration)
@@ -178,7 +178,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 					timeToLive = TimeSpan.FromMilliseconds((long) timesToLive[i]);
 				}
 
-				values[missingCacheKeys[i].Key] = AddAndGet(missingKeys[i], redisValues[i], timestamp, timeToLive) ?? redisValues[i];
+				values[missingCacheKeys[i].Key] = AddAndGet(missingKeys[i], redisValues[i], version, timeToLive) ?? redisValues[i];
 			}
 
 			return values;
@@ -194,7 +194,8 @@ namespace NHibernate.Caches.StackExchangeRedis
 			_writeLock.Wait();
 			try
 			{
-				ClearLocal(GetVersionKey(oldVersion));
+				ClearLocal(_versionKey);
+				_version = newVersion;
 				_versionKey = GetVersionKey(newVersion);
 				_memoryCache.Put(_versionKey, newVersion, TimeSpan.Zero);
 			}
@@ -294,7 +295,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		private object GetLocal(string key)
 		{
 			var cacheValue = (CacheValue) _memoryCache.Get(key);
-			if (cacheValue == null || _lastClearTimestamp >= cacheValue.Timestamp)
+			if (cacheValue == null || _version != cacheValue.Version)
 			{
 				return null;
 			}
@@ -322,7 +323,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 				})
 				: null;
 
-			var timestamp = DateTime.UtcNow.Ticks;
 			var cacheValue = (CacheValue) _memoryCache.Get(cacheKey);
 			if (cacheValue == null && TryPutLocal())
 			{
@@ -333,11 +333,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 			lockValue.Wait();
 			try
 			{
-				if (_lastClearTimestamp >= timestamp)
-				{
-					return false;
-				}
-
 				cacheValue = (CacheValue) _memoryCache.Get(cacheKey);
 
 				// When a different thread calls TryPutLocal at the begining of the method
@@ -353,45 +348,31 @@ namespace NHibernate.Caches.StackExchangeRedis
 					return false;
 				}
 
-				if (publish)
-				{
-					ExecuteOperation(cacheKey, value, invalidationMessage, remove);
-				}
-
 				if (cacheValue is RemovedCacheValue)
 				{
 					if (remove)
 					{
-						cacheValue.Timestamp = timestamp;
+						cacheValue.Version = _version;
 					}
 					else
 					{
-						cacheValue = new CacheValue(value, timestamp, cacheValue.Lock);
+						cacheValue = new CacheValue(value, _version, cacheValue.Lock);
 					}
 				}
 				else
 				{
 					if (remove)
 					{
-						cacheValue = new RemovedCacheValue(timestamp, cacheValue.Lock);
+						cacheValue = new RemovedCacheValue(_version, cacheValue.Lock);
 					}
 					else
 					{
 						cacheValue.Value = value;
-						cacheValue.Timestamp = timestamp;
+						cacheValue.Version = _version;
 					}
 				}
 
-				if (remove)
-				{
-					RemoveLocal(cacheKey, cacheValue);
-				}
-				else
-				{
-					PutLocal(cacheKey, cacheValue);
-				}
-
-				return true;
+				return PutAndPublish();
 			}
 			finally
 			{
@@ -409,26 +390,31 @@ namespace NHibernate.Caches.StackExchangeRedis
 						return false;
 					}
 
-					if (publish)
-					{
-						ExecuteOperation(cacheKey, value, invalidationMessage, remove);
-					}
-
-					if (remove)
-					{
-						RemoveLocal(cacheKey, new RemovedCacheValue(timestamp));
-					}
-					else
-					{
-						PutLocal(cacheKey, new CacheValue(value, timestamp));
-					}
-
-					return true;
+					return PutAndPublish();
 				}
 				finally
 				{
 					_writeLock.Release();
 				}
+			}
+
+			bool PutAndPublish()
+			{
+				if (remove)
+				{
+					RemoveLocal(cacheKey, new RemovedCacheValue(_version));
+				}
+				else
+				{
+					PutLocal(cacheKey, new CacheValue(value, _version));
+				}
+
+				if (publish)
+				{
+					ExecuteOperation(cacheKey, value, invalidationMessage, remove);
+				}
+
+				return true;
 			}
 		}
 
@@ -488,7 +474,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 		private void ClearLocal(string dependencyKey)
 		{
-			_lastClearTimestamp = DateTime.UtcNow.Ticks;
 			if (dependencyKey != null)
 			{
 				_memoryCache.Remove(dependencyKey);
@@ -534,14 +519,14 @@ namespace NHibernate.Caches.StackExchangeRedis
 			RemoveLocal(message.Key, false);
 		}
 
-		private object AddAndGet(string cacheKey, object value, long timestamp, TimeSpan? timeToLive)
+		private object AddAndGet(string cacheKey, object value, long version, TimeSpan? timeToLive)
 		{
 			_writeLock.Wait();
 			try
 			{
-				if (_lastClearTimestamp >= timestamp)
+				if (_version != version)
 				{
-					return value;
+					return null;
 				}
 
 				var cacheValue = (CacheValue) _memoryCache.Get(cacheKey);
@@ -551,7 +536,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 					return cacheValue.Value ?? value;
 				}
 
-				cacheValue = new CacheValue(value, timestamp, new SemaphoreSlim(1, 1));
+				cacheValue = new CacheValue(value, version, new SemaphoreSlim(1, 1));
 				if (timeToLive.HasValue)
 				{
 					PutLocal(cacheKey, cacheValue, timeToLive.Value);
@@ -576,29 +561,29 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 		private class RemovedCacheValue : CacheValue
 		{
-			public RemovedCacheValue(long timestamp) : base(null, timestamp)
+			public RemovedCacheValue(long version) : base(null, version)
 			{
 			}
 
-			public RemovedCacheValue(long timestamp, SemaphoreSlim lockValue) : base(null, timestamp, lockValue)
+			public RemovedCacheValue(long version, SemaphoreSlim lockValue) : base(null, version, lockValue)
 			{
 			}
 		}
 
 		private class CacheValue
 		{
-			public CacheValue(object value, long timestamp) : this(value, timestamp, new SemaphoreSlim(1, 1))
+			public CacheValue(object value, long version) : this(value, version, new SemaphoreSlim(1, 1))
 			{
 			}
 
-			public CacheValue(object value, long timestamp, SemaphoreSlim lockValue)
+			public CacheValue(object value, long version, SemaphoreSlim lockValue)
 			{
 				Value = value;
-				Timestamp = timestamp;
+				Version = version;
 				Lock = lockValue;
 			}
 
-			public long Timestamp { get; set; }
+			public long Version { get; set; }
 
 			public object Value { get; set; }
 

@@ -689,5 +689,95 @@ namespace NHibernate.Caches.Common.Tests
 				Assert.That(item, Is.EqualTo(kv.Value + longKeyValueSuffix), $"Didn't return the item we added for long key {kv.Key}");
 			}
 		}
+
+		[Test]
+		public async Task TestRepeatedPutAsync()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			const string value2 = "valuePut2";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				await (cache.PutAsync(key, value2, CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value2), "didn't return the item we added");
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedRemovePutAsync()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.RemoveAsync(key, CancellationToken.None));
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedPutRemoveAsync()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				await (cache.RemoveAsync(key, CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Null, "Item still exists in cache after remove");
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedClearPutAsync()
+		{
+			if (!SupportsClear)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.ClearAsync(CancellationToken.None));
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedPutClearAsync()
+		{
+			if (!SupportsClear)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				await (cache.ClearAsync(CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Null, "Item still exists in cache after clear");
+			}
+		}
 	}
 }

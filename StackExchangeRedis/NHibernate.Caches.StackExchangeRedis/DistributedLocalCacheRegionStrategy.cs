@@ -31,9 +31,9 @@ namespace NHibernate.Caches.StackExchangeRedis
 		private readonly RedisChannel _synchronizationChannel;
 		private readonly TimeSpan _maxSynchronizationTime;
 		private readonly bool _usePipelining;
-		private readonly string _regionKey;
 		private long _lastClearTimestamp;
 		private int _lastClearClientId;
+		private long _version;
 
 		/// <inheritdoc />
 		public DistributedLocalCacheRegionStrategy(
@@ -50,19 +50,18 @@ namespace NHibernate.Caches.StackExchangeRedis
 			var minRetryDelay = lockConfiguration.MinRetryDelay;
 			var lockRetryDelayProvider = lockConfiguration.RetryDelayProvider;
 
-			_clientId = GetInteger("cache.region_strategy.distributed_local_cache.client_id", properties, Guid.NewGuid().GetHashCode());
-			Log.Debug("Client id for region {0}: {1}", RegionName, _clientId);
-
 			_usePipelining = GetBoolean("cache.region_strategy.distributed_local_cache.use_pipelining", properties, false);
 			Log.Debug("Use pipelining for region {0}: {1}", RegionName, _usePipelining);
+
+			_clientId = GetInteger("cache.region_strategy.distributed_local_cache.client_id", properties, Guid.NewGuid().GetHashCode());
+			Log.Debug("Client id for region {0}: {1}", RegionName, _clientId);
 
 			_maxSynchronizationTime = GetTimeSpanFromSeconds(
 				"cache.region_strategy.distributed_local_cache.max_synchronization_time", properties, TimeSpan.FromSeconds(10));
 			Log.Debug("Max synchronization time for region {0}: {1} seconds", RegionName, _maxSynchronizationTime.TotalSeconds);
 
 			_memoryCache = memoryCache;
-			_regionKey = configuration.RegionKey;
-			_synchronizationChannel = string.Concat("{", _regionKey, "}@", "Synchronization");
+			_synchronizationChannel = string.Concat("{", configuration.RegionKey, "}@", "Synchronization");
 			_lockValueProvider = lockConfiguration.ValueProvider;
 			_lockKeySuffix = lockConfiguration.KeySuffix;
 			_lockAcquireTimeout = lockConfiguration.AcquireTimeout;
@@ -76,7 +75,6 @@ namespace NHibernate.Caches.StackExchangeRedis
 				.OnFailure(OnFailedLock);
 			_subscriber = ConnectionMultiplexer.GetSubscriber();
 
-			SetRegionKey();
 			ConnectionMultiplexer.ConnectionFailed += OnConnectionFailed;
 			ConnectionMultiplexer.ConnectionRestored += OnConnectionRestored;
 			ConnectionMultiplexer.ErrorMessage += OnErrorMessage;
@@ -569,7 +567,15 @@ namespace NHibernate.Caches.StackExchangeRedis
 		private object GetLocal(string key)
 		{
 			var cacheValue = (CacheValue) _memoryCache.Get(key);
-			if (cacheValue == null || _lastClearTimestamp >= cacheValue.Timestamp)
+			if (cacheValue == null || _lastClearTimestamp > cacheValue.Timestamp)
+			{
+				return null;
+			}
+
+			// When the cache value was added with the same timestamp as the clear operation,
+			// we have to rely on the version in order to find out which operation was the last
+			// executed.
+			if (_lastClearTimestamp == cacheValue.Timestamp && cacheValue.Version != _version)
 			{
 				return null;
 			}
@@ -633,7 +639,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			lockValue.Wait();
 			try
 			{
-				if (_lastClearTimestamp >= timestamp)
+				if (!IsActionValid(timestamp, clientId))
 				{
 					return false;
 				}
@@ -678,33 +684,35 @@ namespace NHibernate.Caches.StackExchangeRedis
 					{
 						cacheValue.Timestamp = timestamp;
 						cacheValue.ClientId = clientId;
+						cacheValue.Version = _version;
 					}
 					else
 					{
-						cacheValue = new CacheValue(value, timestamp, clientId, cacheValue.Lock);
+						cacheValue = new CacheValue(value, timestamp, clientId, _version, cacheValue.Lock);
 					}
 				}
 				else
 				{
 					if (remove)
 					{
-						cacheValue = new RemovedCacheValue(timestamp, clientId, cacheValue.Lock);
+						cacheValue = new RemovedCacheValue(timestamp, clientId, _version, cacheValue.Lock);
 					}
 					else
 					{
 						cacheValue.Value = value;
 						cacheValue.Timestamp = timestamp;
 						cacheValue.ClientId = clientId;
+						cacheValue.Version = _version;
 					}
 				}
 
 				if (remove)
 				{
-					_memoryCache.Put(cacheKey, _regionKey, cacheValue, _maxSynchronizationTime);
+					_memoryCache.Put(cacheKey, cacheValue, _maxSynchronizationTime);
 				}
 				else
 				{
-					_memoryCache.Put(cacheKey, _regionKey, cacheValue);
+					_memoryCache.Put(cacheKey, cacheValue);
 				}
 				
 				if (publish)
@@ -732,11 +740,11 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 					if (remove)
 					{
-						_memoryCache.Put(cacheKey, _regionKey, new RemovedCacheValue(timestamp, clientId), _maxSynchronizationTime);
+						_memoryCache.Put(cacheKey, new RemovedCacheValue(timestamp, clientId, _version), _maxSynchronizationTime);
 					}
 					else
 					{
-						_memoryCache.Put(cacheKey, _regionKey, new CacheValue(value, timestamp, clientId));
+						_memoryCache.Put(cacheKey, new CacheValue(value, timestamp, clientId, _version));
 					}
 
 					if (publish)
@@ -783,29 +791,17 @@ namespace NHibernate.Caches.StackExchangeRedis
 			_writeLock.Wait();
 			try
 			{
-				if (_lastClearTimestamp == timestamp)
-				{
-					if (Log.IsDebugEnabled())
-					{
-						Log.Debug(
-							"The timestamp for clearing the local cache is equal to the current one... " +
-							"comparing the client id in order to determine who has a higher priority. ");
-					}
-
-					if (_lastClearClientId > clientId)
-					{
-						return false;
-					}
-				}
-				else if (_lastClearTimestamp > timestamp)
+				if (!IsActionValid(timestamp, clientId))
 				{
 					return false;
 				}
 
 				_lastClearTimestamp = timestamp;
 				_lastClearClientId = clientId;
-				_memoryCache.Remove(_regionKey);
-				SetRegionKey();
+				_version++;
+				// Unfortunately we cannot clear the local cache as it can lead to an inconsistent
+				// state across local caches due to delays of synchronization messages.
+
 				if (publish)
 				{
 					Publish(message);
@@ -819,22 +815,43 @@ namespace NHibernate.Caches.StackExchangeRedis
 			}
 		}
 
-		private void SetRegionKey()
+		private bool IsActionValid(long timestamp, long clientId)
 		{
-			_memoryCache.Put(_regionKey, _clientId, TimeSpan.Zero);
+			if (_lastClearTimestamp == timestamp)
+			{
+				if (Log.IsDebugEnabled())
+				{
+					Log.Debug(
+						"The timestamp for the operation is equal to the last clear timestamp... " +
+						"comparing the client id in order to determine who has a higher priority. ");
+				}
+
+				if (_lastClearClientId > clientId)
+				{
+					return false;
+				}
+			}
+			else if (_lastClearTimestamp > timestamp)
+			{
+				return false;
+			}
+
+			return true;
 		}
 
 		private class CacheValue
 		{
-			public CacheValue(object value, long timestamp, int clientId, SemaphoreSlim lockValue)
+			public CacheValue(object value, long timestamp, int clientId, long version, SemaphoreSlim lockValue)
 			{
 				Value = value;
 				Timestamp = timestamp;
 				ClientId = clientId;
+				Version = version;
 				Lock = lockValue;
 			}
 
-			public CacheValue(object value, long timestamp, int clientId) : this(value, timestamp, clientId, new SemaphoreSlim(1, 1))
+			public CacheValue(object value, long timestamp, int clientId, long version)
+				: this(value, timestamp, clientId, version, new SemaphoreSlim(1, 1))
 			{
 			}
 
@@ -844,16 +861,20 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 			public int ClientId { get; set; }
 
+			public long Version { get; set; }
+
 			public SemaphoreSlim Lock { get; }
 		}
 
 		private class RemovedCacheValue : CacheValue
 		{
-			public RemovedCacheValue(long timestamp, int clientId, SemaphoreSlim lockValue) : base(null, timestamp, clientId, lockValue)
+			public RemovedCacheValue(long timestamp, int clientId, long version, SemaphoreSlim lockValue)
+				: base(null, timestamp, clientId, version, lockValue)
 			{
 			}
 
-			public RemovedCacheValue(long timestamp, int clientId) : base(null, timestamp, clientId)
+			public RemovedCacheValue(long timestamp, int clientId, long version)
+				: base(null, timestamp, clientId, version)
 			{
 			}
 		}
