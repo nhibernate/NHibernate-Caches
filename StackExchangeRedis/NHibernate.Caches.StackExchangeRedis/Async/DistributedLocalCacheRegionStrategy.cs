@@ -228,9 +228,8 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 				var lockKey = GetLockKey(key);
 				Log.Debug("Unlocking key: '{0}'.", lockKey);
-				cancellationToken.ThrowIfCancellationRequested();
 
-				return UnlockKeyAsync(lockKey, lockValue);
+				return UnlockKeyAsync(lockKey, lockValue, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -258,9 +257,8 @@ namespace NHibernate.Caches.StackExchangeRedis
 					lockKeys[i] = GetLockKey(keys[i]);
 					Log.Debug("Unlocking key: '{0}'.", lockKeys[i]);
 				}
-				cancellationToken.ThrowIfCancellationRequested();
 
-				return UnlockManyKeysAsync(lockKeys, lockValue);
+				return UnlockManyKeysAsync(lockKeys, lockValue, cancellationToken);
 			}
 			catch (Exception ex)
 			{
@@ -268,8 +266,9 @@ namespace NHibernate.Caches.StackExchangeRedis
 			}
 		}
 
-		private async Task<bool> UnlockKeyAsync(string lockKey, string lockValue)
+		private async Task<bool> UnlockKeyAsync(string lockKey, string lockValue, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			await (PublishAsync(Serializer.Serialize(new CacheSynchronizationMessage
 			{
 				OperationType = OperationType.Unlock,
@@ -285,8 +284,9 @@ namespace NHibernate.Caches.StackExchangeRedis
 			return UnlockLocal(lockKey, lockValue);
 		}
 
-		private async Task<int> UnlockManyKeysAsync(string[] lockKeys, string lockValue)
+		private async Task<int> UnlockManyKeysAsync(string[] lockKeys, string lockValue, CancellationToken cancellationToken)
 		{
+			cancellationToken.ThrowIfCancellationRequested();
 			await (PublishAsync(Serializer.Serialize(new CacheSynchronizationMessage
 			{
 				OperationType = OperationType.UnlockMany,
