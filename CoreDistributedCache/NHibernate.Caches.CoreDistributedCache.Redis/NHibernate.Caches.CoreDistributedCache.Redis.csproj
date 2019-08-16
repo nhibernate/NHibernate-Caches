@@ -10,7 +10,11 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
+    <PackageReleaseNotes>## Possible breaking change
+    * The obsolete Microsoft.Extensions.Caching.Redis dependency has been changed for Microsoft.Extensions.Caching.StackExchangeRedis
+
+* Improvement
+    * #70 - Use non deprecated Redis provider
     * #60 - Update package format for symbols, license and SourceLink</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">

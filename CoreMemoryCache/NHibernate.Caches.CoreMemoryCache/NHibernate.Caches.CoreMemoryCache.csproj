@@ -11,6 +11,7 @@
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* Improvement
+    * #68 - Add static region configuration
     * #60 - Update package format for symbols, license and SourceLink</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">

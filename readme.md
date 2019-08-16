@@ -20,6 +20,29 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.6.0 for NHibernate 5.2.0
+
+##### Possible breaking change
+The obsolete Microsoft.Extensions.Caching.Redis dependency has been changed for
+Microsoft.Extensions.Caching.StackExchangeRedis, in NHibernate.Caches.CoreDistributedCache.Redis
+
+* Bug
+    * #66 - Issues with custom Regions with RedisCacheProvider
+    * #62 - StackExchangeRedis fails with "too many results to unpack" with 8000 items
+
+* New feature
+    * #69 - "Third Level Cache" for Redis
+
+* Improvement
+    * #71 - Enable batching for StackExchangeRedis by default
+    * #70 - Use non deprecated Redis provider
+    * #68 - Add static region configuration
+    * #64 - Improve StackExchangeRedis LockMany script for DefaultRegionStrategy
+    * #60 - Update package format for symbols, license and SourceLink
+
+* Task
+    * #65 - Update AsyncGenerator to 0.14.0
+
 #### Build 5.5.1 for NHibernate 5.2.0
 
 Re-release in order to have proper release notes in the NuGet packages.
