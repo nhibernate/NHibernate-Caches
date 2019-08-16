@@ -39,7 +39,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			return properties.TryGetValue(key, out var value) ? Convert.ToInt32(value) : defaultValue;
 		}
 
-		public static long GetLong(string key, IDictionary<string, string> properties, int defaultValue)
+		public static long GetLong(string key, IDictionary<string, string> properties, long defaultValue)
 		{
 			if (properties == null)
 			{

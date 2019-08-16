@@ -5,7 +5,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 	/// <summary>
 	/// A memory cache for storing values for a specific cache region.
 	/// The implementation must use the region configuration for expiration
-	/// and sliding expiration for methods that do not have expicit parameters for them.
+	/// and sliding expiration for methods that do not have explicit parameters for them.
 	/// All methods must be thread safe and values must not be serialized.
 	/// </summary>
 	public abstract class RegionMemoryCacheBase
@@ -33,7 +33,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		public abstract void Put(string key, string dependencyKey, object value);
 
 		/// <summary>
-		/// Puts the value in the cache by using an expicit expiration. When <see cref="TimeSpan.Zero"/>
+		/// Puts the value in the cache by using an explicit expiration. When <see cref="TimeSpan.Zero"/>
 		/// is used for <paramref name="expiration"/> the key will never expire.
 		/// </summary>
 		/// <param name="key">The key where the value will be store.</param>
@@ -42,7 +42,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		public abstract void Put(string key, object value, TimeSpan expiration);
 
 		/// <summary>
-		/// Puts the value in the cache by using an expicit expiration. When <see cref="TimeSpan.Zero"/>
+		/// Puts the value in the cache by using an explicit expiration. When <see cref="TimeSpan.Zero"/>
 		/// is used for <paramref name="expiration"/> the key will never expire.
 		/// </summary>
 		/// <param name="key">The key where the value will be store.</param>
