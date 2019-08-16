@@ -28,16 +28,38 @@ namespace NHibernate.Caches.StackExchangeRedis
 		/// <param name="key">The key of the object to retrieve.</param>
 		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
 		/// <returns>The object behind the key or <see langword="null" /> if the key was not found.</returns>
-		public virtual async Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		public virtual Task<object> GetAsync(object key, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
+				if (key == null)
+				{
+					return Task.FromResult<object>(null);
+				}
+
+				var cacheKey = GetCacheKey(key);
+				Log.Debug("Fetching object with key: '{0}'.", cacheKey);
+				return ExecuteGetAsync(cacheKey, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Executes the command to retrieve the key from Redis.
+		/// </summary>
+		/// <param name="cacheKey">The key of the object to retrieve.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>The object behind the key or <see langword="null" /> if the key was not found.</returns>
+		protected virtual async Task<object> ExecuteGetAsync(string cacheKey, CancellationToken cancellationToken)
 		{
 			cancellationToken.ThrowIfCancellationRequested();
-			if (key == null)
-			{
-				return null;
-			}
-
-			var cacheKey = GetCacheKey(key);
-			Log.Debug("Fetching object with key: '{0}'.", cacheKey);
 			RedisValue result;
 			if (string.IsNullOrEmpty(GetScript))
 			{
@@ -46,15 +68,15 @@ namespace NHibernate.Caches.StackExchangeRedis
 			}
 			else
 			{
-				var keys = AppendAdditionalKeys(new RedisKey[] {cacheKey});
-				var values = AppendAdditionalValues(new RedisValue[]
-				{
-					UseSlidingExpiration && ExpirationEnabled,
-					(long) Expiration.TotalMilliseconds
-				});
 				cancellationToken.ThrowIfCancellationRequested();
-				var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(GetScript, keys, values)).ConfigureAwait(false);
-				result = results[0];
+				result = ((RedisValue[]) await (Database.ScriptEvaluateAsync(
+					GetScript,
+					AppendAdditionalKeys(new RedisKey[] {cacheKey}),
+					AppendAdditionalValues(new RedisValue[]
+					{
+						UseSlidingExpiration && ExpirationEnabled,
+						(long) Expiration.TotalMilliseconds
+					}))).ConfigureAwait(false))[0];
 			}
 
 			return result.IsNullOrEmpty ? null : Serializer.Deserialize(result);
@@ -76,8 +98,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 			{
 				return Task.FromCanceled<object[]>(cancellationToken);
 			}
-			return InternalGetManyAsync();
-			async Task<object[]> InternalGetManyAsync()
+			try
 			{
 
 				var cacheKeys = new RedisKey[keys.Length];
@@ -88,36 +109,53 @@ namespace NHibernate.Caches.StackExchangeRedis
 					Log.Debug("Fetching object with key: '{0}'.", cacheKeys[i]);
 				}
 
-				RedisValue[] results;
-				if (string.IsNullOrEmpty(GetManyScript))
-				{
-					cancellationToken.ThrowIfCancellationRequested();
-					results = await (Database.StringGetAsync(cacheKeys)).ConfigureAwait(false);
-				}
-				else
-				{
-					cacheKeys = AppendAdditionalKeys(cacheKeys);
-					var values = AppendAdditionalValues(new RedisValue[]
-				{
-					UseSlidingExpiration && ExpirationEnabled,
-					(long) Expiration.TotalMilliseconds
-				});
-					cancellationToken.ThrowIfCancellationRequested();
-					results = (RedisValue[]) await (Database.ScriptEvaluateAsync(GetManyScript, cacheKeys, values)).ConfigureAwait(false);
-				}
-
-				var objects = new object[keys.Length];
-				for (var i = 0; i < results.Length; i++)
-				{
-					var result = results[i];
-					if (!result.IsNullOrEmpty)
-					{
-						objects[i] = Serializer.Deserialize(result);
-					}
-				}
-
-				return objects;
+				return ExecuteGetManyAsync(cacheKeys, cancellationToken);
 			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object[]>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Executes the command to retrieve the keys from Redis.
+		/// </summary>
+		/// <param name="cacheKeys">The keys of the objects to retrieve.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		/// <returns>An array of objects behind the keys or <see langword="null" /> if the key was not found.</returns>
+		protected virtual async Task<object[]> ExecuteGetManyAsync(RedisKey[] cacheKeys, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			RedisValue[] results;
+			if (string.IsNullOrEmpty(GetManyScript))
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				results = await (Database.StringGetAsync(cacheKeys)).ConfigureAwait(false);
+			}
+			else
+			{
+				cancellationToken.ThrowIfCancellationRequested();
+				results = (RedisValue[]) await (Database.ScriptEvaluateAsync(
+					GetManyScript,
+					AppendAdditionalKeys(cacheKeys),
+					AppendAdditionalValues(new RedisValue[]
+					{
+						UseSlidingExpiration && ExpirationEnabled,
+						(long) Expiration.TotalMilliseconds
+					}))).ConfigureAwait(false);
+			}
+
+			var values = new object[cacheKeys.Length];
+			for (var i = 0; i < results.Length; i++)
+			{
+				var result = results[i];
+				if (!result.IsNullOrEmpty)
+				{
+					values[i] = Serializer.Deserialize(result);
+				}
+			}
+
+			return values;
 		}
 
 		/// <summary>
@@ -141,30 +179,55 @@ namespace NHibernate.Caches.StackExchangeRedis
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return InternalPutAsync();
-			async Task InternalPutAsync()
+			try
 			{
 
 				var cacheKey = GetCacheKey(key);
 				Log.Debug("Putting object with key: '{0}'.", cacheKey);
-				RedisValue serializedValue = Serializer.Serialize(value);
+				return ExecutePutAsync(cacheKey, value, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
 
+		/// <summary>
+		/// Executes the put command.
+		/// </summary>
+		/// <param name="cacheKey">The key parameter for the command.</param>
+		/// <param name="value">The value parameter for the command.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual Task ExecutePutAsync(string cacheKey, object value, CancellationToken cancellationToken)
+		{
+			if (cancellationToken.IsCancellationRequested)
+			{
+				return Task.FromCanceled<object>(cancellationToken);
+			}
+			try
+			{
 				if (string.IsNullOrEmpty(PutScript))
 				{
 					cancellationToken.ThrowIfCancellationRequested();
-					await (Database.StringSetAsync(cacheKey, serializedValue, ExpirationEnabled ? Expiration : (TimeSpan?) null)).ConfigureAwait(false);
-					return;
+					return Database.StringSetAsync(cacheKey, Serializer.Serialize(value), ExpirationEnabled ? Expiration : (TimeSpan?) null);
 				}
-
-				var keys = AppendAdditionalKeys(new RedisKey[] {cacheKey});
-				var values = AppendAdditionalValues(new[]
+				else
+				{
+					cancellationToken.ThrowIfCancellationRequested();
+					return Database.ScriptEvaluateAsync(
+					PutScript,
+					AppendAdditionalKeys(new RedisKey[] {cacheKey}),
+					AppendAdditionalValues(new RedisValue[]
+					{
+						Serializer.Serialize(value),
+						ExpirationEnabled,
+						(long) Expiration.TotalMilliseconds
+					}));
+				}
+			}
+			catch (Exception ex)
 			{
-				serializedValue,
-				ExpirationEnabled,
-				(long) Expiration.TotalMilliseconds
-			});
-				cancellationToken.ThrowIfCancellationRequested();
-				await (Database.ScriptEvaluateAsync(PutScript, keys, values)).ConfigureAwait(false);
+				return Task.FromException<object>(ex);
 			}
 		}
 
@@ -194,47 +257,60 @@ namespace NHibernate.Caches.StackExchangeRedis
 			{
 				return Task.FromCanceled<object>(cancellationToken);
 			}
-			return InternalPutManyAsync();
-			async Task InternalPutManyAsync()
+			try
 			{
 
 				Log.Debug("Putting {0} objects...", keys.Length);
-				if (string.IsNullOrEmpty(PutManyScript))
+				return ExecutePutManyAsync(keys, values, cancellationToken);
+			}
+			catch (Exception ex)
+			{
+				return Task.FromException<object>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Stores the objects into Redis by the given keys.
+		/// </summary>
+		/// <param name="keys">The keys to store the objects.</param>
+		/// <param name="values">The objects to store.</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task ExecutePutManyAsync(object[] keys, object[] values, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			if (string.IsNullOrEmpty(PutManyScript))
+			{
+				if (ExpirationEnabled)
 				{
-					if (ExpirationEnabled)
-					{
-						throw new NotSupportedException($"{nameof(PutManyAsync)} operation with expiration is not supported.");
-					}
-
-					var pairs = new KeyValuePair<RedisKey, RedisValue>[keys.Length];
-					for (var i = 0; i < keys.Length; i++)
-					{
-						pairs[i] = new KeyValuePair<RedisKey, RedisValue>(GetCacheKey(keys[i]), Serializer.Serialize(values[i]));
-						Log.Debug("Putting object with key: '{0}'.", pairs[i].Key);
-					}
-					cancellationToken.ThrowIfCancellationRequested();
-
-					await (Database.StringSetAsync(pairs)).ConfigureAwait(false);
-					return;
+					throw new NotSupportedException($"{nameof(PutManyAsync)} operation with expiration is not supported.");
 				}
 
-
-				var cacheKeys = new RedisKey[keys.Length];
-				var cacheValues = new RedisValue[keys.Length + 2];
+				var pairs = new KeyValuePair<RedisKey, RedisValue>[keys.Length];
 				for (var i = 0; i < keys.Length; i++)
 				{
-					cacheKeys[i] = GetCacheKey(keys[i]);
-					cacheValues[i] = Serializer.Serialize(values[i]);
-					Log.Debug("Putting object with key: '{0}'.", cacheKeys[i]);
+					pairs[i] = new KeyValuePair<RedisKey, RedisValue>(GetCacheKey(keys[i]), Serializer.Serialize(values[i]));
+					Log.Debug("Putting object with key: '{0}'.", pairs[i].Key);
 				}
-
-				cacheKeys = AppendAdditionalKeys(cacheKeys);
-				cacheValues[keys.Length] = ExpirationEnabled;
-				cacheValues[keys.Length + 1] = (long) Expiration.TotalMilliseconds;
-				cacheValues = AppendAdditionalValues(cacheValues);
 				cancellationToken.ThrowIfCancellationRequested();
-				await (Database.ScriptEvaluateAsync(PutManyScript, cacheKeys, cacheValues)).ConfigureAwait(false);
+
+				await (Database.StringSetAsync(pairs)).ConfigureAwait(false);
+				return;
 			}
+
+
+			var cacheKeys = new RedisKey[keys.Length];
+			var cacheValues = new RedisValue[keys.Length + 2];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				cacheKeys[i] = GetCacheKey(keys[i]);
+				cacheValues[i] = Serializer.Serialize(values[i]);
+				Log.Debug("Putting object with key: '{0}'.", cacheKeys[i]);
+			}
+
+			cacheValues[cacheKeys.Length] = ExpirationEnabled;
+			cacheValues[cacheKeys.Length + 1] = (long) Expiration.TotalMilliseconds;
+			cancellationToken.ThrowIfCancellationRequested();
+			await (Database.ScriptEvaluateAsync(PutManyScript, AppendAdditionalKeys(cacheKeys), AppendAdditionalValues(cacheValues))).ConfigureAwait(false);
 		}
 
 		/// <summary>
@@ -252,24 +328,33 @@ namespace NHibernate.Caches.StackExchangeRedis
 			{
 				return Task.FromCanceled<bool>(cancellationToken);
 			}
-			return InternalRemoveAsync();
-			async Task<bool> InternalRemoveAsync()
+			try
 			{
 
 				var cacheKey = GetCacheKey(key);
 				Log.Debug("Removing object with key: '{0}'.", cacheKey);
-				if (string.IsNullOrEmpty(RemoveScript))
-				{
-					cancellationToken.ThrowIfCancellationRequested();
-					return await (Database.KeyDeleteAsync(cacheKey)).ConfigureAwait(false);
-				}
-
-				var keys = AppendAdditionalKeys(new RedisKey[] {cacheKey});
-				var values = GetAdditionalValues();
-				cancellationToken.ThrowIfCancellationRequested();
-				var results = (RedisValue[]) await (Database.ScriptEvaluateAsync(RemoveScript, keys, values)).ConfigureAwait(false);
-				return (bool) results[0];
+				return ExecuteRemoveAsync(cacheKey, cancellationToken);
 			}
+			catch (Exception ex)
+			{
+				return Task.FromException<bool>(ex);
+			}
+		}
+
+		/// <summary>
+		/// Executes the remove command.
+		/// </summary>
+		/// <param name="cacheKey">The key to remove</param>
+		/// <param name="cancellationToken">A cancellation token that can be used to cancel the work</param>
+		protected virtual async Task<bool> ExecuteRemoveAsync(string cacheKey, CancellationToken cancellationToken)
+		{
+			cancellationToken.ThrowIfCancellationRequested();
+			return string.IsNullOrEmpty(RemoveScript)
+				? await (Database.KeyDeleteAsync(cacheKey)).ConfigureAwait(false)
+				: (bool) ((RedisValue[]) await (Database.ScriptEvaluateAsync(
+					RemoveScript,
+					AppendAdditionalKeys(new RedisKey[] {cacheKey}),
+					GetAdditionalValues())).ConfigureAwait(false))[0];
 		}
 
 		/// <summary>

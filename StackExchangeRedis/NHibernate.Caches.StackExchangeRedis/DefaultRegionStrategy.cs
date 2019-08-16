@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using NHibernate.Cache;
 using StackExchange.Redis;
 using static NHibernate.Caches.StackExchangeRedis.ConfigurationHelper;
@@ -14,7 +16,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 	/// </summary>
 	public partial class DefaultRegionStrategy : AbstractRegionStrategy
 	{
-		private const string InvalidVersionMessage = "Invalid version";
+		internal const string InvalidVersionMessage = "Invalid version";
 		private static readonly string UpdateVersionLuaScript;
 		private static readonly string InitializeVersionLuaScript;
 		private static readonly string GetLuaScript;
@@ -46,9 +48,12 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 
 		private readonly RedisKey[] _regionKeyArray;
-		private readonly RedisValue[] _maxVersionNumber;
+		private readonly RedisValue[] _maxVersionArray;
 		private RedisValue[] _currentVersionArray;
 		private readonly bool _usePubSub;
+		private readonly int _retryTimes;
+		private readonly SemaphoreSlim _versionLock = new SemaphoreSlim(1, 1);
+		private readonly int _databaseIndex;
 
 		/// <summary>
 		/// Default constructor.
@@ -57,22 +62,23 @@ namespace NHibernate.Caches.StackExchangeRedis
 			RedisCacheRegionConfiguration configuration, IDictionary<string, string> properties)
 			: base(connectionMultiplexer, configuration, properties)
 		{
-			var maxVersion = GetInteger("cache.region_strategy.default.max_allowed_version", properties, 1000);
+			var maxVersion = GetLong("cache.region_strategy.default.max_allowed_version", properties, 10000);
 			Log.Debug("Max allowed version for region {0}: {1}", RegionName, maxVersion);
 
 			_usePubSub = GetBoolean("cache.region_strategy.default.use_pubsub", properties, true);
 			Log.Debug("Use pubsub for region {0}: {1}", RegionName, _usePubSub);
 
+			_retryTimes = GetInteger("cache.region_strategy.default.retry_times", properties, 1);
+			Log.Debug("Retry times for region {0}: {1}", RegionName, _retryTimes);
+
 			_regionKeyArray = new RedisKey[] {RegionKey};
-			_maxVersionNumber = new RedisValue[] {maxVersion};
+			_maxVersionArray = new RedisValue[] {maxVersion};
+			_databaseIndex = Database.Database;
 			InitializeVersion();
 
 			if (_usePubSub)
 			{
-				ConnectionMultiplexer.GetSubscriber().SubscribeAsync(RegionKey, (channel, value) =>
-				{
-					UpdateVersion(value);
-				});
+				ConnectionMultiplexer.GetSubscriber().Subscribe(RegionKey).OnMessage((Action<ChannelMessage>) OnVersionMessage);
 			}
 		}
 
@@ -111,6 +117,11 @@ namespace NHibernate.Caches.StackExchangeRedis
 		/// <inheritdoc />
 		public override object Get(object key)
 		{
+			return Get(key, 0);
+		}
+
+		private object Get(object key, int retries)
+		{
 			try
 			{
 				return base.Get(key);
@@ -119,17 +130,29 @@ namespace NHibernate.Caches.StackExchangeRedis
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
+				if (retries >= _retryTimes)
+				{
+					Log.Warn("Unable to perform '{0}' operation due to concurrent clear operations, total retries: '{1}'.", nameof(Get), retries);
+					return null;
+				}
+
 				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Retry to fetch the object with key: '{0}'", CurrentVersion, GetCacheKey(key));
 				}
-				return base.Get(key);
+
+				return Get(key, retries + 1);
 			}
 		}
 
 		/// <inheritdoc />
 		public override object[] GetMany(object[] keys)
 		{
+			return GetMany(keys, 0);
+		}
+
+		private object[] GetMany(object[] keys, int retries)
+		{
 			try
 			{
 				return base.GetMany(keys);
@@ -138,19 +161,31 @@ namespace NHibernate.Caches.StackExchangeRedis
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
+				if (retries >= _retryTimes)
+				{
+					Log.Warn("Unable to perform '{0}' operation due to concurrent clear operations, total retries: '{1}'.", nameof(GetMany), retries);
+					return new object[keys.Length];
+				}
+
 				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Retry to fetch objects with keys: {0}",
 						CurrentVersion,
 						string.Join(",", keys.Select(o => $"'{GetCacheKey(o)}'")));
 				}
-				return base.GetMany(keys);
+
+				return GetMany(keys, retries + 1);
 			}
 		}
 
 		/// <inheritdoc />
 		public override string Lock(object key)
 		{
+			return Lock(key, 0);
+		}
+
+		private string Lock(object key, int retries)
+		{
 			try
 			{
 				return base.Lock(key);
@@ -159,16 +194,28 @@ namespace NHibernate.Caches.StackExchangeRedis
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
+				if (retries >= _retryTimes)
+				{
+					throw new CacheException(
+						$"Unable to perform {nameof(Lock)} operation due to concurrent clear operations, total retries: '{retries}'.");
+				}
+
 				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Retry to lock the object with key: '{0}'", CurrentVersion, GetCacheKey(key));
 				}
-				return base.Lock(key);
+
+				return Lock(key, retries + 1);
 			}
 		}
 
 		/// <inheritdoc />
 		public override string LockMany(object[] keys)
+		{
+			return LockMany(keys, 0);
+		}
+
+		private string LockMany(object[] keys, int retries)
 		{
 			try
 			{
@@ -178,13 +225,20 @@ namespace NHibernate.Caches.StackExchangeRedis
 			{
 				Log.Debug("Version '{0}' is not valid anymore, updating version...", CurrentVersion);
 				InitializeVersion();
+				if (retries >= _retryTimes)
+				{
+					throw new CacheException(
+						$"Unable to perform {nameof(LockMany)} operation due to concurrent clear operations, total retries: '{retries}'.");
+				}
+
 				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Retry to lock objects with keys: {0}",
 						CurrentVersion,
 						string.Join(",", keys.Select(o => $"'{GetCacheKey(o)}'")));
 				}
-				return base.LockMany(keys);
+
+				return LockMany(keys, retries + 1);
 			}
 		}
 
@@ -272,13 +326,21 @@ namespace NHibernate.Caches.StackExchangeRedis
 		public override void Clear()
 		{
 			Log.Debug("Clearing region: '{0}'.", RegionKey);
-			var results = (RedisValue[]) Database.ScriptEvaluate(UpdateVersionLuaScript,
-				_regionKeyArray, _maxVersionNumber);
-			var version = results[0];
-			UpdateVersion(version);
-			if (_usePubSub)
+			_versionLock.Wait();
+			try
 			{
-				ConnectionMultiplexer.GetSubscriber().Publish(RegionKey, version);
+				var results = (RedisValue[]) Database.ScriptEvaluate(UpdateVersionLuaScript,
+					_regionKeyArray, _maxVersionArray);
+				var version = (long) results[0];
+				UpdateVersion(version);
+				if (_usePubSub)
+				{
+					ConnectionMultiplexer.GetSubscriber().Publish(RegionKey, version + ";" + _databaseIndex);
+				}
+			}
+			finally
+			{
+				_versionLock.Release();
 			}
 		}
 
@@ -318,16 +380,75 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 		private void InitializeVersion()
 		{
-			var results = (RedisValue[]) Database.ScriptEvaluate(InitializeVersionLuaScript, _regionKeyArray);
-			var version = results[0];
-			UpdateVersion(version);
+			_versionLock.Wait();
+			try
+			{
+				var results = (RedisValue[]) Database.ScriptEvaluate(InitializeVersionLuaScript, _regionKeyArray);
+				UpdateVersion((long) results[0]);
+			}
+			finally
+			{
+				_versionLock.Release();
+			}
 		}
 
-		private void UpdateVersion(RedisValue version)
+		private void UpdateVersion(long newVersion)
 		{
-			Log.Debug("Updating version from '{0}' to '{1}'.", CurrentVersion, version);
-			CurrentVersion = (long) version;
-			_currentVersionArray = new[] {version};
+			var oldVersion = CurrentVersion;
+			if (oldVersion == newVersion)
+			{
+				return;
+			}
+
+			Log.Debug("Updating version from '{0}' to '{1}'.", oldVersion, newVersion);
+			CurrentVersion = newVersion;
+			_currentVersionArray = new RedisValue[] {newVersion};
+			OnVersionUpdate(oldVersion, newVersion);
+		}
+
+		private void OnVersionMessage(ChannelMessage channel)
+		{
+			var message = channel.Message.ToString();
+			var data = message.Split(';');
+			var databaseIndex = int.Parse(data[1]);
+			// Ignore messages from other databases
+			if (databaseIndex != _databaseIndex)
+			{
+				return;
+			}
+
+			var newVersion = long.Parse(data[0]);
+			// As pubsub messages are reveived with a delay, we can receive a version that is older than the current
+			// one when having a lot of clear operations. In that case, skip it in order to prevent data to be put with
+			// an old version number.
+			if (newVersion <= CurrentVersion)
+			{
+				return; // Avoid locking
+			}
+
+			_versionLock.Wait();
+			try
+			{
+				if (newVersion <= CurrentVersion)
+				{
+					return;
+				}
+
+				UpdateVersion(newVersion);
+			}
+			finally
+			{
+				_versionLock.Release();
+			}
+		}
+
+		/// <summary>
+		/// A callback that is called after <see cref="CurrentVersion"/> is updated.
+		/// </summary>
+		/// <param name="oldVersion">The old version number.</param>
+		/// <param name="newVersion">The new version number.</param>
+		protected virtual void OnVersionUpdate(long oldVersion, long newVersion)
+		{
 		}
 	}
 }

@@ -10,26 +10,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Xml;
-using System.Xml.Linq;
 using NHibernate.Cache;
-using NHibernate.Cache.Entry;
 using NHibernate.Caches.Common.Tests;
-using NHibernate.Collection;
-using NHibernate.Engine;
-using NHibernate.Persister.Entity;
-using NHibernate.Type;
-using NSubstitute;
+using NHibernate.Caches.StackExchangeRedis.Tests.Providers;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.StackExchangeRedis.Tests
 {
 	using System.Threading.Tasks;
-	public abstract partial class RedisCacheFixture : CacheFixture
+	using System.Threading;
+	public abstract partial class RedisCacheFixture<TRegionStrategy> : CacheFixture
 	{
 
 		[Test]

@@ -10,14 +10,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using NHibernate.Cache;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.Common.Tests
 {
-	using System.Threading.Tasks;
 	public abstract partial class CacheFixture : Fixture
 	{
 
@@ -37,6 +38,40 @@ namespace NHibernate.Caches.Common.Tests
 			var item = await (cache.GetAsync(key, CancellationToken.None));
 			Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
 			Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+		}
+
+		[Test]
+		public async Task TestDistributedPutAsync()
+		{
+			if (!SupportsDistributedCache)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+
+			var cache = GetDefaultCache();
+			var cache2 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+			var cache3 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+			// Due to async version, it may already be there.
+			await (cache.RemoveAsync(key, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.Null, "cache returned an item we didn't add !?!");
+			Assert.That(await (cache2.GetAsync(key, CancellationToken.None)), Is.Null, "cache returned an item we didn't add !?!");
+			Assert.That(await (cache3.GetAsync(key, CancellationToken.None)), Is.Null, "cache returned an item we didn't add !?!");
+
+			await (cache.PutAsync(key, value, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+			AssertItem(await (cache.GetAsync(key, CancellationToken.None)));
+			AssertItem(await (cache2.GetAsync(key, CancellationToken.None)));
+			AssertItem(await (cache3.GetAsync(key, CancellationToken.None)));
+
+			void AssertItem(object item)
+			{
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+			}
 		}
 
 		[Test]
@@ -62,6 +97,42 @@ namespace NHibernate.Caches.Common.Tests
 			Assert.That(item, Is.Null, "item still exists in cache after remove");
 		}
 
+		[Test, Repeat(2)]
+		public async Task TestDistributedRemoveAsync()
+		{
+			if (!SupportsDistributedCache)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestRemove";
+			const string value = "valueRemove";
+
+			var cache = GetDefaultCache();
+			var cache2 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+			var cache3 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+
+			await (cache.RemoveAsync(key, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after remove");
+			Assert.That(await (cache2.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after remove");
+			Assert.That(await (cache3.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after remove");
+
+			await (cache.PutAsync(key, value, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.Not.Null, "item just added is not there");
+			Assert.That(await (cache2.GetAsync(key, CancellationToken.None)), Is.Not.Null, "item just added is not there");
+			Assert.That(await (cache3.GetAsync(key, CancellationToken.None)), Is.Not.Null, "item just added is not there");
+
+			await (cache.RemoveAsync(key, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after remove");
+			Assert.That(await (cache2.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after remove");
+			Assert.That(await (cache3.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after remove");
+
+			await (cache.PutAsync(key, value, CancellationToken.None));
+		}
+
 		[Test]
 		public async Task TestLockUnlockAsync()
 		{
@@ -85,6 +156,51 @@ namespace NHibernate.Caches.Common.Tests
 			{
 				var lockValue = await (cache.LockAsync(key, CancellationToken.None));
 				await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
+			}
+		}
+
+		[Test]
+		public async Task TestDistributedLockUnlockAsync()
+		{
+			if (!SupportsLocking || !SupportsDistributedCache)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestLock";
+			const string value = "valueLock";
+
+			var cache = GetDefaultCache();
+			var cache2 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+			var cache3 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+
+			// add the item
+			await (cache.PutAsync(key, value, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+
+			var lockValue = await (cache.LockAsync(key, CancellationToken.None));
+			Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None), "The key should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache2.LockAsync(key, CancellationToken.None), "The key should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache3.LockAsync(key, CancellationToken.None), "The key should be locked");
+			await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
+
+			lockValue = await (cache2.LockAsync(key, CancellationToken.None));
+			Assert.ThrowsAsync<CacheException>(() => cache.LockAsync(key, CancellationToken.None), "The key should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache2.LockAsync(key, CancellationToken.None), "The key should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache3.LockAsync(key, CancellationToken.None), "The key should be locked");
+			await (cache2.UnlockAsync(key, lockValue, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+
+			for (var i = 0; i < 2; i++)
+			{
+				lockValue = await (cache.LockAsync(key, CancellationToken.None));
+				await (cache.UnlockAsync(key, lockValue, CancellationToken.None));
+
+				lockValue = await (cache2.LockAsync(key, CancellationToken.None));
+				await (cache2.UnlockAsync(key, lockValue, CancellationToken.None));
+
+				lockValue = await (cache3.LockAsync(key, CancellationToken.None));
+				await (cache3.UnlockAsync(key, lockValue, CancellationToken.None));
 			}
 		}
 
@@ -143,6 +259,40 @@ namespace NHibernate.Caches.Common.Tests
 			// make sure we don't get an item
 			item = await (cache.GetAsync(key, CancellationToken.None));
 			Assert.That(item, Is.Null, "item still exists in cache after clear");
+		}
+
+		[Test]
+		public async Task TestDistributedClearAsync()
+		{
+			if (!SupportsClear || !SupportsDistributedCache)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestClear";
+			const string value = "valueClear";
+
+			var cache = GetDefaultCache();
+			var cache2 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+			var cache3 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+
+			// add the item
+			await (cache.PutAsync(key, value, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+
+			// make sure it's there
+			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.Not.Null, "couldn't find item in cache");
+			Assert.That(await (cache2.GetAsync(key, CancellationToken.None)), Is.Not.Null, "couldn't find item in cache");
+			Assert.That(await (cache3.GetAsync(key, CancellationToken.None)), Is.Not.Null, "couldn't find item in cache");
+
+			// clear the cache
+			await (cache.ClearAsync(CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+
+			// make sure we don't get an item
+			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after clear");
+			Assert.That(await (cache2.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after clear");
+			Assert.That(await (cache3.GetAsync(key, CancellationToken.None)), Is.Null, "item still exists in cache after clear");
 		}
 
 		[Test]
@@ -222,6 +372,52 @@ namespace NHibernate.Caches.Common.Tests
 		}
 
 		[Test]
+		public async Task TestDistributedPutManyAsync()
+		{
+			if (!SupportsDistributedCache)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			var keys = new object[10];
+			var values = new object[10];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				keys[i] = $"keyTestPut{i}";
+				values[i] = $"valuePut{i}";
+			}
+
+			var cache = GetDefaultCache();
+			var cache2 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+			var cache3 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+			// Due to async version, it may already be there.
+			foreach (var key in keys)
+				await (cache.RemoveAsync(key, CancellationToken.None));
+
+			await (Task.Delay(DistributedSynhronizationTime));
+			Assert.That(await (cache.GetManyAsync(keys, CancellationToken.None)), Is.EquivalentTo(new object[10]), "cache returned items we didn't add !?!");
+			Assert.That(await (cache2.GetManyAsync(keys, CancellationToken.None)), Is.EquivalentTo(new object[10]), "cache returned items we didn't add !?!");
+			Assert.That(await (cache3.GetManyAsync(keys, CancellationToken.None)), Is.EquivalentTo(new object[10]), "cache returned items we didn't add !?!");
+
+			await (cache.PutManyAsync(keys, values, CancellationToken.None));
+			await (Task.Delay(DistributedSynhronizationTime));
+
+			AssertNotEmpty(await (cache.GetManyAsync(keys, CancellationToken.None)));
+			AssertNotEmpty(await (cache2.GetManyAsync(keys, CancellationToken.None)));
+			AssertNotEmpty(await (cache3.GetManyAsync(keys, CancellationToken.None)));
+
+			void AssertNotEmpty(object[] items)
+			{
+				for (var i = 0; i < items.Length; i++)
+				{
+					var item = items[i];
+					Assert.That(item, Is.Not.Null, "unable to retrieve cached item");
+					Assert.That(item, Is.EqualTo(values[i]), "didn't return the item we added");
+				}
+			}
+		}
+
+		[Test]
 		public async Task TestLockUnlockManyAsync()
 		{
 			if (!SupportsLocking)
@@ -269,6 +465,71 @@ namespace NHibernate.Caches.Common.Tests
 			{
 				lockValue = await (cache.LockManyAsync(keys, CancellationToken.None));
 				await (cache.UnlockManyAsync(keys, lockValue, CancellationToken.None));
+			}, "the first 5 keys should not be locked.");
+		}
+
+		[Test]
+		public async Task TestDistributedLockUnlockManyAsync()
+		{
+			if (!SupportsDistributedCache)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			var keys = new object[10];
+			var values = new object[10];
+			for (var i = 0; i < keys.Length; i++)
+			{
+				keys[i] = $"keyTestLock{i}";
+				values[i] = $"valueLock{i}";
+			}
+
+			var cache = GetDefaultCache();
+			var cache2 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+			var cache3 = (CacheBase) GetNewProvider().BuildCache(DefaultRegion, GetDefaultProperties());
+
+			// add the item
+			await (cache.PutManyAsync(keys, values, CancellationToken.None));
+			await (cache.LockManyAsync(keys, CancellationToken.None));
+
+			Assert.ThrowsAsync<CacheException>(() => cache.LockManyAsync(keys, CancellationToken.None), "all items should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache2.LockManyAsync(keys, CancellationToken.None), "all items should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache3.LockManyAsync(keys, CancellationToken.None), "all items should be locked");
+
+			await (Task.Delay(cache.Timeout / Timestamper.OneMs));
+
+			for (var i = 0; i < 2; i++)
+			{
+				Assert.DoesNotThrowAsync(async () =>
+				{
+					await (cache.UnlockManyAsync(keys, await (cache.LockManyAsync(keys, CancellationToken.None)), CancellationToken.None));
+					await (cache2.UnlockManyAsync(keys, await (cache2.LockManyAsync(keys, CancellationToken.None)), CancellationToken.None));
+					await (cache3.UnlockManyAsync(keys, await (cache3.LockManyAsync(keys, CancellationToken.None)), CancellationToken.None));
+				}, "the items should be unlocked");
+			}
+
+			// Test partial locks by locking the first 5 keys and afterwards try to lock last 6 keys.
+			var lockValue = await (cache.LockManyAsync(keys.Take(5).ToArray(), CancellationToken.None));
+
+			Assert.ThrowsAsync<CacheException>(() => cache.LockManyAsync(keys.Skip(4).ToArray(), CancellationToken.None), "the fifth key should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache2.LockManyAsync(keys.Skip(4).ToArray(), CancellationToken.None), "the fifth key should be locked");
+			Assert.ThrowsAsync<CacheException>(() => cache3.LockManyAsync(keys.Skip(4).ToArray(), CancellationToken.None), "the fifth key should be locked");
+
+			Assert.DoesNotThrowAsync(async () =>
+			{
+				await (cache.UnlockManyAsync(keys, await (cache.LockManyAsync(keys.Skip(5).ToArray(), CancellationToken.None)), CancellationToken.None));
+				await (cache2.UnlockManyAsync(keys, await (cache2.LockManyAsync(keys.Skip(5).ToArray(), CancellationToken.None)), CancellationToken.None));
+				await (cache3.UnlockManyAsync(keys, await (cache3.LockManyAsync(keys.Skip(5).ToArray(), CancellationToken.None)), CancellationToken.None));
+			}, "the last 5 keys should not be locked.");
+
+			// Unlock the first 5 keys
+			await (cache.UnlockManyAsync(keys, lockValue, CancellationToken.None));
+
+			Assert.DoesNotThrowAsync(async () =>
+			{
+				await (cache.UnlockManyAsync(keys, await (cache.LockManyAsync(keys, CancellationToken.None)), CancellationToken.None));
+				await (cache2.UnlockManyAsync(keys, await (cache2.LockManyAsync(keys, CancellationToken.None)), CancellationToken.None));
+				await (cache3.UnlockManyAsync(keys, await (cache3.LockManyAsync(keys, CancellationToken.None)), CancellationToken.None));
 			}, "the first 5 keys should not be locked.");
 		}
 
@@ -426,6 +687,96 @@ namespace NHibernate.Caches.Common.Tests
 				Assert.That(item, Is.EqualTo(kv.Value), $"Didn't return the item we added for key {kv.Key}");
 				item = await (cache.GetAsync(longKeyPrefix + kv.Key, CancellationToken.None));
 				Assert.That(item, Is.EqualTo(kv.Value + longKeyValueSuffix), $"Didn't return the item we added for long key {kv.Key}");
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedPutAsync()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			const string value2 = "valuePut2";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				await (cache.PutAsync(key, value2, CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value2), "didn't return the item we added");
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedRemovePutAsync()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.RemoveAsync(key, CancellationToken.None));
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedPutRemoveAsync()
+		{
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				await (cache.RemoveAsync(key, CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Null, "Item still exists in cache after remove");
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedClearPutAsync()
+		{
+			if (!SupportsClear)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.ClearAsync(CancellationToken.None));
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+				Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+
+			}
+		}
+
+		[Test]
+		public async Task TestRepeatedPutClearAsync()
+		{
+			if (!SupportsClear)
+			{
+				Assert.Ignore("Test not supported by provider");
+			}
+
+			const string key = "keyTestPut";
+			const string value = "valuePut";
+			var cache = GetDefaultCache();
+			for (var i = 0; i < 100; i++)
+			{
+				await (cache.PutAsync(key, value, CancellationToken.None));
+				await (cache.ClearAsync(CancellationToken.None));
+				var item = await (cache.GetAsync(key, CancellationToken.None));
+				Assert.That(item, Is.Null, "Item still exists in cache after clear");
 			}
 		}
 	}

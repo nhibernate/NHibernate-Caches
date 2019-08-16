@@ -1,32 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Reflection;
-using System.Threading;
-using System.Xml;
-using System.Xml.Linq;
 using NHibernate.Cache;
-using NHibernate.Cache.Entry;
 using NHibernate.Caches.Common.Tests;
-using NHibernate.Collection;
-using NHibernate.Engine;
-using NHibernate.Persister.Entity;
-using NHibernate.Type;
-using NSubstitute;
+using NHibernate.Caches.StackExchangeRedis.Tests.Providers;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.StackExchangeRedis.Tests
 {
 	[TestFixture]
-	public abstract partial class RedisCacheFixture : CacheFixture
+	public abstract partial class RedisCacheFixture<TRegionStrategy> : CacheFixture
 	{
 		protected override bool SupportsSlidingExpiration => true;
 		protected override bool SupportsLocking => true;
 		protected override bool SupportsDistinguishingKeysWithSameStringRepresentationAndHashcode => false;
+		protected override bool DisposeCacheProvidersPerTest => true;
 
 		protected override Func<ICacheProvider> ProviderBuilder =>
 			() => new RedisCacheProvider();
+
+		protected override void Configure(Dictionary<string, string> defaultProperties)
+		{
+			base.Configure(defaultProperties);
+			defaultProperties.Add(RedisEnvironment.RegionStrategyFactory, typeof(CacheRegionStrategyFactory).AssemblyQualifiedName);
+			defaultProperties.Add(RedisEnvironment.RegionStrategy, typeof(TRegionStrategy).AssemblyQualifiedName);
+			defaultProperties.Add(RedisEnvironment.ConnectionMultiplexerProvider, typeof(ConnectionMultiplexerProvider).AssemblyQualifiedName);
+		}
 
 		[Serializable]
 		protected class CustomCacheKey
@@ -62,6 +60,14 @@ namespace NHibernate.Caches.StackExchangeRedis.Tests
 			{
 				return _hashCode.GetHashCode();
 			}
+		}
+
+		[Test]
+		public void TestRegionStrategyType()
+		{
+			var cache = (RedisCache) GetDefaultCache();
+			Assert.That(cache, Is.Not.Null, "cache is not a redis cache.");
+			Assert.That(cache.RegionStrategy, Is.TypeOf<TRegionStrategy>(), "cache strategy is not type of FastRegionStrategy");
 		}
 
 		[Test]

@@ -153,6 +153,16 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 			var cacheKey = GetCacheKey(key);
 			Log.Debug("Fetching object with key: '{0}'.", cacheKey);
+			return ExecuteGet(cacheKey);
+		}
+
+		/// <summary>
+		/// Executes the command to retrieve the key from Redis.
+		/// </summary>
+		/// <param name="cacheKey">The key of the object to retrieve.</param>
+		/// <returns>The object behind the key or <see langword="null" /> if the key was not found.</returns>
+		protected virtual object ExecuteGet(string cacheKey)
+		{
 			RedisValue result;
 			if (string.IsNullOrEmpty(GetScript))
 			{
@@ -160,14 +170,14 @@ namespace NHibernate.Caches.StackExchangeRedis
 			}
 			else
 			{
-				var keys = AppendAdditionalKeys(new RedisKey[] {cacheKey});
-				var values = AppendAdditionalValues(new RedisValue[]
-				{
-					UseSlidingExpiration && ExpirationEnabled,
-					(long) Expiration.TotalMilliseconds
-				});
-				var results = (RedisValue[]) Database.ScriptEvaluate(GetScript, keys, values);
-				result = results[0];
+				result = ((RedisValue[]) Database.ScriptEvaluate(
+					GetScript,
+					AppendAdditionalKeys(new RedisKey[] {cacheKey}),
+					AppendAdditionalValues(new RedisValue[]
+					{
+						UseSlidingExpiration && ExpirationEnabled,
+						(long) Expiration.TotalMilliseconds
+					})))[0];
 			}
 
 			return result.IsNullOrEmpty ? null : Serializer.Deserialize(result);
@@ -193,6 +203,16 @@ namespace NHibernate.Caches.StackExchangeRedis
 				Log.Debug("Fetching object with key: '{0}'.", cacheKeys[i]);
 			}
 
+			return ExecuteGetMany(cacheKeys);
+		}
+
+		/// <summary>
+		/// Executes the command to retrieve the keys from Redis.
+		/// </summary>
+		/// <param name="cacheKeys">The keys of the objects to retrieve.</param>
+		/// <returns>An array of objects behind the keys or <see langword="null" /> if the key was not found.</returns>
+		protected virtual object[] ExecuteGetMany(RedisKey[] cacheKeys)
+		{
 			RedisValue[] results;
 			if (string.IsNullOrEmpty(GetManyScript))
 			{
@@ -200,26 +220,27 @@ namespace NHibernate.Caches.StackExchangeRedis
 			}
 			else
 			{
-				cacheKeys = AppendAdditionalKeys(cacheKeys);
-				var values = AppendAdditionalValues(new RedisValue[]
-				{
-					UseSlidingExpiration && ExpirationEnabled,
-					(long) Expiration.TotalMilliseconds
-				});
-				results = (RedisValue[]) Database.ScriptEvaluate(GetManyScript, cacheKeys, values);
+				results = (RedisValue[]) Database.ScriptEvaluate(
+					GetManyScript,
+					AppendAdditionalKeys(cacheKeys),
+					AppendAdditionalValues(new RedisValue[]
+					{
+						UseSlidingExpiration && ExpirationEnabled,
+						(long) Expiration.TotalMilliseconds
+					}));
 			}
 
-			var objects = new object[keys.Length];
+			var values = new object[cacheKeys.Length];
 			for (var i = 0; i < results.Length; i++)
 			{
 				var result = results[i];
 				if (!result.IsNullOrEmpty)
 				{
-					objects[i] = Serializer.Deserialize(result);
+					values[i] = Serializer.Deserialize(result);
 				}
 			}
 
-			return objects;
+			return values;
 		}
 
 		/// <summary>
@@ -241,22 +262,32 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 			var cacheKey = GetCacheKey(key);
 			Log.Debug("Putting object with key: '{0}'.", cacheKey);
-			RedisValue serializedValue = Serializer.Serialize(value);
+			ExecutePut(cacheKey, value);
+		}
 
+		/// <summary>
+		/// Executes the put command.
+		/// </summary>
+		/// <param name="cacheKey">The key parameter for the command.</param>
+		/// <param name="value">The value parameter for the command.</param>
+		protected virtual void ExecutePut(string cacheKey, object value)
+		{
 			if (string.IsNullOrEmpty(PutScript))
 			{
-				Database.StringSet(cacheKey, serializedValue, ExpirationEnabled ? Expiration : (TimeSpan?) null);
-				return;
+				Database.StringSet(cacheKey, Serializer.Serialize(value), ExpirationEnabled ? Expiration : (TimeSpan?) null);
 			}
-
-			var keys = AppendAdditionalKeys(new RedisKey[] {cacheKey});
-			var values = AppendAdditionalValues(new[]
+			else
 			{
-				serializedValue,
-				ExpirationEnabled,
-				(long) Expiration.TotalMilliseconds
-			});
-			Database.ScriptEvaluate(PutScript, keys, values);
+				Database.ScriptEvaluate(
+					PutScript,
+					AppendAdditionalKeys(new RedisKey[] {cacheKey}),
+					AppendAdditionalValues(new RedisValue[]
+					{
+						Serializer.Serialize(value),
+						ExpirationEnabled,
+						(long) Expiration.TotalMilliseconds
+					}));
+			}
 		}
 
 		/// <summary>
@@ -282,6 +313,16 @@ namespace NHibernate.Caches.StackExchangeRedis
 			}
 
 			Log.Debug("Putting {0} objects...", keys.Length);
+			ExecutePutMany(keys, values);
+		}
+
+		/// <summary>
+		/// Stores the objects into Redis by the given keys.
+		/// </summary>
+		/// <param name="keys">The keys to store the objects.</param>
+		/// <param name="values">The objects to store.</param>
+		protected virtual void ExecutePutMany(object[] keys, object[] values)
+		{
 			if (string.IsNullOrEmpty(PutManyScript))
 			{
 				if (ExpirationEnabled)
@@ -310,11 +351,9 @@ namespace NHibernate.Caches.StackExchangeRedis
 				Log.Debug("Putting object with key: '{0}'.", cacheKeys[i]);
 			}
 
-			cacheKeys = AppendAdditionalKeys(cacheKeys);
-			cacheValues[keys.Length] = ExpirationEnabled;
-			cacheValues[keys.Length + 1] = (long) Expiration.TotalMilliseconds;
-			cacheValues = AppendAdditionalValues(cacheValues);
-			Database.ScriptEvaluate(PutManyScript, cacheKeys, cacheValues);
+			cacheValues[cacheKeys.Length] = ExpirationEnabled;
+			cacheValues[cacheKeys.Length + 1] = (long) Expiration.TotalMilliseconds;
+			Database.ScriptEvaluate(PutManyScript, AppendAdditionalKeys(cacheKeys), AppendAdditionalValues(cacheValues));
 		}
 
 		/// <summary>
@@ -330,15 +369,21 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 			var cacheKey = GetCacheKey(key);
 			Log.Debug("Removing object with key: '{0}'.", cacheKey);
-			if (string.IsNullOrEmpty(RemoveScript))
-			{
-				return Database.KeyDelete(cacheKey);
-			}
+			return ExecuteRemove(cacheKey);
+		}
 
-			var keys = AppendAdditionalKeys(new RedisKey[] {cacheKey});
-			var values = GetAdditionalValues();
-			var results = (RedisValue[]) Database.ScriptEvaluate(RemoveScript, keys, values);
-			return (bool) results[0];
+		/// <summary>
+		/// Executes the remove command.
+		/// </summary>
+		/// <param name="cacheKey">The key to remove</param>
+		protected virtual bool ExecuteRemove(string cacheKey)
+		{
+			return string.IsNullOrEmpty(RemoveScript)
+				? Database.KeyDelete(cacheKey)
+				: (bool) ((RedisValue[]) Database.ScriptEvaluate(
+					RemoveScript,
+					AppendAdditionalKeys(new RedisKey[] {cacheKey}),
+					GetAdditionalValues()))[0];
 		}
 
 		/// <summary>

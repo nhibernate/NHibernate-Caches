@@ -9,6 +9,7 @@ namespace NHibernate.Caches.Common.Tests
 	public abstract class Fixture
 	{
 		protected virtual bool SupportsDefaultExpiration => true;
+		protected virtual bool DisposeCacheProvidersPerTest => false;
 
 		protected ICacheProvider DefaultProvider { get; private set; }
 
@@ -30,7 +31,10 @@ namespace NHibernate.Caches.Common.Tests
 		public void FixtureSetup()
 		{
 			Configure(_defaultProperties);
-			DefaultProvider = GetNewProvider();
+			if (!DisposeCacheProvidersPerTest)
+			{
+				DefaultProvider = GetNewProvider();
+			}
 		}
 
 		protected virtual void Configure(Dictionary<string, string> defaultProperties)
@@ -44,15 +48,39 @@ namespace NHibernate.Caches.Common.Tests
 		[OneTimeTearDown]
 		public void FixtureTearDown()
 		{
-			foreach (var provider in _providers)
+			if (DisposeCacheProvidersPerTest)
 			{
-				provider.Stop();
+				return;
 			}
+
+			StopProviders();
 			OnOneTimeTearDown();
 		}
 
 		protected virtual void OnOneTimeTearDown()
 		{}
+
+		[SetUp]
+		public void TestSetup()
+		{
+			if (!DisposeCacheProvidersPerTest)
+			{
+				return;
+			}
+
+			DefaultProvider = GetNewProvider();
+		}
+
+		[TearDown]
+		public void TearDown()
+		{
+			if (!DisposeCacheProvidersPerTest)
+			{
+				return;
+			}
+
+			StopProviders();
+		}
 
 		protected ICacheProvider GetNewProvider()
 		{
@@ -67,6 +95,16 @@ namespace NHibernate.Caches.Common.Tests
 			var cache = (CacheBase) DefaultProvider.BuildCache(DefaultRegion, GetDefaultProperties());
 			Assert.That(cache, Is.Not.Null, "No default cache returned");
 			return cache;
+		}
+
+		private void StopProviders()
+		{
+			foreach (var provider in _providers)
+			{
+				provider.Stop();
+			}
+
+			_providers.Clear();
 		}
 	}
 }
