@@ -4,11 +4,11 @@ This document describes the policies and procedures for working with NHibernate.
 
 For the least friction, please follow the steps in the order presented, being careful not to miss any. There are many details in this document that will help your contribution go as smoothly as possible. Please read it thoroughly.
 
-## Create or find a Jira Issue
+## Create or find a GitHub Issue
 
-Jira is used to generate the release notes and serves as a central point of reference for all changes that have occurred to NHibernate.Caches.
+GitHub is used to generate the release notes and serves as a central point of reference for all changes that have occurred to NHibernate.Caches.
 
-Visit [https://nhibernate.jira.com/projects/NHCH/issues][1] and search for your issue. If you see it, giving it a vote is a good way to increase the visibility of the issue.
+Check [issues][1] and search for your issue. If you see it, giving it a vote is a good way to increase the visibility of the issue.
 
 Before creating an issue, please do your best to verify the existence of the problem. This reduces noise in the issue tracker and helps conserve the resources of the team for more useful tasks. Note the issue number for future steps.
 
@@ -48,13 +48,13 @@ Since you now have a failing test case, it should be straight-forward to step in
 
 Once you've made changes to the NHibernate.Caches code base, you'll want to ensure that you haven't caused any previously passing tests to fail. The easiest way to check this is to run **nant test** from the root of NHibernate.Caches repository.
 
-Cache provider tests depending on a cache server does not fail the task by default. If you have change such a provider, setup its server and check the nant output for unexpected failures.
+Cache provider tests depending on a cache server does not fail the task by default. If you have changed such a provider, setup its server and check the nant output for unexpected failures.
 
 ## Submit a Pull Request
 
 If you are fixing an existing issue, please make sure to include this issue number in your GitHub pull request. 
 
-We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate.Cahces codebase. To make this easier, NHibernate.Caches has an [editorconfig][3] configuration file to switch Visual Studio automatically between tabs and spaces mode. It is recommended you install editorconfig from the Visual Studio Extension Manager.
+We use tabs for code indentation, not spaces. As this is not the default in Visual Studio, you will need to reconfigure Visual Studio to indent with tabs whenever you work on the NHibernate.Cahces codebase. To make this easier, NHibernate.Caches has an [editorconfig][3] configuration file to switch Visual Studio automatically between tabs and spaces mode. It is recommended you install editorconfig from the Visual Studio Extension Manager, if you are using an older version of Visual Studio.
 
 After submitting your pull request, come back later to check the outcome of automated builds. If some have failed, they will be listed in your pull request with a link to the corresponding AppVeyor build. Find out in the build which tests are newly failing, and take appropriate action.
 
@@ -66,7 +66,7 @@ The NHibernate team monitors GitHub regularly, so your request will be noticed. 
 
 The NHibernate community values your contributions. Thank you for the time you have invested.
 
- [1]: https://nhibernate.jira.com/projects/NHCH/issues
+ [1]: https://github.com/nhibernate/NHibernate-Caches/issues
  [2]: https://github.com/nhibernate/NHibernate-Caches/
  [3]: http://www.editorconfig.org/
  [4]: http://groups.google.com/group/nhibernate-development
