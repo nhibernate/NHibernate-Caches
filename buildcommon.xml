@@ -164,7 +164,7 @@
         </items>
       </in>
       <do>
-        <echo message="nuget push -source https://nuget.org/ ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
+        <echo message="nuget push -source https://api.nuget.org/v3/index.json ${filename} ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="true"/>
       </do>
     </foreach>
   </target>
