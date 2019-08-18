@@ -92,7 +92,7 @@ after_build:
         $wc.DownloadFile('https://dist.nuget.org/win-x86-commandline/latest/nuget.exe', $nugetExe)
         Add-Content 'NuGetPush.bat' "rem In order to use this bat you have to be sure you have executed 'nuget SetApiKey'"
         Get-Item '*.nupkg' | ForEach-Object {
-            Add-Content 'NuGetPush.bat' "nuget push -source https://nuget.org/ $($_.Name)"
+            Add-Content 'NuGetPush.bat' "nuget push -source https://api.nuget.org/v3/index.json $($_.Name)"
         }
         cd $env:APPVEYOR_BUILD_FOLDER
         7z a "$nugetFolderName.zip" "$nugetFolderName\"
