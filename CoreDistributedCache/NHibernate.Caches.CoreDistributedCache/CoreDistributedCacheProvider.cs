@@ -26,6 +26,7 @@ using System.Configuration;
 using System.Text;
 using Microsoft.Extensions.Caching.Distributed;
 using NHibernate.Cache;
+using NHibernate.Caches.Common;
 using NHibernate.Util;
 
 namespace NHibernate.Caches.CoreDistributedCache
@@ -50,8 +51,13 @@ namespace NHibernate.Caches.CoreDistributedCache
 		[CLSCompliant(false)]
 		public static IDistributedCacheFactory CacheFactory { get; set; }
 
+		/// <summary>
+		/// The default serializer for all regions.
+		/// </summary>
+		public static CacheSerializerBase DefaultSerializer { get; set; } = new BinaryCacheSerializer();
+
 		/// <summary>Should the keys be appended with their hashcode?</summary>
-		/// <value>By defauly <see langword="true" /> for the .Net Framework build,
+		/// <value>By default <see langword="true" /> for the .Net Framework build,
 		/// <see langword="false" /> otherwise. This setting will be <c>false</c> by default
 		/// for all runtime in the next major release (6.0).</value>
 		/// <remarks>
@@ -115,6 +121,18 @@ namespace NHibernate.Caches.CoreDistributedCache
 			}
 
 			AppendHashcodeToKey = config.AppendHashcodeToKey;
+
+			DefaultSerializer = GetSerializer(config.Properties) ?? new BinaryCacheSerializer();
+		}
+
+		internal static CacheSerializerBase GetSerializer(IDictionary<string, string> props)
+		{
+			var serializer = props?["cache.serializer"];
+			if (string.IsNullOrEmpty(serializer))
+				return null;
+
+			var serializerClass = ReflectHelper.ClassForName(serializer);
+			return (CacheSerializerBase) Cfg.Environment.ObjectsFactory.CreateInstance(serializerClass);
 		}
 
 		#region ICacheProvider Members

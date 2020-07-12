@@ -23,11 +23,10 @@
 using System;
 using NHibernate.Cache;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using NHibernate.Caches.Common;
 using NHibernate.Caches.Util;
 using NHibernate.Util;
 
@@ -140,6 +139,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		private readonly IDistributedCache _cache;
 		private readonly int? _maxKeySize;
 		private readonly Func<string, string> _keySanitizer;
+		private CacheSerializerBase _serializer;
 
 		private static readonly TimeSpan DefaultExpiration = TimeSpan.FromSeconds(300);
 		private const bool _defaultUseSlidingExpiration = false;
@@ -230,6 +230,9 @@ namespace NHibernate.Caches.CoreDistributedCache
 			}
 
 			_fullRegion = regionPrefix + RegionName;
+			_serializer = CoreDistributedCacheProvider.GetSerializer(props) ??
+				CoreDistributedCacheProvider.DefaultSerializer ??
+				throw new InvalidOperationException("The serializer must be not null");
 		}
 
 		private static string GetRegionPrefix(IDictionary<string, string> props)
@@ -352,12 +355,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 			if (cachedData == null)
 				return null;
 
-			var serializer = new BinaryFormatter();
-			using (var stream = new MemoryStream(cachedData))
-			{
-				var entry = serializer.Deserialize(stream) as Tuple<object, object>;
-				return Equals(entry?.Item1, key) ? entry.Item2 : null;
-			}
+			return _serializer.Deserialize(cachedData);
 		}
 
 		/// <inheritdoc />
@@ -373,14 +371,8 @@ namespace NHibernate.Caches.CoreDistributedCache
 				throw new ArgumentNullException(nameof(value), "null value not allowed");
 			}
 
-			byte[] cachedData;
-			var serializer = new BinaryFormatter();
-			using (var stream = new MemoryStream())
-			{
-				var entry = new Tuple<object, object>(key, value);
-				serializer.Serialize(stream, entry);
-				cachedData = stream.ToArray();
-			}
+			var entry = new Tuple<object, object>(key, value);
+			var cachedData = _serializer.Serialize(entry);
 
 			var cacheKey = GetCacheKey(key);
 			var options = new DistributedCacheEntryOptions();

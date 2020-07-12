@@ -11,11 +11,10 @@
 using System;
 using NHibernate.Cache;
 using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Caching.Distributed;
+using NHibernate.Caches.Common;
 using NHibernate.Caches.Util;
 using NHibernate.Util;
 
@@ -41,12 +40,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 			if (cachedData == null)
 				return null;
 
-			var serializer = new BinaryFormatter();
-			using (var stream = new MemoryStream(cachedData))
-			{
-				var entry = serializer.Deserialize(stream) as Tuple<object, object>;
-				return Equals(entry?.Item1, key) ? entry.Item2 : null;
-			}
+			return _serializer.Deserialize(cachedData);
 		}
 
 		/// <inheritdoc />
@@ -68,14 +62,8 @@ namespace NHibernate.Caches.CoreDistributedCache
 			try
 			{
 
-				byte[] cachedData;
-				var serializer = new BinaryFormatter();
-				using (var stream = new MemoryStream())
-				{
-					var entry = new Tuple<object, object>(key, value);
-					serializer.Serialize(stream, entry);
-					cachedData = stream.ToArray();
-				}
+				var entry = new Tuple<object, object>(key, value);
+				var cachedData = _serializer.Serialize(entry);
 
 				var cacheKey = GetCacheKey(key);
 				var options = new DistributedCacheEntryOptions();
