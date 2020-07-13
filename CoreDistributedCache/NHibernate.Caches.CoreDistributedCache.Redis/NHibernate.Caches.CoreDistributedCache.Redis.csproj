@@ -10,12 +10,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>## Possible breaking change
-    * The obsolete Microsoft.Extensions.Caching.Redis dependency has been changed for Microsoft.Extensions.Caching.StackExchangeRedis
-
-* Improvement
-    * #70 - Use non deprecated Redis provider
-    * #60 - Update package format for symbols, license and SourceLink</PackageReleaseNotes>
+    <PackageReleaseNotes>* Improvement
+    * #83 Add support for custom serializer in CoreDistributedCache</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>

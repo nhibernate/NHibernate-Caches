@@ -8,8 +8,6 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
-      * #60 - Update package format for symbols, license and SourceLink</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
