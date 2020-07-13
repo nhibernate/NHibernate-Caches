@@ -128,8 +128,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 		internal static CacheSerializerBase GetSerializer(IDictionary<string, string> props)
 		{
-			var serializer = props?["cache.serializer"];
-			if (string.IsNullOrEmpty(serializer))
+			if (props == null || !props.TryGetValue("cache.serializer", out var serializer) || string.IsNullOrEmpty(serializer))
 				return null;
 
 			var serializerClass = ReflectHelper.ClassForName(serializer);

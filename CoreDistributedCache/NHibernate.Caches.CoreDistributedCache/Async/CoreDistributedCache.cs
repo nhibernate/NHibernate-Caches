@@ -40,7 +40,8 @@ namespace NHibernate.Caches.CoreDistributedCache
 			if (cachedData == null)
 				return null;
 
-			return _serializer.Deserialize(cachedData);
+			var entry = _serializer.Deserialize(cachedData) as Tuple<object, object>;
+			return Equals(entry?.Item1, key) ? entry.Item2 : null;
 		}
 
 		/// <inheritdoc />
