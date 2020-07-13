@@ -20,14 +20,6 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
-#### Build 5.7.0 for NHibernate 5.2.0
-
-* Bug
-    * #72 Fix nuget source for pushing snupkg
-
-* Improvement
-    * #83 Add support for custom serializer in CoreDistributedCache
-
 #### Build 5.6.0 for NHibernate 5.2.0
 
 ##### Possible breaking change
