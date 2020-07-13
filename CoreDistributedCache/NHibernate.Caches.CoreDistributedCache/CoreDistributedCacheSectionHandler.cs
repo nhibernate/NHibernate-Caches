@@ -27,9 +27,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 				var expiration = node.Attributes["expiration"]?.Value;
 				var sliding = node.Attributes["sliding"]?.Value;
 				var appendHashcode = node.Attributes["append-hashcode"]?.Value;
+				var serializer = node.Attributes["serializer"]?.Value;
 				if (region != null)
 				{
-					caches.Add(new RegionConfig(region, expiration, sliding, appendHashcode));
+					caches.Add(new RegionConfig(region, expiration, sliding, appendHashcode, serializer));
 				}
 				else
 				{
