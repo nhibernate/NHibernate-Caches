@@ -76,10 +76,10 @@
     <echo message="Created a '${project.config}' package in ${build.dir}" />
   </target>
 
-  <target name="generate-async" depends="common.nuget-restore common.solution-restore common.find-async-generator-console">
-    <exec
-      workingdir="${root.dir}"
-      program="${async-generator-console}" />
+  <target name="generate-async" depends="common.tools-restore common.solution-restore common.find-async-generator-console">
+    <exec workingdir="${root.dir}" program="dotnet" verbose="true">
+      <arg line="${async-generator-console}" />
+    </exec>
   </target>
 
 </project>
