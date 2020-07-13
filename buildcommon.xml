@@ -90,39 +90,31 @@
     </exec>
   </target>
 
-  <target name="common.download-nuget" depends="init">
-    <get
-      src="https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-      dest="${tools.dir}/nuget.exe"
-      usetimestamp="true"
-    />
-  </target>
-
-  <target name="common.nuget-restore" depends="init common.download-nuget">
-    <exec basedir="${tools.dir}" workingdir="${root.dir}/Tools" program="NuGet.exe">
-      <arg value="install" />
+  <target name="common.tools-restore" depends="init">
+    <exec workingdir="${root.dir}/Tools" program="dotnet" verbose="true">
+      <arg line="restore ./packages.csproj --packages ." />
     </exec>
   </target>
 
-  <target name="common.solution-restore" depends="common.nuget-restore">
+  <target name="common.solution-restore" depends="common.tools-restore">
     <exec program="${path::combine(tools.dir, 'dotnet.cmd')}" verbose="true">
       <arg value="/t:Restore" />
       <arg value="${root.dir}/NHibernate.Caches.Everything.sln" />
     </exec>
   </target>
 
-  <target name="common.get-nuget-package-path">
+  <target name="get-tool-info" depends="common.tools-restore">
     <xmlpeek
-      file="${tools.dir}/packages.config"
-      xpath="/packages/package[@id = '${nuget-package-id}']/@version"
-      property="nuget-package-version" />
-    <property name="nuget-package-path" value="${tools.dir}/${nuget-package-id}.${nuget-package-version}/" />
+      file="${tools.dir}/packages.csproj"
+      xpath="/Project/ItemGroup/PackageReference[@Include = '${tool.id}']/@Version"
+      property="tool.version" />
+    <property name="tool.path" value="${tools.dir}/${tool.id}/${tool.version}/" />
   </target>
 
   <target name="common.find-nunit">
-    <property name="nuget-package-id" value="NUnit.ConsoleRunner" />
-    <call target="common.get-nuget-package-path" />
-    <property name="nunit-console" value="${nuget-package-path}/tools/nunit3-console.exe" />
+    <property name="tool.id" value="NUnit.ConsoleRunner" />
+    <call target="get-tool-info" />
+    <property name="nunit-console" value="${tool.path}tools/nunit3-console.exe" />
   </target>
 
   <target name="common.run-tests"
@@ -145,15 +137,14 @@
   </target>
 
   <target name="common.find-async-generator-console">
-    <property name="nuget-package-id" value="CSharpAsyncGenerator.CommandLine" />
-    <call target="common.get-nuget-package-path" />
-    <property name="async-generator-console"  value="${nuget-package-path}/tools/AsyncGenerator.CommandLine.exe" />
+    <property name="tool.id" value="CSharpAsyncGenerator.CommandLine" />
+    <call target="get-tool-info" />
+    <property name="async-generator-console" value="${tool.path}tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
   </target>
 
   <target name="common.nuget-pushbat"
           description="Creates files for the release on nuget gallery.">
 
-    <copy file="${tools.dir}/NuGet.exe" todir="${nuget.nupackages.dir}"/>
     <property name="nuget.nupackages.pushbatfile" value="${path::combine(nuget.nupackages.dir, 'NuGetPush.bat')}" />
 
     <echo message="rem In order to use this bat you have to be sure you have executed 'nuget SetApiKey' ${environment::newline()}" file="${nuget.nupackages.pushbatfile}" append="false"/>
