@@ -54,6 +54,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <summary>
 		/// The default serializer for all regions.
 		/// </summary>
+		[CLSCompliant(false)]
 		public static CacheSerializerBase DefaultSerializer { get; set; } = new BinaryCacheSerializer();
 
 		/// <summary>Should the keys be appended with their hashcode?</summary>
