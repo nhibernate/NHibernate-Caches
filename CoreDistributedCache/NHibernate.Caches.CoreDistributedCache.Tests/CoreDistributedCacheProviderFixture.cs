@@ -22,6 +22,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using NHibernate.Cache;
 using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
@@ -39,6 +40,10 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 		{
 			var cache = DefaultProvider.BuildCache("foo", null);
 			Assert.That(cache, Is.Not.Null, "pre-configured cache not found");
+			Assert.That(CoreDistributedCacheProvider.DefaultSerializer, Is.TypeOf<TestSerializer1>());
+			var serializerField = typeof(CoreDistributedCacheBase).GetField("_serializer", BindingFlags.Instance | BindingFlags.NonPublic);
+			Assert.That(serializerField, Is.Not.Null);
+			Assert.That(serializerField.GetValue(cache), Is.TypeOf<TestSerializer2>());
 		}
 
 		[Test]

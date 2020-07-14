@@ -1,30 +1,23 @@
-﻿using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Runtime.Serialization.Formatters.Binary;
+using NHibernate.Util;
 
 namespace NHibernate.Caches.Common
 {
-	/// <inheritdoc />
+	/// <summary>
+	/// A binary serializer, using <see cref="BinaryFormatter"/>.
+	/// </summary>
 	public class BinaryCacheSerializer : CacheSerializerBase
 	{
 		/// <inheritdoc />
 		public override byte[] Serialize(object value)
 		{
-			var serializer = new BinaryFormatter();
-			using (var stream = new MemoryStream())
-			{
-				serializer.Serialize(stream, value);
-				return stream.ToArray();
-			}
+			return SerializationHelper.Serialize(value);
 		}
 
 		/// <inheritdoc />
 		public override object Deserialize(byte[] value)
 		{
-			var serializer = new BinaryFormatter();
-			using (var stream = new MemoryStream(value))
-			{
-				return serializer.Deserialize(stream);
-			}
+			return SerializationHelper.Deserialize(value);
 		}
 	}
 }

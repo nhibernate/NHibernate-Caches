@@ -63,7 +63,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			const string xmlSimple =
 				"<coredistributedcache factory-class=\"factory1\" append-hashcode=\"false\">" +
 				"<properties><property name=\"prop1\">Value1</property></properties>" +
-				"<cache region=\"foo\" expiration=\"500\" sliding=\"true\" append-hashcode=\"true\" />" +
+				"<cache region=\"foo\" expiration=\"500\" sliding=\"true\" append-hashcode=\"true\" serializer=\"serReg\" />" +
 				"</coredistributedcache>";
 
 			var handler = new CoreDistributedCacheSectionHandler();
@@ -89,6 +89,8 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			Assert.That(config.Regions[0].Properties["expiration"], Is.EqualTo("500"));
 			Assert.That(config.Regions[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
 			Assert.That(config.Regions[0].Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
+			Assert.That(config.Regions[0].Properties, Does.ContainKey("cache.serializer"));
+			Assert.That(config.Regions[0].Properties["cache.serializer"], Is.EqualTo("serReg"));
 
 			Assert.That(config.AppendHashcodeToKey, Is.False);
 		}

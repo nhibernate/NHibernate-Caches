@@ -80,7 +80,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 		/// <param name="expiration">The expiration for the region.</param>
 		/// <param name="sliding">Whether the expiration should be sliding or not.</param>
 		/// <param name="appendHashcodeToKey">Should the keys be appended with their hashcode?</param>
+		// Since 5.7
+		[Obsolete("Use overload with appendHashcodeToKey additional parameter")]
 		public RegionConfig(string region, string expiration, string sliding, string appendHashcodeToKey)
+			: this(region, expiration, sliding, appendHashcodeToKey, null)
 		{
 			Region = region;
 			Properties = new Dictionary<string, string>();
@@ -90,6 +93,28 @@ namespace NHibernate.Caches.CoreDistributedCache
 				Properties["cache.use_sliding_expiration"] = sliding;
 			if (!string.IsNullOrEmpty(appendHashcodeToKey))
 				Properties["cache.append_hashcode_to_key"] = appendHashcodeToKey;
+		}
+
+		/// <summary>
+		/// Build a cache region configuration.
+		/// </summary>
+		/// <param name="region">The configured cache region.</param>
+		/// <param name="expiration">The expiration for the region.</param>
+		/// <param name="sliding">Whether the expiration should be sliding or not.</param>
+		/// <param name="appendHashcodeToKey">Should the keys be appended with their hashcode?</param>
+		/// <param name="serializer">The serializer class name for the region.</param>
+		public RegionConfig(string region, string expiration, string sliding, string appendHashcodeToKey, string serializer)
+		{
+			Region = region;
+			Properties = new Dictionary<string, string>();
+			if (!string.IsNullOrEmpty(expiration))
+				Properties["expiration"] = expiration;
+			if (!string.IsNullOrEmpty(sliding))
+				Properties["cache.use_sliding_expiration"] = sliding;
+			if (!string.IsNullOrEmpty(appendHashcodeToKey))
+				Properties["cache.append_hashcode_to_key"] = appendHashcodeToKey;
+			if (!string.IsNullOrEmpty(serializer))
+				Properties["cache.serializer"] = serializer;
 		}
 
 		/// <summary>The region name.</summary>
