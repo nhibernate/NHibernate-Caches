@@ -10,18 +10,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Bug
-    * #66 - Issues with custom Regions with RedisCacheProvider
-    * #62 - StackExchangeRedis fails with "too many results to unpack" with 8000 items
-
-* New feature
-    * #69 - "Third Level Cache" for Redis
-
-* Improvement
-    * #71 - Enable batching for StackExchangeRedis by default
-    * #68 - Add static region configuration
-    * #64 - Improve StackExchangeRedis LockMany script for DefaultRegionStrategy
-    * #60 - Update package format for symbols, license and SourceLink</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #86 Update SourceLink package to its release version</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
@@ -34,7 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Iesi.Collections" Version="4.0.4" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
     <PackageReference Include="NHibernate" Version="5.2.0" />
     <PackageReference Include="StackExchange.Redis" Version="2.0.495" />
   </ItemGroup>

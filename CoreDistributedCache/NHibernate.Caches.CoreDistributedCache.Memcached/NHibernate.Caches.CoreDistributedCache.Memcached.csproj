@@ -9,7 +9,10 @@
     <SignAssembly>False</SignAssembly>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* Improvement
-    * #83 Add support for custom serializer in CoreDistributedCache</PackageReleaseNotes>
+    * #83 Add support for custom serializer in CoreDistributedCache
+
+* Task
+    * #86 Update SourceLink package to its release version</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
@@ -30,6 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="EnyimMemcachedCore" Version="2.1.0" />
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
   </ItemGroup>
 </Project>

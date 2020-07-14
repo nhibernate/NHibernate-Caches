@@ -8,16 +8,15 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
-    * #68 - Add static region configuration
-    * #60 - Update package format for symbols, license and SourceLink</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #86 Update SourceLink package to its release version</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />
     <None Include="..\default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="all" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0" PrivateAssets="all" />
     <PackageReference Include="NHibernate" Version="5.2.0" />
   </ItemGroup>
   <ItemGroup>
