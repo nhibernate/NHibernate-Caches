@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Xml;
+using NHibernate.Caches.Common;
 
 namespace NHibernate.Caches.CoreDistributedCache
 {
 	/// <summary>
 	/// Configuration file provider.
 	/// </summary>
-	public class CoreDistributedCacheSectionHandler : IConfigurationSectionHandler
+	public class CoreDistributedCacheSectionHandler : ICacheConfigurationSectionHandler
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CoreDistributedCacheSectionHandler));
 
@@ -70,5 +70,8 @@ namespace NHibernate.Caches.CoreDistributedCache
 		}
 
 		#endregion
+
+		/// <inheritdoc />
+		public string ConfigurationSectionName => "coredistributedcache";
 	}
 }

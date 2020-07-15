@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Text;
 using Microsoft.Extensions.Caching.Distributed;
 using NHibernate.Cache;
@@ -92,7 +91,8 @@ namespace NHibernate.Caches.CoreDistributedCache
 			Log = NHibernateLogger.For(typeof(CoreDistributedCacheProvider));
 			ConfiguredCachesProperties = new Dictionary<string, IDictionary<string, string>>();
 
-			if (!(ConfigurationManager.GetSection("coredistributedcache") is CacheConfig config))
+			var config = ConfigurationProvider.Current.GetConfiguration();
+			if (config == null)
 				return;
 
 			if (!string.IsNullOrEmpty(config.FactoryClass))

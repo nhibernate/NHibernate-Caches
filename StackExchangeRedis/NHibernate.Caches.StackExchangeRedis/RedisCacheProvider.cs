@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using NHibernate.Cache;
 using StackExchange.Redis;
 using static NHibernate.Caches.StackExchangeRedis.ConfigurationHelper;
@@ -41,7 +40,8 @@ namespace NHibernate.Caches.StackExchangeRedis
 			Log = NHibernateLogger.For(typeof(RedisCacheProvider));
 			ConfiguredCacheRegions = new Dictionary<string, RegionConfig>();
 
-			if (!(ConfigurationManager.GetSection("redis") is CacheConfig config))
+			var config = ConfigurationProvider.Current.GetConfiguration();
+			if (config == null)
 				return;
 
 			ConfiguredCache = config;

@@ -20,7 +20,11 @@
 
 #endregion
 
+using System.Configuration;
+using System.IO;
+using System.Linq;
 using System.Xml;
+using NHibernate.Caches.Common;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.CoreDistributedCache.Tests
@@ -87,12 +91,50 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			Assert.That(config.Regions[0].Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
 			Assert.That(config.Regions[0].Properties, Does.ContainKey("expiration"));
 			Assert.That(config.Regions[0].Properties["expiration"], Is.EqualTo("500"));
-			Assert.That(config.Regions[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
-			Assert.That(config.Regions[0].Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
 			Assert.That(config.Regions[0].Properties, Does.ContainKey("cache.serializer"));
 			Assert.That(config.Regions[0].Properties["cache.serializer"], Is.EqualTo("serReg"));
 
 			Assert.That(config.AppendHashcodeToKey, Is.False);
+		}
+
+		[Test]
+		public void TestGetConfigFromProvidedConfiguration()
+		{
+			var assemblyPath =
+				Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileName(GetType().Assembly.Location));
+			ConfigurationProvider.SetConfiguration(ConfigurationManager.OpenExeConfiguration(assemblyPath));
+			var config = ConfigurationProvider.Current.GetConfiguration();
+
+			Assert.That(config, Is.Not.Null, "config");
+			Assert.That(config.FactoryClass, Is.EqualTo("NHibernate.Caches.CoreDistributedCache.Memory.MemoryFactory,NHibernate.Caches.CoreDistributedCache.Memory"));
+
+			Assert.That(config.Properties, Is.Not.Null, "Properties");
+			Assert.That(config.Properties.Count, Is.GreaterThan(2), "Properties count");
+			Assert.That(config.Properties, Does.ContainKey("size-limit"));
+			Assert.That(config.Properties["size-limit"], Is.EqualTo("1048576"));
+
+			Assert.That(config.Regions, Is.Not.Null, "Regions");
+			Assert.That(config.Regions.Length, Is.GreaterThan(1), "Regions count");
+			Assert.That(config.Regions, Has.One.Property(nameof(RegionConfig.Region)).EqualTo("foo"));
+			var fooRegion = config.Regions.Single(r => r.Region == "foo");
+			Assert.That(fooRegion.Properties, Does.ContainKey("cache.use_sliding_expiration"));
+			Assert.That(fooRegion.Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
+			Assert.That(fooRegion.Properties, Does.ContainKey("expiration"));
+			Assert.That(fooRegion.Properties["expiration"], Is.EqualTo("500"));
+		}
+
+		private ConfigurationProviderBase<CacheConfig, CoreDistributedCacheSectionHandler> _configurationProviderBackup;
+
+		[SetUp]
+		public void OnSetup()
+		{
+			_configurationProviderBackup = ConfigurationProvider.Current;
+		}
+
+		[TearDown]
+		public void OnTearDown()
+		{
+			ConfigurationProvider.Current = _configurationProviderBackup;
 		}
 	}
 }

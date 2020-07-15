@@ -22,7 +22,10 @@
 
 #endregion
 
+using System.Configuration;
+using System.IO;
 using System.Xml;
+using NHibernate.Caches.Common;
 using NUnit.Framework;
 
 namespace NHibernate.Caches.RtMemoryCache.Tests
@@ -62,6 +65,38 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 			var caches = result as CacheConfig[];
 			Assert.That(caches.Length, Is.EqualTo(1));
 			Assert.That(caches[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
+		}
+
+		[Test]
+		public void TestGetConfigFromProvidedConfiguration()
+		{
+			var assemblyPath =
+				Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileName(GetType().Assembly.Location));
+			ConfigurationProvider.SetConfiguration(ConfigurationManager.OpenExeConfiguration(assemblyPath));
+			var config = ConfigurationProvider.Current.GetConfiguration();
+
+			Assert.That(config, Is.Not.Null, "config");
+
+			Assert.That(config.Length, Is.GreaterThan(1), "Regions count");
+			Assert.That(config[0].Region, Is.EqualTo("foo"));
+			Assert.That(config[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
+			Assert.That(config[0].Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
+			Assert.That(config[0].Properties, Does.ContainKey("expiration"));
+			Assert.That(config[0].Properties["expiration"], Is.EqualTo("500"));
+		}
+
+		private ConfigurationProviderBase<CacheConfig[], RtMemoryCacheSectionHandler> _configurationProviderBackup;
+
+		[SetUp]
+		public void OnSetup()
+		{
+			_configurationProviderBackup = ConfigurationProvider.Current;
+		}
+
+		[TearDown]
+		public void OnTearDown()
+		{
+			ConfigurationProvider.Current = _configurationProviderBackup;
 		}
 	}
 }

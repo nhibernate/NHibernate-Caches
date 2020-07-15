@@ -22,7 +22,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Text;
 using Microsoft.Extensions.Caching.Memory;
 using NHibernate.Cache;
@@ -70,7 +69,8 @@ namespace NHibernate.Caches.CoreMemoryCache
 			Log = NHibernateLogger.For(typeof(CoreMemoryCacheProvider));
 			ConfiguredCachesProperties = new Dictionary<string, IDictionary<string, string>>();
 
-			if (!(ConfigurationManager.GetSection("corememorycache") is CacheConfig config))
+			var config = ConfigurationProvider.Current.GetConfiguration();
+			if (config == null)
 				return;
 
 			if (config.ExpirationScanFrequency != null)

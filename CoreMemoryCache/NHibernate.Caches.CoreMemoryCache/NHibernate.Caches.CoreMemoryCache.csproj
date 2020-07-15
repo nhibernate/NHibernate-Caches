@@ -33,4 +33,7 @@
       <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
     </Content>
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\NHibernate.Caches.Common\NHibernate.Caches.Common.csproj" />
+  </ItemGroup>
 </Project>

@@ -1,14 +1,14 @@
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Xml;
+using NHibernate.Caches.Common;
 
 namespace NHibernate.Caches.StackExchangeRedis
 {
 	/// <summary>
 	/// Configuration file provider.
 	/// </summary>
-	public class RedisSectionHandler : IConfigurationSectionHandler
+	public class RedisSectionHandler : ICacheConfigurationSectionHandler
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(RedisSectionHandler));
 
@@ -106,5 +106,8 @@ namespace NHibernate.Caches.StackExchangeRedis
 		}
 
 		#endregion
+
+		/// <inheritdoc />
+		public string ConfigurationSectionName => "redis";
 	}
 }
