@@ -44,7 +44,7 @@ namespace NHibernate.Caches.Common.Tests
 			// ConfigurationProvider.)
 			var configPath = assemblyPath + ".config";
 			// If this copy fails: either testconfig has started having its own file, and this hack can no more be used,
-			// or a previous test run was interupted before its cleanup (RunAfterAnyTests): go clean it manually.
+			// or a previous test run was interrupted before its cleanup (RunAfterAnyTests): go clean it manually.
 			// Discussion about this mess: https://github.com/dotnet/corefx/issues/22101
 			File.Copy(configPath, GetTesthostConfigPath());
 			_removeTesthostConfig = true;
