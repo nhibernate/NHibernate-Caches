@@ -39,8 +39,9 @@ namespace NHibernate.Caches.Common.Tests
 
 		private static void ReadCoreCacheSectionFromTesthostConfig(string assemblyPath, string configSectionName)
 		{
-			// For caches section, ConfigurationManager being directly used, the only workaround is to provide
-			// the configuration with its expected file name...
+			// For caches section, ConfigurationManager being used, the only general workaround is to provide
+			// the configuration with its expected file name... (Another option would be to explicitly setup each cache
+			// ConfigurationProvider.)
 			var configPath = assemblyPath + ".config";
 			// If this copy fails: either testconfig has started having its own file, and this hack can no more be used,
 			// or a previous test run was interupted before its cleanup (RunAfterAnyTests): go clean it manually.
