@@ -18,7 +18,7 @@
 
   <!-- This is used only for build folder -->
   <!-- TODO: Either remove or refactor to use NHibernate.Caches.props -->
-  <property name="project.version" value="5.6.0" overwrite="false" />
+  <property name="project.version" value="5.7.0" overwrite="false" />
 
   <!-- named project configurations -->
   <target name="set-debug-project-configuration" description="Perform a 'debug' build">

@@ -10,7 +10,7 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
+    <PackageReleaseNotes>* New Feature
     * #83 Add support for custom serializer in CoreDistributedCache
     * #79 Allow replacing ConfigurationManager for reading values
 
