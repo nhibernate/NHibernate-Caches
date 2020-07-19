@@ -8,7 +8,7 @@
     <TargetFrameworks>net461;netstandard2.0</TargetFrameworks>
     <SignAssembly>False</SignAssembly>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
+    <PackageReleaseNotes>* New Feature
     * #83 Add support for custom serializer in CoreDistributedCache
     * #79 Allow replacing ConfigurationManager for reading values
 

@@ -8,7 +8,7 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Improvement
+    <PackageReleaseNotes>* New Feature
     * #79 Allow replacing ConfigurationManager for reading values
 
 * Task
