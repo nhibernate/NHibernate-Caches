@@ -21,7 +21,6 @@
 #endregion
 
 using System.Collections.Generic;
-using System.Configuration;
 using System.Text;
 using NHibernate.Cache;
 
@@ -49,9 +48,11 @@ namespace NHibernate.Caches.RtMemoryCache
 			Log = NHibernateLogger.For(typeof(RtMemoryCacheProvider));
 			ConfiguredCachesProperties = new Dictionary<string, IDictionary<string, string>>();
 
-			if (!(ConfigurationManager.GetSection("rtmemorycache") is CacheConfig[] list))
+			var config = ConfigurationProvider.Current.GetConfiguration();
+			if (config == null)
 				return;
-			foreach (var cache in list)
+
+			foreach (var cache in config)
 			{
 				ConfiguredCachesProperties.Add(cache.Region, cache.Properties);
 			}

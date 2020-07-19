@@ -20,16 +20,17 @@
 
 #endregion
 
+using System;
 using System.Configuration;
 using System.IO;
 using System.Xml;
 using NHibernate.Caches.Common;
 using NUnit.Framework;
 
-namespace NHibernate.Caches.CoreMemoryCache.Tests
+namespace NHibernate.Caches.StackExchangeRedis.Tests
 {
 	[TestFixture]
-	public class CoreMemoryCacheSectionHandlerFixture
+	public class RedisSectionHandlerFixture
 	{
 		private static XmlNode GetConfigurationSection(string xml)
 		{
@@ -41,13 +42,13 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 		[Test]
 		public void TestGetConfigNullSection()
 		{
-			var handler = new CoreMemoryCacheSectionHandler();
+			var handler = new RedisSectionHandler();
 			var section = new XmlDocument();
 			var result = handler.Create(null, null, section);
 			Assert.That(result, Is.Not.Null, "result");
 			Assert.That(result, Is.InstanceOf<CacheConfig>());
 			var config = (CacheConfig) result;
-			Assert.That(config.ExpirationScanFrequency, Is.Null, "ExpirationScanFrequency");
+			Assert.That(config.Configuration, Is.Null, "Configuration");
 			Assert.That(config.Regions, Is.Not.Null, "Regions");
 			Assert.That(config.Regions.Length, Is.EqualTo(0));
 		}
@@ -56,23 +57,21 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 		public void TestGetConfigFromFile()
 		{
 			const string xmlSimple =
-				"<corememorycache expiration-scan-frequency=\"5\"><cache region=\"foo\" expiration=\"500\" sliding=\"true\" /></corememorycache>";
+				"<redis configuration=\"127.0.0.1\"><cache region=\"foo\" expiration=\"500\" sliding=\"true\" /></redis>";
 
-			var handler = new CoreMemoryCacheSectionHandler();
+			var handler = new RedisSectionHandler();
 			var section = GetConfigurationSection(xmlSimple);
 			var result = handler.Create(null, null, section);
 			Assert.That(result, Is.Not.Null);
 			Assert.That(result, Is.InstanceOf<CacheConfig>());
 			var config = (CacheConfig) result;
-			Assert.That(config.ExpirationScanFrequency, Is.EqualTo("5"), "ExpirationScanFrequency");
+			Assert.That(config.Configuration, Is.EqualTo("127.0.0.1"), "Configuration");
 
 			Assert.That(config.Regions, Is.Not.Null, "Regions");
 			Assert.That(config.Regions.Length, Is.EqualTo(1), "Regions count");
 			Assert.That(config.Regions[0].Region, Is.EqualTo("foo"));
-			Assert.That(config.Regions[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
-			Assert.That(config.Regions[0].Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
-			Assert.That(config.Regions[0].Properties, Does.ContainKey("expiration"));
-			Assert.That(config.Regions[0].Properties["expiration"], Is.EqualTo("500"));
+			Assert.That(config.Regions[0].UseSlidingExpiration, Is.EqualTo(true));
+			Assert.That(config.Regions[0].Expiration, Is.EqualTo(TimeSpan.FromSeconds(500)));
 		}
 
 		[Test]
@@ -84,18 +83,16 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 			var config = ConfigurationProvider.Current.GetConfiguration();
 
 			Assert.That(config, Is.Not.Null, "config");
-			Assert.That(config.ExpirationScanFrequency, Is.EqualTo("00:05:00"), "ExpirationScanFrequency");
+			Assert.That(config.Configuration, Is.EqualTo("127.0.0.1"), "Configuration");
 
 			Assert.That(config.Regions, Is.Not.Null, "Regions");
 			Assert.That(config.Regions.Length, Is.GreaterThan(1), "Regions count");
 			Assert.That(config.Regions[0].Region, Is.EqualTo("foo"));
-			Assert.That(config.Regions[0].Properties, Does.ContainKey("cache.use_sliding_expiration"));
-			Assert.That(config.Regions[0].Properties["cache.use_sliding_expiration"], Is.EqualTo("true"));
-			Assert.That(config.Regions[0].Properties, Does.ContainKey("expiration"));
-			Assert.That(config.Regions[0].Properties["expiration"], Is.EqualTo("500"));
+			Assert.That(config.Regions[0].UseSlidingExpiration, Is.EqualTo(true));
+			Assert.That(config.Regions[0].Expiration, Is.EqualTo(TimeSpan.FromSeconds(500)));
 		}
 
-		private ConfigurationProviderBase<CacheConfig, CoreMemoryCacheSectionHandler> _configurationProviderBackup;
+		private ConfigurationProviderBase<CacheConfig, RedisSectionHandler> _configurationProviderBackup;
 
 		[SetUp]
 		public void OnSetup()

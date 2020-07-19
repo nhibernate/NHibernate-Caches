@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using System.Configuration;
 using System.Xml;
+using NHibernate.Caches.Common;
 
 namespace NHibernate.Caches.CoreMemoryCache
 {
 	/// <summary>
 	/// Configuration file provider.
 	/// </summary>
-	public class CoreMemoryCacheSectionHandler : IConfigurationSectionHandler
+	public class CoreMemoryCacheSectionHandler : ICacheConfigurationSectionHandler
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(CoreMemoryCacheSectionHandler));
 
@@ -41,5 +41,8 @@ namespace NHibernate.Caches.CoreMemoryCache
 		}
 
 		#endregion
+
+		/// <inheritdoc />
+		public string ConfigurationSectionName => "corememorycache";
 	}
 }

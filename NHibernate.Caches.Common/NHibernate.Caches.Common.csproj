@@ -8,7 +8,10 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* Task
+    <PackageReleaseNotes>* Improvement
+    * #79 Allow replacing ConfigurationManager for reading values
+
+* Task
     * #86 Update SourceLink package to its release version</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">

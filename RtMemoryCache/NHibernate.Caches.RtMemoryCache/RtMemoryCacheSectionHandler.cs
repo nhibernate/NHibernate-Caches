@@ -1,13 +1,13 @@
 using System.Collections.Generic;
-using System.Configuration;
 using System.Xml;
+using NHibernate.Caches.Common;
 
 namespace NHibernate.Caches.RtMemoryCache
 {
 	/// <summary>
 	/// Config file provider.
 	/// </summary>
-	public class RtMemoryCacheSectionHandler : IConfigurationSectionHandler
+	public class RtMemoryCacheSectionHandler : ICacheConfigurationSectionHandler
 	{
 		private static readonly INHibernateLogger Log = NHibernateLogger.For(typeof(RtMemoryCacheSectionHandler));
 
@@ -53,5 +53,8 @@ namespace NHibernate.Caches.RtMemoryCache
 		}
 
 		#endregion
+
+		/// <inheritdoc />
+		public string ConfigurationSectionName => "rtmemorycache";
 	}
 }
