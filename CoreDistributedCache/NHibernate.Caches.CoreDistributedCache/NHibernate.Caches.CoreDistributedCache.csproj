@@ -39,6 +39,7 @@ This provider is not bound to a specific implementation and require a cache fact
     <Content Include="../../LICENSE.txt">
       <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
     </Content>
+    <None Include="../../NHibernate-NuGet.png" Pack="true" PackagePath="/"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\NHibernate.Caches.Common\NHibernate.Caches.Common.csproj" />
