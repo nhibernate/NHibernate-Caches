@@ -26,4 +26,8 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../NHibernate-NuGet.png" Pack="true" PackagePath="/"/>
+  </ItemGroup>
 </Project>

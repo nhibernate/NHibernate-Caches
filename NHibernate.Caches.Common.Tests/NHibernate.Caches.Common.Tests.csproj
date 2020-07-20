@@ -26,4 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\NHibernate.Caches.Common\NHibernate.Caches.Common.csproj" />
   </ItemGroup>
+  <ItemGroup>
+    <None Remove="../../NHibernate-NuGet.png" />
+  </ItemGroup>
 </Project>

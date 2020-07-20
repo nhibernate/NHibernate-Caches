@@ -32,6 +32,7 @@
     <Content Include="../LICENSE.txt">
       <PackagePath>./NHibernate.Caches.license.txt</PackagePath>
     </Content>
+    <None Remove="../../NHibernate-NuGet.png" />
     <None Include="../NHibernate-NuGet.png" Pack="true" PackagePath="/"/>
   </ItemGroup>
 </Project>
