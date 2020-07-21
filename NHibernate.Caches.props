@@ -14,6 +14,7 @@
     <Authors>NHibernate community</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <PackageIconUrl>https://raw.githubusercontent.com/nhibernate/nhibernate-core/master/logo/NHibernate-NuGet.png</PackageIconUrl>
+    <PackageIcon>NHibernate-NuGet.png</PackageIcon>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
     <PackageProjectUrl>https://github.com/nhibernate/NHibernate-Caches</PackageProjectUrl>
@@ -25,4 +26,8 @@
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <TreatSpecificWarningsAsErrors />
   </PropertyGroup>
+
+  <ItemGroup Condition="'$(IsPackable)' == 'true'">
+    <None Include="$(MSBuildThisFileDirectory)/NHibernate-NuGet.png" Pack="true" PackagePath="/"/>
+  </ItemGroup>
 </Project>
