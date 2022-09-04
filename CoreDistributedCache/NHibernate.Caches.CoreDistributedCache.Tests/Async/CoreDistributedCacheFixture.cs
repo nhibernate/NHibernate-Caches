@@ -37,6 +37,8 @@ using NHibernate.Cache;
 using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
 using NSubstitute;
+using NHibernate.Caches.Util.JsonSerializer;
+using NHibernate.Engine;
 
 namespace NHibernate.Caches.CoreDistributedCache.Tests
 {
@@ -67,6 +69,26 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			await (cache.PutAsync("-abc-", "test", CancellationToken.None));
 			await (distribCache.Received().SetAsync(Arg.Is<string>(k => k.Contains(keySanitizer("-abc-"))), Arg.Any<byte[]>(),
 				Arg.Any<DistributedCacheEntryOptions>()));
+		}
+
+		[Test]
+		public async Task CanUseCacheKeyWithJsonSerializerAsync()
+		{
+			var key = new CacheKey("keyTestJsonPut", NHibernateUtil.String, "someEntityName", Substitute.For<ISessionFactoryImplementor>());
+			const string value = "valuePut";
+
+			var props = GetDefaultProperties();
+			props["cache.serializer"] = typeof(DistributedCacheJsonSerializer).AssemblyQualifiedName;
+			var cache = (CacheBase) DefaultProvider.BuildCache(DefaultRegion, props);
+			// Due to async version, it may already be there.
+			await (cache.RemoveAsync(key, CancellationToken.None));
+
+			Assert.That(await (cache.GetAsync(key, CancellationToken.None)), Is.Null, "cache returned an item we didn't add !?!");
+
+			await (cache.PutAsync(key, value, CancellationToken.None));
+			var item = await (cache.GetAsync(key, CancellationToken.None));
+			Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+			Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
 		}
 	}
 }

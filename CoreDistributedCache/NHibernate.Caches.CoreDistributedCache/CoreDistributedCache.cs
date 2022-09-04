@@ -293,12 +293,14 @@ namespace NHibernate.Caches.CoreDistributedCache
 			return append;
 		}
 
-		private string GetCacheKey(object key)
+		private (string fullKey, string sanitzedKey) GetCacheKey(object key)
 		{
 			var baseKey = _cacheKeyPrefix + _fullRegion + ":" + key;
-			var keyAsString = AppendHashcodeToKey
+			baseKey = AppendHashcodeToKey
 				? baseKey + "@" + key.GetHashCode()
 				: baseKey;
+
+			var keyAsString = baseKey;
 
 			if (_maxKeySize < keyAsString.Length)
 			{
@@ -337,7 +339,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 
 			Log.Debug("Using cache key '{0}' for object key '{1}'.", keyAsString, key);
 
-			return keyAsString;
+			return (baseKey, keyAsString);
 		}
 
 		/// <inheritdoc />
@@ -348,15 +350,15 @@ namespace NHibernate.Caches.CoreDistributedCache
 				return null;
 			}
 
-			var cacheKey = GetCacheKey(key);
+			var (fullKey, cacheKey) = GetCacheKey(key);
 			Log.Debug("Fetching object '{0}' from the cache.", cacheKey);
 
 			var cachedData = _cache.Get(cacheKey);
 			if (cachedData == null)
 				return null;
 
-			var entry = _serializer.Deserialize(cachedData) as Tuple<object, object>;
-			return Equals(entry?.Item1, key) ? entry.Item2 : null;
+			var entry = _serializer.Deserialize(cachedData) as Tuple<string, object>;
+			return Equals(entry?.Item1, fullKey) ? entry.Item2 : null;
 		}
 
 		/// <inheritdoc />
@@ -372,10 +374,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 				throw new ArgumentNullException(nameof(value), "null value not allowed");
 			}
 
-			var entry = new Tuple<object, object>(key, value);
+			var (fullKey, cacheKey) = GetCacheKey(key);
+			var entry = new Tuple<string, object>(fullKey, value);
 			var cachedData = _serializer.Serialize(entry);
 
-			var cacheKey = GetCacheKey(key);
 			var options = new DistributedCacheEntryOptions();
 			if (UseSlidingExpiration)
 				options.SlidingExpiration = Expiration;
@@ -394,7 +396,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 				throw new ArgumentNullException(nameof(key));
 			}
 
-			var cacheKey = GetCacheKey(key);
+			var (_, cacheKey) = GetCacheKey(key);
 			Log.Debug("removing item with key: {0}", cacheKey);
 			_cache.Remove(cacheKey);
 		}

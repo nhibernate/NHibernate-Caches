@@ -22,6 +22,18 @@ It's recommended to research for a while before deciding which one is better for
 
 #### Build 5.8.0 for NHibernate 5.2.0
 
+##### Possible breaking change
+CoreDistributedCache now use a `Tuple<string, object>(keyAsString, value)` as the cached value instead of a
+`Tuple<object, object>(key, value)` :
+- Upon upgrade, all previously cached entries will be ignored.
+- If the distributed cache remains filled by older releases through other processes, there will be additional cache
+  misses for both older and newer versions.
+- If you are using another serializer than the default binary serializer, you may have to adjust its configuration.
+- Distinguishing different objects which keys have the same string representation and hashcode is no more supported.
+
+* Improvement
+    * #106 - Unable to use DistributedCache with JsonCacheSerializer
+
 * Task
     * #108 - Fix AppVeyor build
     * #89 - Fix iconUrl warning

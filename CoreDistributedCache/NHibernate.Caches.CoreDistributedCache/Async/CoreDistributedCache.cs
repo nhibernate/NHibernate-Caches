@@ -33,15 +33,15 @@ namespace NHibernate.Caches.CoreDistributedCache
 				return null;
 			}
 
-			var cacheKey = GetCacheKey(key);
+			var (fullKey, cacheKey) = GetCacheKey(key);
 			Log.Debug("Fetching object '{0}' from the cache.", cacheKey);
 
 			var cachedData = await (_cache.GetAsync(cacheKey, cancellationToken)).ConfigureAwait(false);
 			if (cachedData == null)
 				return null;
 
-			var entry = _serializer.Deserialize(cachedData) as Tuple<object, object>;
-			return Equals(entry?.Item1, key) ? entry.Item2 : null;
+			var entry = _serializer.Deserialize(cachedData) as Tuple<string, object>;
+			return Equals(entry?.Item1, fullKey) ? entry.Item2 : null;
 		}
 
 		/// <inheritdoc />
@@ -63,10 +63,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 			try
 			{
 
-				var entry = new Tuple<object, object>(key, value);
+				var (fullKey, cacheKey) = GetCacheKey(key);
+				var entry = new Tuple<string, object>(fullKey, value);
 				var cachedData = _serializer.Serialize(entry);
 
-				var cacheKey = GetCacheKey(key);
 				var options = new DistributedCacheEntryOptions();
 				if (UseSlidingExpiration)
 					options.SlidingExpiration = Expiration;
@@ -96,7 +96,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 			try
 			{
 
-				var cacheKey = GetCacheKey(key);
+				var (_, cacheKey) = GetCacheKey(key);
 				Log.Debug("removing item with key: {0}", cacheKey);
 				return _cache.RemoveAsync(cacheKey, cancellationToken);
 			}
