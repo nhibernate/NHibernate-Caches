@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27004.2002
+# Visual Studio Version 17
+VisualStudioVersion = 17.3.32825.248
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Providers", "Providers", "{9BC335BB-4F31-44B4-9C2D-5A97B4742675}"
 EndProject
@@ -9,75 +9,76 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{55271617
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{132CB859-841B-48C6-AA58-41BE77727E0D}"
 	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+		AsyncGenerator.yml = AsyncGenerator.yml
 		buildcommon.xml = buildcommon.xml
+		CONTRIBUTING.md = CONTRIBUTING.md
+		default.build = default.build
+		NHibernate.Caches.props = NHibernate.Caches.props
 		NHibernate.Caches.snk = NHibernate.Caches.snk
 		readme.md = readme.md
-		NHibernate.Caches.props = NHibernate.Caches.props
-		default.build = default.build
-		AsyncGenerator.yml = AsyncGenerator.yml
-		appveyor.yml = appveyor.yml
 		ReleaseProcedure.txt = ReleaseProcedure.txt
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache", "SysCache\NHibernate.Caches.SysCache\NHibernate.Caches.SysCache.csproj", "{2D48853D-7F90-4E1F-BE98-035CAB2D4F1F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.SysCache", "SysCache\NHibernate.Caches.SysCache\NHibernate.Caches.SysCache.csproj", "{2D48853D-7F90-4E1F-BE98-035CAB2D4F1F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache2", "SysCache2\NHibernate.Caches.SysCache2\NHibernate.Caches.SysCache2.csproj", "{F5852ECD-C05B-4C98-B300-702BA8D8244C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.SysCache2", "SysCache2\NHibernate.Caches.SysCache2\NHibernate.Caches.SysCache2.csproj", "{F5852ECD-C05B-4C98-B300-702BA8D8244C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence", "Prevalence\NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.csproj", "{6008B514-E6E4-4485-A188-2D3FE802EC95}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.Prevalence", "Prevalence\NHibernate.Caches.Prevalence\NHibernate.Caches.Prevalence.csproj", "{6008B514-E6E4-4485-A188-2D3FE802EC95}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache", "MemCache\NHibernate.Caches.MemCache\NHibernate.Caches.MemCache.csproj", "{A824DAC6-D317-4DBD-B08A-1CA8C3CFB7C1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.MemCache", "MemCache\NHibernate.Caches.MemCache\NHibernate.Caches.MemCache.csproj", "{A824DAC6-D317-4DBD-B08A-1CA8C3CFB7C1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Velocity", "Velocity\NHibernate.Caches.Velocity\NHibernate.Caches.Velocity.csproj", "{09EA5F04-1F0C-4D5E-A393-2B7B2FD279E8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.Velocity", "Velocity\NHibernate.Caches.Velocity\NHibernate.Caches.Velocity.csproj", "{09EA5F04-1F0C-4D5E-A393-2B7B2FD279E8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache.Tests", "SysCache\NHibernate.Caches.SysCache.Tests\NHibernate.Caches.SysCache.Tests.csproj", "{1EA6533B-EDC0-4585-927B-65A8A607826A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.SysCache.Tests", "SysCache\NHibernate.Caches.SysCache.Tests\NHibernate.Caches.SysCache.Tests.csproj", "{1EA6533B-EDC0-4585-927B-65A8A607826A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.MemCache.Tests", "MemCache\NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests.csproj", "{650E352A-EAE4-4D63-9A89-D7DD7FA4630F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.MemCache.Tests", "MemCache\NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests.csproj", "{650E352A-EAE4-4D63-9A89-D7DD7FA4630F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SharedCache", "SharedCache\NHibernate.Caches.SharedCache\NHibernate.Caches.SharedCache.csproj", "{F67ECF65-16D8-400D-A3D7-93A359C26A76}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.SharedCache", "SharedCache\NHibernate.Caches.SharedCache\NHibernate.Caches.SharedCache.csproj", "{F67ECF65-16D8-400D-A3D7-93A359C26A76}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SharedCache.Tests", "SharedCache\NHibernate.Caches.SharedCache.Tests\NHibernate.Caches.SharedCache.Tests.csproj", "{D54BB1AC-274D-4BD7-B89D-05A61078C83F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.SharedCache.Tests", "SharedCache\NHibernate.Caches.SharedCache.Tests\NHibernate.Caches.SharedCache.Tests.csproj", "{D54BB1AC-274D-4BD7-B89D-05A61078C83F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Prevalence.Tests", "Prevalence\NHibernate.Caches.Prevalence.Tests\NHibernate.Caches.Prevalence.Tests.csproj", "{07372137-0714-485A-AB07-0A0A872D3444}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.Prevalence.Tests", "Prevalence\NHibernate.Caches.Prevalence.Tests\NHibernate.Caches.Prevalence.Tests.csproj", "{07372137-0714-485A-AB07-0A0A872D3444}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Velocity.Tests", "Velocity\NHibernate.Caches.Velocity.Tests\NHibernate.Caches.Velocity.Tests.csproj", "{CA4F0A59-844B-4717-8F3B-6F53DC0F0B2E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.Velocity.Tests", "Velocity\NHibernate.Caches.Velocity.Tests\NHibernate.Caches.Velocity.Tests.csproj", "{CA4F0A59-844B-4717-8F3B-6F53DC0F0B2E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.EnyimMemcached", "EnyimMemcached\NHibernate.Caches.EnyimMemcached\NHibernate.Caches.EnyimMemcached.csproj", "{8B477613-1694-4467-A351-E43349D14527}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.EnyimMemcached", "EnyimMemcached\NHibernate.Caches.EnyimMemcached\NHibernate.Caches.EnyimMemcached.csproj", "{8B477613-1694-4467-A351-E43349D14527}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.EnyimMemcached.Tests", "EnyimMemcached\NHibernate.Caches.EnyimMemcached.Tests\NHibernate.Caches.EnyimMemcached.Tests.csproj", "{49F3BCBF-924F-4CFD-A5F7-4C8C4F8FC319}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.EnyimMemcached.Tests", "EnyimMemcached\NHibernate.Caches.EnyimMemcached.Tests\NHibernate.Caches.EnyimMemcached.Tests.csproj", "{49F3BCBF-924F-4CFD-A5F7-4C8C4F8FC319}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.SysCache2.Tests", "SysCache2\NHibernate.Caches.SysCache2.Tests\NHibernate.Caches.SysCache2.Tests.csproj", "{F56E6488-DE96-4D1A-9913-D36CBC16E945}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.SysCache2.Tests", "SysCache2\NHibernate.Caches.SysCache2.Tests\NHibernate.Caches.SysCache2.Tests.csproj", "{F56E6488-DE96-4D1A-9913-D36CBC16E945}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.RtMemoryCache", "RtMemoryCache\NHibernate.Caches.RtMemoryCache\NHibernate.Caches.RtMemoryCache.csproj", "{C0295AB5-00FB-4B45-82F6-2060080D01F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.RtMemoryCache", "RtMemoryCache\NHibernate.Caches.RtMemoryCache\NHibernate.Caches.RtMemoryCache.csproj", "{C0295AB5-00FB-4B45-82F6-2060080D01F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.RtMemoryCache.Tests", "RtMemoryCache\NHibernate.Caches.RtMemoryCache.Tests\NHibernate.Caches.RtMemoryCache.Tests.csproj", "{0B67ADE8-929E-46D2-A4E6-C0D621378EAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.RtMemoryCache.Tests", "RtMemoryCache\NHibernate.Caches.RtMemoryCache.Tests\NHibernate.Caches.RtMemoryCache.Tests.csproj", "{0B67ADE8-929E-46D2-A4E6-C0D621378EAE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Common.Tests", "NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj", "{D3B6FF9C-4254-48F3-A6A6-64DB03C8A2AC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.Common.Tests", "NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj", "{D3B6FF9C-4254-48F3-A6A6-64DB03C8A2AC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreMemoryCache", "CoreMemoryCache\NHibernate.Caches.CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.csproj", "{FD759770-E662-4822-A627-85FAA2B3177C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.CoreMemoryCache", "CoreMemoryCache\NHibernate.Caches.CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.csproj", "{FD759770-E662-4822-A627-85FAA2B3177C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreMemoryCache.Tests", "CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.Tests\NHibernate.Caches.CoreMemoryCache.Tests.csproj", "{4EE5D89B-A1B5-4CF8-95B8-44C2FAFD0119}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.CoreMemoryCache.Tests", "CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.Tests\NHibernate.Caches.CoreMemoryCache.Tests.csproj", "{4EE5D89B-A1B5-4CF8-95B8-44C2FAFD0119}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistributedCache", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.csproj", "{EFB25D54-38E6-441C-9287-4D69E40B1595}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.CoreDistributedCache", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.csproj", "{EFB25D54-38E6-441C-9287-4D69E40B1595}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistributedCache.Tests", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Tests\NHibernate.Caches.CoreDistributedCache.Tests.csproj", "{AD359D7F-6E65-48CB-A59A-B78ED58C1309}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.CoreDistributedCache.Tests", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Tests\NHibernate.Caches.CoreDistributedCache.Tests.csproj", "{AD359D7F-6E65-48CB-A59A-B78ED58C1309}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistributedCache.Redis", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Redis\NHibernate.Caches.CoreDistributedCache.Redis.csproj", "{0A6D9315-094E-4C6D-8A87-8C642A2D25D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.CoreDistributedCache.Redis", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Redis\NHibernate.Caches.CoreDistributedCache.Redis.csproj", "{0A6D9315-094E-4C6D-8A87-8C642A2D25D7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistributedCache.Memory", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Memory\NHibernate.Caches.CoreDistributedCache.Memory.csproj", "{63AD02AD-1F35-4341-A4C7-7EAEA238F08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.CoreDistributedCache.Memory", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Memory\NHibernate.Caches.CoreDistributedCache.Memory.csproj", "{63AD02AD-1F35-4341-A4C7-7EAEA238F08C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistributedCache.SqlServer", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.SqlServer\NHibernate.Caches.CoreDistributedCache.SqlServer.csproj", "{03A80D4B-6C72-4F31-8680-DD6119E34CDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.CoreDistributedCache.SqlServer", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.SqlServer\NHibernate.Caches.CoreDistributedCache.SqlServer.csproj", "{03A80D4B-6C72-4F31-8680-DD6119E34CDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.CoreDistributedCache.Memcached", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Memcached\NHibernate.Caches.CoreDistributedCache.Memcached.csproj", "{CB7BEB99-1964-4D83-86AD-100439E04186}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.CoreDistributedCache.Memcached", "CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Memcached\NHibernate.Caches.CoreDistributedCache.Memcached.csproj", "{CB7BEB99-1964-4D83-86AD-100439E04186}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Common", "NHibernate.Caches.Common\NHibernate.Caches.Common.csproj", "{15C72C05-4976-4401-91CB-31EF769AADD7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.Common", "NHibernate.Caches.Common\NHibernate.Caches.Common.csproj", "{15C72C05-4976-4401-91CB-31EF769AADD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Util.JsonSerializer", "Util\NHibernate.Caches.Util.JsonSerializer\NHibernate.Caches.Util.JsonSerializer.csproj", "{2327C330-0CE6-4F58-96A3-013BEFDFCCEB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.Util.JsonSerializer", "Util\NHibernate.Caches.Util.JsonSerializer\NHibernate.Caches.Util.JsonSerializer.csproj", "{2327C330-0CE6-4F58-96A3-013BEFDFCCEB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.Util.JsonSerializer.Tests", "Util\NHibernate.Caches.Util.JsonSerializer.Tests\NHibernate.Caches.Util.JsonSerializer.Tests.csproj", "{26EAA903-63F7-41B1-9197-5944CEBF00C2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.Util.JsonSerializer.Tests", "Util\NHibernate.Caches.Util.JsonSerializer.Tests\NHibernate.Caches.Util.JsonSerializer.Tests.csproj", "{26EAA903-63F7-41B1-9197-5944CEBF00C2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.StackExchangeRedis", "StackExchangeRedis\NHibernate.Caches.StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.csproj", "{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.StackExchangeRedis", "StackExchangeRedis\NHibernate.Caches.StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.csproj", "{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NHibernate.Caches.StackExchangeRedis.Tests", "StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.Tests\NHibernate.Caches.StackExchangeRedis.Tests.csproj", "{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NHibernate.Caches.StackExchangeRedis.Tests", "StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.Tests\NHibernate.Caches.StackExchangeRedis.Tests.csproj", "{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -240,5 +241,8 @@ Global
 		{26EAA903-63F7-41B1-9197-5944CEBF00C2} = {55271617-8CB8-4225-B338-069033160497}
 		{726AA9C7-0EA4-47C0-B65D-D42CD3ECEF82} = {9BC335BB-4F31-44B4-9C2D-5A97B4742675}
 		{CC2A7851-B1CD-49F7-ACD4-08604C2ACC63} = {55271617-8CB8-4225-B338-069033160497}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7D1E6C01-7CCE-48B2-A55D-B4864656EFEC}
 	EndGlobalSection
 EndGlobal

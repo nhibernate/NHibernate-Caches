@@ -27,6 +27,8 @@ using NHibernate.Cache;
 using NHibernate.Caches.Common.Tests;
 using NUnit.Framework;
 using NSubstitute;
+using NHibernate.Caches.Util.JsonSerializer;
+using NHibernate.Engine;
 
 namespace NHibernate.Caches.CoreDistributedCache.Tests
 {
@@ -35,6 +37,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 	{
 		protected override bool SupportsSlidingExpiration => true;
 		protected override bool SupportsClear => false;
+		protected override bool SupportsDistinguishingKeysWithSameStringRepresentationAndHashcode => false;
 
 		protected override Func<ICacheProvider> ProviderBuilder =>
 			() => new CoreDistributedCacheProvider();
@@ -61,6 +64,34 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			cache.Put("-abc-", "test");
 			distribCache.Received().Set(Arg.Is<string>(k => k.Contains(keySanitizer("-abc-"))), Arg.Any<byte[]>(),
 				Arg.Any<DistributedCacheEntryOptions>());
+		}
+
+		[Test]
+		public void CanUseCacheKeyWithJsonSerializer()
+		{
+			var key = new CacheKey("keyTestJsonPut", NHibernateUtil.String, "someEntityName", Substitute.For<ISessionFactoryImplementor>());
+			const string value = "valuePut";
+
+			var props = GetDefaultProperties();
+			props["cache.serializer"] = typeof(DistributedCacheJsonSerializer).AssemblyQualifiedName;
+			var cache = (CacheBase) DefaultProvider.BuildCache(DefaultRegion, props);
+			// Due to async version, it may already be there.
+			cache.Remove(key);
+
+			Assert.That(cache.Get(key), Is.Null, "cache returned an item we didn't add !?!");
+
+			cache.Put(key, value);
+			var item = cache.Get(key);
+			Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
+			Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
+		}
+
+		private class DistributedCacheJsonSerializer : JsonCacheSerializer
+		{
+			public DistributedCacheJsonSerializer()
+			{
+				RegisterType(typeof(Tuple<string, object>), "tso");
+			}
 		}
 	}
 }
