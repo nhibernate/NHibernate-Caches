@@ -1,5 +1,5 @@
 ﻿projects:
-- filePath: CoreDistributedCache\NHibernate.Caches.CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.csproj
+- filePath: CoreDistributedCache/NHibernate.Caches.CoreDistributedCache/NHibernate.Caches.CoreDistributedCache.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -28,7 +28,7 @@
   registerPlugin:
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
-- filePath: StackExchangeRedis\NHibernate.Caches.StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.csproj
+- filePath: StackExchangeRedis/NHibernate.Caches.StackExchangeRedis/NHibernate.Caches.StackExchangeRedis.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -87,7 +87,7 @@
   registerPlugin:
   - type: AsyncGenerator.Core.Plugins.EmptyRegionRemover
     assemblyName: AsyncGenerator.Core
-- filePath: NHibernate.Caches.Common.Tests\NHibernate.Caches.Common.Tests.csproj
+- filePath: NHibernate.Caches.Common.Tests/NHibernate.Caches.Common.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -103,7 +103,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: CoreDistributedCache\NHibernate.Caches.CoreDistributedCache.Tests\NHibernate.Caches.CoreDistributedCache.Tests.csproj
+- filePath: CoreDistributedCache/NHibernate.Caches.CoreDistributedCache.Tests/NHibernate.Caches.CoreDistributedCache.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -119,7 +119,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: CoreMemoryCache\NHibernate.Caches.CoreMemoryCache.Tests\NHibernate.Caches.CoreMemoryCache.Tests.csproj
+- filePath: CoreMemoryCache/NHibernate.Caches.CoreMemoryCache.Tests/NHibernate.Caches.CoreMemoryCache.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -135,7 +135,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: EnyimMemcached\NHibernate.Caches.EnyimMemcached.Tests\NHibernate.Caches.EnyimMemcached.Tests.csproj
+- filePath: EnyimMemcached/NHibernate.Caches.EnyimMemcached.Tests/NHibernate.Caches.EnyimMemcached.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -151,7 +151,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: MemCache\NHibernate.Caches.MemCache.Tests\NHibernate.Caches.MemCache.Tests.csproj
+- filePath: MemCache/NHibernate.Caches.MemCache.Tests/NHibernate.Caches.MemCache.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -167,7 +167,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: Prevalence\NHibernate.Caches.Prevalence.Tests\NHibernate.Caches.Prevalence.Tests.csproj
+- filePath: Prevalence/NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -183,7 +183,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: RtMemoryCache\NHibernate.Caches.RtMemoryCache.Tests\NHibernate.Caches.RtMemoryCache.Tests.csproj
+- filePath: RtMemoryCache/NHibernate.Caches.RtMemoryCache.Tests/NHibernate.Caches.RtMemoryCache.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -199,7 +199,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: SharedCache\NHibernate.Caches.SharedCache.Tests\NHibernate.Caches.SharedCache.Tests.csproj
+- filePath: SharedCache/NHibernate.Caches.SharedCache.Tests/NHibernate.Caches.SharedCache.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -215,7 +215,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: StackExchangeRedis\NHibernate.Caches.StackExchangeRedis.Tests\NHibernate.Caches.StackExchangeRedis.Tests.csproj
+- filePath: StackExchangeRedis/NHibernate.Caches.StackExchangeRedis.Tests/NHibernate.Caches.StackExchangeRedis.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -238,7 +238,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: SysCache\NHibernate.Caches.SysCache.Tests\NHibernate.Caches.SysCache.Tests.csproj
+- filePath: SysCache/NHibernate.Caches.SysCache.Tests/NHibernate.Caches.SysCache.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -254,7 +254,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: SysCache2\NHibernate.Caches.SysCache2.Tests\NHibernate.Caches.SysCache2.Tests.csproj
+- filePath: SysCache2/NHibernate.Caches.SysCache2.Tests/NHibernate.Caches.SysCache2.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -270,7 +270,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: Velocity\NHibernate.Caches.Velocity.Tests\NHibernate.Caches.Velocity.Tests.csproj
+- filePath: Velocity/NHibernate.Caches.Velocity.Tests/NHibernate.Caches.Velocity.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true

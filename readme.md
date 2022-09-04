@@ -35,6 +35,7 @@ CoreDistributedCache now use a `Tuple<string, object>(keyAsString, value)` as th
     * #106 - Unable to use DistributedCache with JsonCacheSerializer
 
 * Task
+    * #109 - Automatically generate async code on pull request
     * #108 - Fix AppVeyor build
     * #89 - Fix iconUrl warning
 

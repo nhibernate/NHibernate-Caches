@@ -99,7 +99,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				{
 					object Context() => new KeyValuePair<string, CacheLockValue>(lockKey, cacheLockValue);
 					return await (_retryPolicy
-					.ExecuteAsync(async () =>
+						.ExecuteAsync(async () =>
 						{
 							if (!LockLocal(lockKey, cacheLockValue))
 							{
@@ -109,16 +109,16 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 							cacheLockValue.Setup();
 							var subscriberCount = await (_subscriber.PublishAsync(_synchronizationChannel, Serializer.Serialize(new CacheSynchronizationMessage
-						{
-							OperationType = OperationType.Lock,
-							Timestamp = DateTime.UtcNow.Ticks,
-							ClientId = _clientId,
-							Data = new LockData
 							{
-								LockKey = lockKey,
-								LockValue = lockValue
-							}
-						}))).ConfigureAwait(false) - 1;
+								OperationType = OperationType.Lock,
+								Timestamp = DateTime.UtcNow.Ticks,
+								ClientId = _clientId,
+								Data = new LockData
+								{
+									LockKey = lockKey,
+									LockValue = lockValue
+								}
+							}))).ConfigureAwait(false) - 1;
 
 							if (subscriberCount == 0)
 							{
@@ -169,7 +169,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 				{
 					object Context() => new KeyValuePair<string[], CacheLockValue>(lockKeys, cacheLockValue);
 					return await (_retryPolicy
-					.ExecuteAsync(async () =>
+						.ExecuteAsync(async () =>
 						{
 							if (!LockManyLocal(lockKeys, cacheLockValue))
 							{
@@ -179,16 +179,16 @@ namespace NHibernate.Caches.StackExchangeRedis
 
 							cacheLockValue.Setup();
 							var subscriberCount = await (_subscriber.PublishAsync(_synchronizationChannel, Serializer.Serialize(new CacheSynchronizationMessage
-						{
-							OperationType = OperationType.LockMany,
-							Timestamp = DateTime.UtcNow.Ticks,
-							ClientId = _clientId,
-							Data = new LockManyData
 							{
-								LockKeys = lockKeys,
-								LockValue = lockValue
-							}
-						}))).ConfigureAwait(false) - 1;
+								OperationType = OperationType.LockMany,
+								Timestamp = DateTime.UtcNow.Ticks,
+								ClientId = _clientId,
+								Data = new LockManyData
+								{
+									LockKeys = lockKeys,
+									LockValue = lockValue
+								}
+							}))).ConfigureAwait(false) - 1;
 
 							if (subscriberCount == 0)
 							{

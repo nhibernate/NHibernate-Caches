@@ -91,6 +91,9 @@
   </target>
 
   <target name="common.tools-restore" depends="init">
+    <exec workingdir="${root.dir}" program="dotnet" verbose="true">
+      <arg line="tool restore" />
+    </exec>
     <exec workingdir="${root.dir}/Tools" program="dotnet" verbose="true">
       <arg line="restore ./packages.csproj --packages ." />
     </exec>
@@ -134,12 +137,6 @@
     <exec program="dotnet" failonerror="${common.run-tests.failonerror}">
       <arg line="${root.dir}/${test.project}/${test.file}/bin/${build.config}/${net.core-fx}/${test.file}.dll --labels=before --nocolor --result=${testresults.dir}/${test.file}.dll-core-results.xml" />
     </exec>
-  </target>
-
-  <target name="common.find-async-generator-console">
-    <property name="tool.id" value="CSharpAsyncGenerator.CommandLine" />
-    <call target="get-tool-info" />
-    <property name="async-generator-console" value="${tool.path}tools/netcoreapp2.1/AsyncGenerator.CommandLine.dll" />
   </target>
 
   <target name="common.nuget-pushbat"

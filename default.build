@@ -76,9 +76,9 @@
     <echo message="Created a '${project.config}' package in ${build.dir}" />
   </target>
 
-  <target name="generate-async" depends="common.tools-restore common.solution-restore common.find-async-generator-console">
+  <target name="generate-async" depends="common.tools-restore common.solution-restore">
     <exec workingdir="${root.dir}" program="dotnet" verbose="true">
-      <arg line="${async-generator-console}" />
+      <arg line="async-generator" />
     </exec>
   </target>
 
