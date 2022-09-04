@@ -215,14 +215,14 @@ namespace NHibernate.Caches.StackExchangeRedis
 				{
 					cancellationToken.ThrowIfCancellationRequested();
 					return Database.ScriptEvaluateAsync(
-					PutScript,
-					AppendAdditionalKeys(new RedisKey[] {cacheKey}),
-					AppendAdditionalValues(new RedisValue[]
-					{
-						Serializer.Serialize(value),
-						ExpirationEnabled,
-						(long) Expiration.TotalMilliseconds
-					}));
+						PutScript,
+						AppendAdditionalKeys(new RedisKey[] {cacheKey}),
+						AppendAdditionalValues(new RedisValue[]
+						{
+							Serializer.Serialize(value),
+							ExpirationEnabled,
+							(long) Expiration.TotalMilliseconds
+						}));
 				}
 			}
 			catch (Exception ex)
@@ -490,11 +490,11 @@ namespace NHibernate.Caches.StackExchangeRedis
 				}
 
 				var unlockedKeys =
-				await (_keyLocker.UnlockManyAsync(cacheKeys, lockValue, UnlockManyScript, GetAdditionalKeys(), GetAdditionalValues(), cancellationToken)).ConfigureAwait(false);
+					await (_keyLocker.UnlockManyAsync(cacheKeys, lockValue, UnlockManyScript, GetAdditionalKeys(), GetAdditionalValues(), cancellationToken)).ConfigureAwait(false);
 				if (Log.IsDebugEnabled())
 				{
 					Log.Debug("Number of unlocked objects with keys ({0}): {1}", string.Join(",", cacheKeys.Select(o => $"'{o}'")),
-					unlockedKeys);
+						unlockedKeys);
 				}
 
 				return unlockedKeys;
