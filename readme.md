@@ -20,6 +20,12 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.8.0 for NHibernate 5.2.0
+
+* Task
+    * #108 - Fix AppVeyor build
+    * #89 - Fix iconUrl warning
+
 #### Build 5.7.0 for NHibernate 5.2.0
 
 * New feature

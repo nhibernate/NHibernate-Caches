@@ -16,9 +16,9 @@ matrix:
     configuration: Release
 install:
 # memcache server
-- curl -L -O -S -s http://downloads.northscale.com/memcached-1.4.5-amd64.zip
-- 7z x memcached-1.4.5-amd64.zip
-- ps: $MemCached = Start-Process memcached-amd64\memcached.exe -PassThru
+- curl -L -O -S -s https://github.com/jefyt/memcached-windows/releases/download/1.6.8_mingw/memcached-1.6.8-win64-mingw.zip
+- 7z x memcached-1.6.8-win64-mingw.zip
+- ps: $MemCached = Start-Process memcached-1.6.8-win64-mingw\bin\memcached.exe -PassThru
 # redis server
 - curl -L -O -S -s https://github.com/ServiceStack/redis-windows/raw/master/downloads/redis64-2.8.17.zip
 - 7z x redis64-2.8.17.zip
