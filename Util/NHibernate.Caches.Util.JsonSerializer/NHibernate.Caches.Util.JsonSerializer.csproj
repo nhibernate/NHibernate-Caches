@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <Import Project="../../NHibernate.Caches.props" />
   <PropertyGroup>
     <Product>NHibernate.Caches.Util.JsonSerializer</Product>
@@ -9,7 +9,7 @@
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* Task
-    * #86 Update SourceLink package to its release version</PackageReleaseNotes>
+    * #110 Update Newtonsoft Json.Net to a non-vulnerable version</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
