@@ -30,6 +30,7 @@ CoreDistributedCache now use a `Tuple<string, object>(keyAsString, value)` as th
   misses for both older and newer versions.
 - If you are using another serializer than the default binary serializer, you may have to adjust its configuration.
 - Distinguishing different objects which keys have the same string representation and hashcode is no more supported.
+
 NHibernate.Caches.Util.JsonSerializer now uses Newtonsoft.Json 13.0.1, up from 10.0.1.
 
 * Improvement
