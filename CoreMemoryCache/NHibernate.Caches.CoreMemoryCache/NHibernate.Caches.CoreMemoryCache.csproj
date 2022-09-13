@@ -10,11 +10,11 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* New Feature
-    * #79 Allow replacing ConfigurationManager for reading values
+    <PackageReleaseNotes>* Improvement
+    * #106 - Unable to use DistributedCache with JsonCacheSerializer
 
 * Task
-    * #86 Update SourceLink package to its release version</PackageReleaseNotes>
+    * #89 - Fix iconUrl warning</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>

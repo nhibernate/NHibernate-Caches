@@ -9,7 +9,8 @@
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <PackageReleaseNotes>* Task
-    * #110 Update Newtonsoft Json.Net to a non-vulnerable version</PackageReleaseNotes>
+    * #110 - Update Newtonsoft Json.Net to a non-vulnerable version
+    * #89 - Fix iconUrl warning</PackageReleaseNotes>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>

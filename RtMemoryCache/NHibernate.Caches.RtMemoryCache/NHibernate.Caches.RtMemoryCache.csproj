@@ -8,11 +8,8 @@
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>..\..\NHibernate.Caches.snk</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <PackageReleaseNotes>* New Feature
-    * #79 Allow replacing ConfigurationManager for reading values
-
-* Task
-    * #86 Update SourceLink package to its release version</PackageReleaseNotes>
+    <PackageReleaseNotes>* Task
+    * #89 - Fix iconUrl warning</PackageReleaseNotes>
   </PropertyGroup>
   <ItemGroup>
     <None Include="..\..\NHibernate.Caches.snk" Link="NHibernate.snk" />

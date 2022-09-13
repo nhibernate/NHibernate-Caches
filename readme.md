@@ -37,6 +37,7 @@ NHibernate.Caches.Util.JsonSerializer now uses Newtonsoft.Json 13.0.1, up from 1
     * #106 - Unable to use DistributedCache with JsonCacheSerializer
 
 * Task
+    * #112 - Release 5.7.0
     * #110 - Update Newtonsoft Json.Net to a non-vulnerable version
     * #109 - Automatically generate async code on pull request
     * #108 - Fix AppVeyor build
