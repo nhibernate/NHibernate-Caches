@@ -17,6 +17,7 @@
     <PackageIcon>NHibernate-NuGet.png</PackageIcon>
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <PackageLicenseExpression>LGPL-2.1-only</PackageLicenseExpression>
+    <PackageReadmeFile>NHibernate.Caches.readme.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/nhibernate/NHibernate-Caches</PackageProjectUrl>
     <PackageTags>nhibernate; cache</PackageTags>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
