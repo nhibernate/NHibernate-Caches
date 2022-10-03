@@ -9,7 +9,7 @@
       "groupName": "NUnit"
     },
     {
-      "matchSourceUrls": [ "https://togithub.com/nunit/nunit-console"],
+      "matchSourceUrls": [ "https://github.com/nunit/nunit-console"],
       "groupName": "NUnit.Console"
     }
   ]
