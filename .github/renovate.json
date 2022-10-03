@@ -5,7 +5,8 @@
   ],
   "packageRules": [
     {
-      "matchSourceUrls": [ "https://github.com/nunit/nunit"]
+      "matchSourceUrls": [ "https://github.com/nunit/nunit"],
+      "groupName": "NUnit"
     },
     {
       "matchSourceUrls": [ "https://github.com/nunit/nunit-console"],
