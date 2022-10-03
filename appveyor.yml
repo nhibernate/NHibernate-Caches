@@ -6,7 +6,7 @@ configuration:
 environment:
   global:
     netTargetFx: net461
-    coreTargetFx: netcoreapp2.0
+    coreTargetFx: net6.0
   matrix:
   - tests: net
   - tests: core

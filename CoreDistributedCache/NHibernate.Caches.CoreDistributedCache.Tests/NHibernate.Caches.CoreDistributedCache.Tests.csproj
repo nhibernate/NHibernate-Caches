@@ -3,13 +3,13 @@
   <PropertyGroup>
     <Product>NHibernate.Caches.CoreDistributedCache</Product>
     <Description>Unit tests of cache provider for NHibernate using .Net Core IDistributedCache (Microsoft.Extensions.Caching.Abstractions).</Description>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;net6.0</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
@@ -28,7 +28,7 @@
     <PackageReference Include="NSubstitute" Version="3.1.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
     <PackageReference Include="NUnitLite" Version="3.9.0" />
   </ItemGroup>
   <ItemGroup>
