@@ -12,5 +12,5 @@
       "matchSourceUrls": [ "https://togithub.com/nunit/nunit-console"],
       "groupName": "NUnit.Console"
     }
-  }
+  ]
 }
