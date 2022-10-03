@@ -2,5 +2,15 @@
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
     "config:base"
-  ]
+  ],
+  "packageRules": [
+    {
+      "matchSourceUrls": [ "https://github.com/nunit/nunit"],
+      "groupName": "NUnit"
+    },
+    {
+      "matchSourceUrls": [ "https://togithub.com/nunit/nunit-console"],
+      "groupName": "NUnit.Console"
+    }
+  }
 }
