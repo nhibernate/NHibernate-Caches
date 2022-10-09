@@ -3,13 +3,13 @@
   <PropertyGroup>
     <Product>NHibernate.Caches.Util.JsonSerializer.Tests</Product>
     <Description>Unit tests for json serializer.</Description>
-    <TargetFrameworks>net461;netcoreapp2.0</TargetFrameworks>
+    <TargetFrameworks>net461;net6.0</TargetFrameworks>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
     <DefineConstants>NETFX;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(TargetFramework)' == 'netcoreapp2.0'">
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net6.0'">
     <OutputType>Exe</OutputType>
     <GenerateProgramFile>false</GenerateProgramFile>
   </PropertyGroup>
@@ -21,7 +21,7 @@
     <PackageReference Include="log4net" Version="2.0.10" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
     <PackageReference Include="NUnitLite" Version="3.9.0" />
   </ItemGroup>
 </Project>
