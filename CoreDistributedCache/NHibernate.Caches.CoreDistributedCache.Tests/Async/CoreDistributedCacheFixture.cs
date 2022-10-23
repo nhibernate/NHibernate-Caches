@@ -78,7 +78,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			const string value = "valuePut";
 
 			var props = GetDefaultProperties();
-			props["cache.serializer"] = typeof(DistributedCacheJsonSerializer).AssemblyQualifiedName;
+			props["cache.serializer"] = typeof(JsonCacheSerializer).AssemblyQualifiedName;
 			var cache = (CacheBase) DefaultProvider.BuildCache(DefaultRegion, props);
 			// Due to async version, it may already be there.
 			await (cache.RemoveAsync(key, CancellationToken.None));
