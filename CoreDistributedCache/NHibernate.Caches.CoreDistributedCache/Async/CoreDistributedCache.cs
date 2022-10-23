@@ -40,8 +40,10 @@ namespace NHibernate.Caches.CoreDistributedCache
 			if (cachedData == null)
 				return null;
 
-			var entry = _serializer.Deserialize(cachedData) as Tuple<string, object>;
-			return Equals(entry?.Item1, fullKey) ? entry.Item2 : null;
+			var entry = _serializer.Deserialize(cachedData) as object[];
+			if (entry == null || entry.Length != 2)
+				return null;
+			return Equals(entry[0], fullKey) ? entry[1] : null;
 		}
 
 		/// <inheritdoc />
@@ -64,7 +66,7 @@ namespace NHibernate.Caches.CoreDistributedCache
 			{
 
 				var (fullKey, cacheKey) = GetCacheKey(key);
-				var entry = new Tuple<string, object>(fullKey, value);
+				var entry = new object[] { fullKey, value };
 				var cachedData = _serializer.Serialize(entry);
 
 				var options = new DistributedCacheEntryOptions();
