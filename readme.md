@@ -20,11 +20,31 @@ It's recommended to research for a while before deciding which one is better for
 
 ## Notes
 
+#### Build 5.9.0 for NHibernate 5.2.0
+
+##### Possible breaking change
+To eliminate the need for a JSON serializer custom registration, CoreDistributedCache now uses a simple `object[]`
+as the cached value instead of a `Tuple<string, object>(keyAsString, value)`:
+- Upon upgrade, all previously cached entries will be ignored.
+- If the distributed cache remains filled by older releases through other processes, there will be additional cache
+  misses for both older and newer versions.
+- If you are using another serializer than the default binary serializer, you may have to adjust its configuration.
+
+* Improvement
+    * #117 - Avoid custom registration for the Json serializer
+    * #115 - Run tests using .NET 6
+
+* Task
+    * #119 - Release 5.9.0
+    * #118 - Allow git to handle line endings
+    * #116 - Remove Microsoft.Extensions.Caching.SqlConfig.Tools cli
+    * #113 - Tell NuGet about the readme file
+
 #### Build 5.8.0 for NHibernate 5.2.0
 
 ##### Possible breaking change
-CoreDistributedCache now use a `Tuple<string, object>(keyAsString, value)` as the cached value instead of a
-`Tuple<object, object>(key, value)` :
+CoreDistributedCache now uses a `Tuple<string, object>(keyAsString, value)` as the cached value instead of a
+`Tuple<object, object>(key, value)`:
 - Upon upgrade, all previously cached entries will be ignored.
 - If the distributed cache remains filled by older releases through other processes, there will be additional cache
   misses for both older and newer versions.
@@ -37,7 +57,7 @@ NHibernate.Caches.Util.JsonSerializer now uses Newtonsoft.Json 13.0.1, up from 1
     * #106 - Unable to use DistributedCache with JsonCacheSerializer
 
 * Task
-    * #112 - Release 5.7.0
+    * #112 - Release 5.8.0
     * #110 - Update Newtonsoft Json.Net to a non-vulnerable version
     * #109 - Automatically generate async code on pull request
     * #108 - Fix AppVeyor build
