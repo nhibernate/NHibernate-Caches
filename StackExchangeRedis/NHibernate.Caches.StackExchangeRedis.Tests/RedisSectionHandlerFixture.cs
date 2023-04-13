@@ -92,7 +92,7 @@ namespace NHibernate.Caches.StackExchangeRedis.Tests
 			Assert.That(config.Regions[0].Expiration, Is.EqualTo(TimeSpan.FromSeconds(500)));
 		}
 
-		private ConfigurationProviderBase<CacheConfig, RedisSectionHandler> _configurationProviderBackup;
+		private ConfigurationProviderBase<CacheConfig> _configurationProviderBackup;
 
 		[SetUp]
 		public void OnSetup()

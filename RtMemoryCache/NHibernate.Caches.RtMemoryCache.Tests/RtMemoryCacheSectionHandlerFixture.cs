@@ -85,7 +85,7 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 			Assert.That(config[0].Properties["expiration"], Is.EqualTo("500"));
 		}
 
-		private ConfigurationProviderBase<CacheConfig[], RtMemoryCacheSectionHandler> _configurationProviderBackup;
+		private ConfigurationProviderBase<CacheConfig[]> _configurationProviderBackup;
 
 		[SetUp]
 		public void OnSetup()
