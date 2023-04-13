@@ -95,7 +95,7 @@ namespace NHibernate.Caches.CoreMemoryCache.Tests
 			Assert.That(config.Regions[0].Properties["expiration"], Is.EqualTo("500"));
 		}
 
-		private ConfigurationProviderBase<CacheConfig, CoreMemoryCacheSectionHandler> _configurationProviderBackup;
+		private ConfigurationProviderBase<CacheConfig> _configurationProviderBackup;
 
 		[SetUp]
 		public void OnSetup()
