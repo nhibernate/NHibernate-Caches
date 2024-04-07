@@ -73,7 +73,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			const string value = "valuePut";
 
 			var props = GetDefaultProperties();
-			props["cache.serializer"] = typeof(DistributedCacheJsonSerializer).AssemblyQualifiedName;
+			props["cache.serializer"] = typeof(JsonCacheSerializer).AssemblyQualifiedName;
 			var cache = (CacheBase) DefaultProvider.BuildCache(DefaultRegion, props);
 			// Due to async version, it may already be there.
 			cache.Remove(key);
@@ -84,14 +84,6 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			var item = cache.Get(key);
 			Assert.That(item, Is.Not.Null, "Unable to retrieve cached item");
 			Assert.That(item, Is.EqualTo(value), "didn't return the item we added");
-		}
-
-		private class DistributedCacheJsonSerializer : JsonCacheSerializer
-		{
-			public DistributedCacheJsonSerializer()
-			{
-				RegisterType(typeof(Tuple<string, object>), "tso");
-			}
 		}
 	}
 }
