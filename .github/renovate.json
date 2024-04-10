@@ -3,6 +3,7 @@
   "extends": [
     "config:base"
   ],
+  "rebaseWhen": "conflicted",
   "packageRules": [
     {
       "matchSourceUrls": [ "https://github.com/nunit/nunit"],
