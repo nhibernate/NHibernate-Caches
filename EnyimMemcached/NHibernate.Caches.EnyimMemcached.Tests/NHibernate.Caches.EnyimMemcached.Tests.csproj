@@ -11,6 +11,6 @@
     <ProjectReference Include="..\NHibernate.Caches.EnyimMemcached\NHibernate.Caches.EnyimMemcached.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.10" />
+    <PackageReference Include="log4net" Version="2.0.17" />
   </ItemGroup>
 </Project>

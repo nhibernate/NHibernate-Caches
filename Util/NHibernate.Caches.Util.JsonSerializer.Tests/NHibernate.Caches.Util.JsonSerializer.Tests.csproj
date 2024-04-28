@@ -18,10 +18,10 @@
     <ProjectReference Include="..\NHibernate.Caches.Util.JsonSerializer\NHibernate.Caches.Util.JsonSerializer.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="log4net" Version="2.0.10" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.9.0" />
+    <PackageReference Include="log4net" Version="2.0.17" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net6.0'">
-    <PackageReference Include="NUnitLite" Version="3.9.0" />
+    <PackageReference Include="NUnitLite" Version="3.14.0" />
   </ItemGroup>
 </Project>
