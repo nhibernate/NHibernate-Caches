@@ -8,18 +8,11 @@
   <property name="root.dir" value=".." />
   <include buildfile="${root.dir}/buildcommon.xml" />
 
-  <fileset id="EnyimMemcached-required-assemblies">
-    <include name="${folders.lib}/Enyim.*"/>
-  </fileset>
-
   <target name="prepare-bin-pack-specific" depends="init">
     <property name="bin-pack.project.name" value="EnyimMemcached" />
   </target>
 
   <target name="bin-pack" depends="init prepare-bin-pack-specific bin-pack-common">
-    <copy todir="${bin-pack.project.deploy}" flatten="true">
-      <fileset refid="EnyimMemcached-required-assemblies" />
-    </copy>
   </target>
 
   <target name="test" depends="init">
