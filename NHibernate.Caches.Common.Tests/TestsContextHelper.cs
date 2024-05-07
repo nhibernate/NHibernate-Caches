@@ -16,8 +16,8 @@ namespace NHibernate.Caches.Common.Tests
 			//so we need to explicitly load the configuration
 			if (Assembly.GetEntryAssembly() != null)
 			{
-				var assemblyPath = Path.Combine(TestContext.CurrentContext.TestDirectory,
-					Path.GetFileName(testAssembly.Location));
+				var assemblyPath =
+					Path.Combine(TestContext.CurrentContext.TestDirectory, Path.GetFileName(testAssembly.Location));
 				var configuration = ConfigurationManager.OpenExeConfiguration(assemblyPath);
 				Cfg.Environment.InitializeGlobalProperties(GetTestAssemblyHibernateConfiguration(configuration));
 				configure?.Invoke(configuration);
