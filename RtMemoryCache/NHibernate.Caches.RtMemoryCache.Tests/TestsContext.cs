@@ -13,7 +13,7 @@ namespace NHibernate.Caches.RtMemoryCache.Tests
 		public void RunBeforeAnyTests()
 		{
 #if !NETFX
-			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, "coredistributedcache");
+			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, ConfigurationProvider.SetConfiguration);
 #endif
 			ConfigureLog4Net();
 		}
