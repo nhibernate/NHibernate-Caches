@@ -24,6 +24,11 @@
     <PackageReference Include="NUnitLite" Version="3.14.0" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="log4net" Version="2.0.17" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.9.2" />
+    <PackageReference Include="NUnit3TestAdapter" Version="4.5.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\NHibernate.Caches.Common\NHibernate.Caches.Common.csproj" />
   </ItemGroup>
 </Project>
