@@ -151,55 +151,7 @@
     - name: createNewTypes
       value: false
     assemblyName: AsyncGenerator.Core
-- filePath: MemCache/NHibernate.Caches.MemCache.Tests/NHibernate.Caches.MemCache.Tests.csproj
-  targetFramework: net461
-  concurrentRun: true
-  applyChanges: true
-  analyzation:
-    cancellationTokens:
-      enabled: true
-    scanMethodBody: true
-    scanForMissingAsyncMembers:
-    - all: true
-  registerPlugin:
-  - type: AsyncGenerator.Core.Plugins.NUnitPlugin
-    parameters:
-    - name: createNewTypes
-      value: false
-    assemblyName: AsyncGenerator.Core
-- filePath: Prevalence/NHibernate.Caches.Prevalence.Tests/NHibernate.Caches.Prevalence.Tests.csproj
-  targetFramework: net461
-  concurrentRun: true
-  applyChanges: true
-  analyzation:
-    cancellationTokens:
-      enabled: true
-    scanMethodBody: true
-    scanForMissingAsyncMembers:
-    - all: true
-  registerPlugin:
-  - type: AsyncGenerator.Core.Plugins.NUnitPlugin
-    parameters:
-    - name: createNewTypes
-      value: false
-    assemblyName: AsyncGenerator.Core
 - filePath: RtMemoryCache/NHibernate.Caches.RtMemoryCache.Tests/NHibernate.Caches.RtMemoryCache.Tests.csproj
-  targetFramework: net461
-  concurrentRun: true
-  applyChanges: true
-  analyzation:
-    cancellationTokens:
-      enabled: true
-    scanMethodBody: true
-    scanForMissingAsyncMembers:
-    - all: true
-  registerPlugin:
-  - type: AsyncGenerator.Core.Plugins.NUnitPlugin
-    parameters:
-    - name: createNewTypes
-      value: false
-    assemblyName: AsyncGenerator.Core
-- filePath: SharedCache/NHibernate.Caches.SharedCache.Tests/NHibernate.Caches.SharedCache.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
@@ -255,22 +207,6 @@
       value: false
     assemblyName: AsyncGenerator.Core
 - filePath: SysCache2/NHibernate.Caches.SysCache2.Tests/NHibernate.Caches.SysCache2.Tests.csproj
-  targetFramework: net461
-  concurrentRun: true
-  applyChanges: true
-  analyzation:
-    cancellationTokens:
-      enabled: true
-    scanMethodBody: true
-    scanForMissingAsyncMembers:
-    - all: true
-  registerPlugin:
-  - type: AsyncGenerator.Core.Plugins.NUnitPlugin
-    parameters:
-    - name: createNewTypes
-      value: false
-    assemblyName: AsyncGenerator.Core
-- filePath: Velocity/NHibernate.Caches.Velocity.Tests/NHibernate.Caches.Velocity.Tests.csproj
   targetFramework: net461
   concurrentRun: true
   applyChanges: true
