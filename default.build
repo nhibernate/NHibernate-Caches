@@ -11,10 +11,6 @@
     <include name="Util/default.build" />
     <include name="SysCache/default.build" />
     <include name="SysCache2/default.build" />
-    <include name="SharedCache/default.build" />
-    <include name="MemCache/default.build" />
-    <include name="Velocity/default.build" />
-    <include name="Prevalence/default.build" />
     <include name="EnyimMemcached/default.build" />
     <include name="RtMemoryCache/default.build" />
     <include name="CoreMemoryCache/default.build" />
