@@ -4,7 +4,6 @@
   <property name="framework.family" value="${framework::get-family(framework::get-target-framework())}"/>
   <property name="framework.version" value="${framework::get-version(framework::get-target-framework())}"/>
 
-  <property name="folders.lib" value="../Lib/${framework.family}/${framework.version}" />
   <property name="key.file" value="../NHibernate.Caches.snk" />
 
   <property name="net.target-fx" value="net461" />
