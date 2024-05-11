@@ -13,7 +13,7 @@ namespace NHibernate.Caches.StackExchangeRedis.Tests
 		public void RunBeforeAnyTests()
 		{
 #if !NETFX
-			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, "redis");
+			TestsContextHelper.RunBeforeAnyTests(typeof(TestsContext).Assembly, ConfigurationProvider.SetConfiguration);
 #endif
 			ConfigureLog4Net();
 		}
