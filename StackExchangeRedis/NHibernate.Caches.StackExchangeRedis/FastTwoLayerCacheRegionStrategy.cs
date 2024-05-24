@@ -30,7 +30,7 @@ namespace NHibernate.Caches.StackExchangeRedis
 		public FastTwoLayerCacheRegionStrategy(
 			IConnectionMultiplexer connectionMultiplexer,
 			RedisCacheRegionConfiguration configuration,
-			RegionMemoryCacheBase memoryCache, 
+			RegionMemoryCacheBase memoryCache,
 			IDictionary<string, string> properties)
 			: base(connectionMultiplexer, configuration, properties)
 		{
