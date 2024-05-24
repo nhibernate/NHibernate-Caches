@@ -4,7 +4,6 @@
     <Product>NHibernate.Caches.StackExchangeRedis.Tests</Product>
     <Description>Unit tests of cache provider NHibernate using StackExchange.Redis.</Description>
     <TargetFrameworks>net461;net6.0</TargetFrameworks>
-    <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
