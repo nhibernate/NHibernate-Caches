@@ -4,6 +4,7 @@
     <Product>NHibernate.Caches.Util.JsonSerializer.Tests</Product>
     <Description>Unit tests for json serializer.</Description>
     <TargetFrameworks>net461;net8.0</TargetFrameworks>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">

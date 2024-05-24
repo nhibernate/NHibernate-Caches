@@ -4,6 +4,7 @@
     <Product>NHibernate.Caches.CoreDistributedCache</Product>
     <Description>Unit tests of cache provider for NHibernate using .Net Core IDistributedCache (Microsoft.Extensions.Caching.Abstractions).</Description>
     <TargetFrameworks>net461;net8.0</TargetFrameworks>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">

@@ -5,6 +5,7 @@
     <Description>Unit tests of cache provider NHibernate using StackExchange.Redis.</Description>
     <TargetFrameworks>net461;net8.0</TargetFrameworks>
     <ImplicitlyExpandNETStandardFacades>false</ImplicitlyExpandNETStandardFacades>
+    <EnableUnsafeBinaryFormatterSerialization>true</EnableUnsafeBinaryFormatterSerialization>
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'net461'">
