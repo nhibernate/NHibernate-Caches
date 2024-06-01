@@ -8,12 +8,26 @@ namespace NHibernate.Caches.Common
 	/// Base generic class for the cache configuration settings.
 	/// </summary>
 	/// <typeparam name="TConfig">The configuration class.</typeparam>
+	public abstract class ConfigurationProviderBase<TConfig>
+		where TConfig : class
+	{
+		/// <summary>
+		/// Get the cache configuration.
+		/// </summary>
+		/// <returns>The cache configuration.</returns>
+		public abstract TConfig GetConfiguration();
+	}
+
+	/// <summary>
+	/// Base generic class for the cache configuration settings.
+	/// </summary>
+	/// <typeparam name="TConfig">The configuration class.</typeparam>
 	/// <typeparam name="TConfigHandler">The configuration class section handler.</typeparam>
-	public abstract class ConfigurationProviderBase<TConfig, TConfigHandler>
+	public abstract class ConfigurationProviderBase<TConfig, TConfigHandler> : ConfigurationProviderBase<TConfig>
 		where TConfig : class
 		where TConfigHandler : ICacheConfigurationSectionHandler, new()
 	{
-		private static ConfigurationProviderBase<TConfig, TConfigHandler> _current;
+		private static ConfigurationProviderBase<TConfig> _current;
 		private static readonly string ConfigurationSectionName;
 
 		static ConfigurationProviderBase()
@@ -25,7 +39,7 @@ namespace NHibernate.Caches.Common
 		/// Provides ability to override default <see cref="System.Configuration.ConfigurationManager"/> with custom implementation.
 		/// Can be set to null if all configuration is specified by code.
 		/// </summary>
-		public static ConfigurationProviderBase<TConfig, TConfigHandler> Current
+		public static ConfigurationProviderBase<TConfig> Current
 		{
 			get => _current ?? (_current = new StaticConfigurationManagerProvider());
 			set => _current = value ?? new NullConfigurationProvider();
@@ -40,12 +54,6 @@ namespace NHibernate.Caches.Common
 		{
 			_current = configuration == null ? null : new SystemConfigurationProvider(configuration);
 		}
-
-		/// <summary>
-		/// Get the cache configuration.
-		/// </summary>
-		/// <returns>The cache configuration.</returns>
-		public abstract TConfig GetConfiguration();
 
 		private class StaticConfigurationManagerProvider : ConfigurationProviderBase<TConfig, TConfigHandler>
 		{
@@ -83,7 +91,7 @@ namespace NHibernate.Caches.Common
 			}
 		}
 
-		private class NullConfigurationProvider : ConfigurationProviderBase<TConfig, TConfigHandler>
+		private class NullConfigurationProvider : ConfigurationProviderBase<TConfig>
 		{
 			/// <inheritdoc />
 			public override TConfig GetConfiguration()
