@@ -19,7 +19,7 @@
     <None Include="default.build" Link="default.build" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="NHibernate" Version="5.2.0" />
+    <PackageReference Include="NHibernate" Version="5.5.2" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="all" />
   </ItemGroup>
   <ItemGroup>
