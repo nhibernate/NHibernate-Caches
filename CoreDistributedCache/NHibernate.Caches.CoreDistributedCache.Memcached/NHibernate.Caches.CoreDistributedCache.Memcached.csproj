@@ -32,7 +32,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="EnyimMemcachedCore" Version="2.1.0" />
+    <PackageReference Include="EnyimMemcachedCore" Version="3.2.3" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="all" />
   </ItemGroup>
 </Project>
