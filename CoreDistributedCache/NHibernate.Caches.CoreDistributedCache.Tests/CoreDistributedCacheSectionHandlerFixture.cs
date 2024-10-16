@@ -123,7 +123,7 @@ namespace NHibernate.Caches.CoreDistributedCache.Tests
 			Assert.That(fooRegion.Properties["expiration"], Is.EqualTo("500"));
 		}
 
-		private ConfigurationProviderBase<CacheConfig, CoreDistributedCacheSectionHandler> _configurationProviderBackup;
+		private ConfigurationProviderBase<CacheConfig> _configurationProviderBackup;
 
 		[SetUp]
 		public void OnSetup()
