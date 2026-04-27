@@ -17,7 +17,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="all" />
-    <PackageReference Include="NHibernate" Version="5.2.0" />
+    <PackageReference Include="NHibernate" Version="5.4.9" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Configuration" />
